@@ -32,7 +32,7 @@ jobs:
       - run:
           name: Copy artifacts to latest/
           command: |
-            if [ "${CIRCLE_BRANCH}" = "master" ]; then
+            if [ "${CIRCLE_BRANCH}" = "main" ]; then
               aws s3 cp $S3_BASE_URL/dujour/$CIRCLE_BUILD_NUM/ $S3_BASE_URL/latest/ --recursive --acl public-read
             fi
 
