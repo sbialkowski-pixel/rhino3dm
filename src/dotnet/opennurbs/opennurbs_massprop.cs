@@ -12,12 +12,12 @@ namespace Rhino.Geometry
   /// </summary>
   public class AreaMassProperties : IDisposable
   {
-    #region members
+#region members
     private IntPtr m_ptr; // ON_MassProperties*
     private readonly bool m_bIsConst;
-    #endregion
+#endregion
 
-    #region constructors
+#region constructors
     private AreaMassProperties(IntPtr ptr, bool isConst)
     {
       m_ptr = ptr;
@@ -64,7 +64,7 @@ namespace Rhino.Geometry
         m_ptr = IntPtr.Zero;
       }
     }
-    #endregion
+#endregion
 
     /// <summary>
     /// Computes an AreaMassProperties for a closed planar curve.
@@ -262,7 +262,7 @@ namespace Rhino.Geometry
     }
 
 
-    #region properties
+#region properties
     internal IntPtr ConstPointer()
     {
       return m_ptr;
@@ -315,9 +315,9 @@ namespace Rhino.Geometry
         return rc;
       }
     }
-    #endregion
+#endregion
 
-    #region moments
+#region moments
     const int idx_wc_firstmoments = 0;
     const int idx_wc_secondmoments = 1;
     const int idx_wc_productmoments = 2;
@@ -647,9 +647,9 @@ namespace Rhino.Geometry
       return UnsafeNativeMethods.ON_MassProperties_GetPrincipalMoments(ptr, false, ref x, ref xaxis, ref y, ref yaxis, ref z, ref zaxis);
     }
 
-    #endregion
+#endregion
 
-    #region methods
+#region methods
     ///// <summary>
     ///// Sum mass properties together to get an aggregate mass.
     ///// </summary>
@@ -660,7 +660,7 @@ namespace Rhino.Geometry
     //  IntPtr pSum = summand.ConstPointer();
     //  return UnsafeNativeMethods.ON_MassProperties_Sum(m_ptr, pSum);
     //}
-    #endregion
+#endregion
   }
 
   /// <summary>
@@ -670,12 +670,12 @@ namespace Rhino.Geometry
   /// </summary>
   public class VolumeMassProperties : IDisposable
   {
-    #region members
+#region members
     private IntPtr m_ptr; // ON_MassProperties*
     private readonly bool m_bIsConst;
-    #endregion
+#endregion
 
-    #region constructors
+#region constructors
     private VolumeMassProperties(IntPtr ptr, bool isConst)
     {
       m_ptr = ptr;
@@ -721,7 +721,7 @@ namespace Rhino.Geometry
         m_ptr = IntPtr.Zero;
       }
     }
-    #endregion
+#endregion
 
     /// <summary>
     /// Compute the VolumeMassProperties for a single Mesh.
@@ -864,7 +864,7 @@ namespace Rhino.Geometry
       return IntPtr.Zero == rc ? null : new VolumeMassProperties(rc, false);
     }
     
-    #region properties
+#region properties
     internal IntPtr ConstPointer()
     {
       return m_ptr;
@@ -927,9 +927,9 @@ namespace Rhino.Geometry
         return rc;
       }
     }
-    #endregion
+#endregion
 
-    #region moments
+#region moments
     const int idx_wc_firstmoments = 0;
     const int idx_wc_secondmoments = 1;
     const int idx_wc_productmoments = 2;
@@ -1210,9 +1210,9 @@ namespace Rhino.Geometry
         return moment;
       }
     }
-    #endregion
+#endregion
 
-    #region methods
+#region methods
     /// <summary>
     /// Sum mass properties together to get an aggregate mass.
     /// </summary>
@@ -1224,8 +1224,7 @@ namespace Rhino.Geometry
       IntPtr pSum = summand.ConstPointer();
       return UnsafeNativeMethods.ON_MassProperties_Sum(m_ptr, pSum);
     }
-    #endregion
+#endregion
   }
 }
-
 #endif

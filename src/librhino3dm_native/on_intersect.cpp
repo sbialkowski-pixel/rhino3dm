@@ -161,6 +161,7 @@ RH_C_FUNCTION void ON_Intersect_MeshPlanes4(ON_SimpleArray<ON_Polyline*>* pPolyl
   delete pPolylines;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // ray shooter and mesh/mesh intersect not supported in stand alone OpenNURBS
 #if !defined(RHINO3DM_BUILD)

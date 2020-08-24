@@ -570,7 +570,17 @@ RH_C_FUNCTION void ON_PointCloud_GetColors(const ON_PointCloud* pConstPointCloud
     }
   }
 }
-
+RH_C_FUNCTION int ON_PointCloud_GetClosestPoint(const ON_PointCloud* pConstPointCloud, ON_3DPOINT_STRUCT point)
+{
+    int rc = -1;
+    if (pConstPointCloud)
+    {
+        int index = -1;
+        if (pConstPointCloud->GetClosestPoint(ON_3dPoint(point.val), &index))
+            rc = index;
+    }
+    return rc;
+}
 // not currently available in stand alone OpenNURBS build
 #if !defined(RHINO3DM_BUILD)
 

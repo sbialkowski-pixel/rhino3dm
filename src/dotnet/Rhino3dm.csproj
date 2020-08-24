@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rhino</RootNamespace>
     <AssemblyName>Rhino3dm</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -28,7 +28,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>$(SolutionDir)$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;RHINO3DM_BUILD</DefineConstants>
+    <DefineConstants>TRACE;RHINO3DM_BUILD SB_IMP</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,11 +46,36 @@
   <ItemGroup>
     <Compile Include="AutoNativeEnums.cs" />
     <Compile Include="AutoNativeMethods.cs" />
+    <Compile Include="Diagrams\Circle2.cs" />
+    <Compile Include="Diagrams\Containment.cs" />
+    <Compile Include="Diagrams\ConvexHull\Solver.cs" />
+    <Compile Include="Diagrams\Delaunay\Connectivity.cs" />
+    <Compile Include="Diagrams\Delaunay\Edge.cs" />
+    <Compile Include="Diagrams\Delaunay\EdgeList.cs" />
+    <Compile Include="Diagrams\Delaunay\Face.cs" />
+    <Compile Include="Diagrams\Delaunay\FaceEx.cs" />
+    <Compile Include="Diagrams\Delaunay\FaceExList.cs" />
+    <Compile Include="Diagrams\Delaunay\Solver.cs" />
+    <Compile Include="Diagrams\Line2.cs" />
+    <Compile Include="Diagrams\LineCircleX.cs" />
+    <Compile Include="Diagrams\LineX.cs" />
+    <Compile Include="Diagrams\Node2.cs" />
+    <Compile Include="Diagrams\Node2Leaf.cs" />
+    <Compile Include="Diagrams\Node2List.cs" />
+    <Compile Include="Diagrams\Node2Proximity.cs" />
+    <Compile Include="Diagrams\Node2Tree.cs" />
+    <Compile Include="Diagrams\Parallax.cs" />
+    <Compile Include="Diagrams\Side2.cs" />
+    <Compile Include="Diagrams\Vec2.cs" />
+    <Compile Include="Diagrams\Voronoi\Cell2.cs" />
+    <Compile Include="Diagrams\Voronoi\Solver.cs" />
     <Compile Include="hostutils.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="interop.cs" />
     <Compile Include="MonoHost.cs" />
     <Compile Include="NameSpaceDoc.cs" />
+    <Compile Include="opennurbs\Clipper.cs" />
+    <Compile Include="opennurbs\clipperInterop.cs" />
     <Compile Include="opennurbs\opennurbs_3dm.cs" />
     <Compile Include="opennurbs\opennurbs_3dm_attributes.cs" />
     <Compile Include="opennurbs\opennurbs_3dm_properties.cs" />
@@ -277,6 +302,7 @@
     <Compile Include="UnsafeNativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="RDN_StrongName.snk" />
   </ItemGroup>
   <ItemGroup />

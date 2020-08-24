@@ -4,12 +4,231 @@ using Rhino.Runtime;
 
 namespace Rhino.Geometry.Intersect
 {
+
+    public class IntersectionEvent
+    {
+
+        internal int m_type; // 1 == ccx_point
+                             // 2 == ccx_overlap
+                             // 3 == csx_point
+                             // 4 == csx_overlap
+
+        // using same internal names as OpenNURBS so we can keep things straight
+        internal Point3d m_A0; //Point on A (or first point on overlap)
+        internal Point3d m_A1; //Point on A (or last point on overlap)
+        internal Point3d m_B0; //Point on B (or first point on overlap)
+        internal Point3d m_B1; //Point on B (or last point on overlap)
+        internal double m_a0; //Parameter on A (or first parameter of overlap)
+        internal double m_a1; //Parameter on A (or last parameter of overlap)
+        internal double m_b0; //Parameter on B (or first parameter of overlap) (or first U parameter on surface)
+        internal double m_b1; //Parameter on B (or last parameter of overlap) (or last U parameter on surface)
+
+        internal int m_Aid = -1; //ID of curve A
+        internal int m_Bid = -1; //ID of curve B
+
+        public IntersectionEvent(Point3d A, double ParameterA, Point3d B, double ParameterB)
+        {
+            m_type = 1;
+            m_A0 = A;
+            m_B0 = B;
+            m_a0 = ParameterA;
+            m_b0 = ParameterB;
+        }
+
+        /// <summary>
+        /// All curve intersection events are either a single point or an overlap.
+        /// </summary>
+        /// <since>5.0</since>
+        public bool IsPoint
+        {
+            get { return (1 == m_type || 3 == m_type); }
+        }
+
+        /// <summary>
+        /// All curve intersection events are either a single point or an overlap.
+        /// </summary>
+        /// <since>5.0</since>
+        public bool IsOverlap
+        {
+            get { return !IsPoint; }
+        }
+
+        /// <summary>
+        /// Gets the point on Curve A where the intersection occurred. 
+        /// If the intersection type is overlap, then this will return the 
+        /// start of the overlap region.
+        /// </summary>
+        /// <since>5.0</since>
+        public Point3d PointA
+        {
+            get { return m_A0; }
+        }
+        /// <summary>
+        /// Gets the end point of the overlap on Curve A. 
+        /// If the intersection type is not overlap, this value is meaningless.
+        /// </summary>
+        /// <since>5.0</since>
+        public Point3d PointA2
+        {
+            get { return m_A1; }
+        }
+
+        /// <summary>
+        /// Gets the point on Curve B (or Surface B) where the intersection occurred. 
+        /// If the intersection type is overlap, then this will return the 
+        /// start of the overlap region.
+        /// </summary>
+        /// <since>5.0</since>
+        public Point3d PointB
+        {
+            get { return m_B0; }
+        }
+        /// <summary>
+        /// Gets the end point of the overlap on Curve B (or Surface B). 
+        /// If the intersection type is not overlap, this value is meaningless.
+        /// </summary>
+        /// <since>5.0</since>
+        public Point3d PointB2
+        {
+            get { return m_B1; }
+        }
+
+        /// <summary>
+        /// Gets the parameter on Curve A where the intersection occurred. 
+        /// If the intersection type is overlap, then this will return the 
+        /// start of the overlap region.
+        /// </summary>
+        /// <since>5.0</since>
+        public double ParameterA
+        {
+            get { return m_a0; }
+        }
+        /// <summary>
+        /// Gets the parameter on Curve B where the intersection occurred. 
+        /// If the intersection type is overlap, then this will return the 
+        /// start of the overlap region.
+        /// </summary>
+        /// <since>5.0</since>
+        public double ParameterB
+        {
+            get { return m_b0; }
+        }
+
+        /// <summary>
+        /// Gets the interval on curve A where the overlap occurs. 
+        /// If the intersection type is not overlap, this value is meaningless.
+        /// </summary>
+        /// <since>5.0</since>
+        public Interval OverlapA
+        {
+            get { return new Interval(m_a0, m_a1); }
+        }
+        /// <summary>
+        /// Gets the interval on curve B where the overlap occurs. 
+        /// If the intersection type is not overlap, this value is meaningless.
+        /// </summary>
+        /// <since>5.0</since>
+        public Interval OverlapB
+        {
+            get { return new Interval(m_b0, m_b1); }
+        }
+
+
+        /// <summary>
+        /// Get/Set Id of curve A which take part in intersection event
+        /// </summary>
+        public int IdA
+        {
+            get { return m_Aid; }
+            set { m_Aid = value; }
+        }
+
+        /// <summary>
+        /// Get/Set Id of curve B which take part in intersection event
+        /// </summary>
+        public int IdB
+        {
+            get { return m_Bid; }
+            set { m_Bid = value; }
+        }
+
+        /// <summary>
+        /// Compare intersection events.
+        /// </summary>
+        /// <param name="eventA">The first intersection event to compare.</param>
+        /// <param name="eventB">The second intersection event to compare.</param>
+        /// <param name="relativePointTolerance">The comparison tolerance. If RhinoMath.UnsetValue, then RhinoMath.SqrtEpsilon is used.</param>
+        /// <returns>true if the two inputs represent the same intersection, false otherwise.</returns>
+        /// <since>7.0</since>
+        public static bool CompareEquivalent(IntersectionEvent eventA, IntersectionEvent eventB, double relativePointTolerance)
+        {
+            return CompareEquivalent(eventA, eventB, relativePointTolerance, null);
+        }
+
+        /// <summary>
+        /// Compare intersection events.
+        /// </summary>
+        /// <param name="eventA">The first intersection event to compare.</param>
+        /// <param name="eventB">The second intersection event to compare.</param>
+        /// <param name="relativePointTolerance">The comparison tolerance. If RhinoMath.UnsetValue, then RhinoMath.SqrtEpsilon is used.</param>
+        /// <param name="log">If not null and false is returned, then a description of the error is appended to log.</param>
+        /// <returns></returns>
+        /// <since>7.0</since>
+        public static bool CompareEquivalent(IntersectionEvent eventA, IntersectionEvent eventB, double relativePointTolerance, Rhino.FileIO.TextLog log)
+        {
+            // compare to match
+            if (relativePointTolerance == RhinoMath.UnsetValue)
+                relativePointTolerance = RhinoMath.SqrtEpsilon;
+
+            bool rc = true;
+            if (eventA.m_type != eventB.m_type)
+            {
+                if (log != null)
+                    log.Print("Event types mismatch.");
+                rc = false;
+            }
+            else
+            {
+                for (int ei = 0; ei < 2; ei++)
+                {
+                    if (ei == 1 && eventA.m_type != 4) // ON_X_EVENT::TYPE::csx_overlap
+                        continue;
+
+                    Point3d AActual = (ei == 0) ? eventA.m_A0 : eventA.m_A1;
+                    Point3d BActual = (ei == 0) ? eventA.m_B0 : eventA.m_B1;
+                    Point3d AExp = (ei == 0) ? eventB.m_A0 : eventB.m_A1;
+                    Point3d BExp = (ei == 0) ? eventB.m_B0 : eventB.m_B1;
+
+                    double sz = AExp.MaximumCoordinate;
+                    double dist = AActual.DistanceTo(AExp);
+                    if (dist > relativePointTolerance * (1 + sz))
+                    {
+                        if (log != null)
+                            log.Print("Event mismatch. Distance between expected and actual m_A{0} was {1}.\n", ei * 2, dist);
+                        rc = false;
+                    }
+
+                    dist = BActual.DistanceTo(BExp);
+                    if (dist > relativePointTolerance * (1 + sz))
+                    {
+                        if (log != null)
+                            log.Print("Event mismatch. Distance between expected and actual m_B{0} was {1}.\n", ei * 2, dist);
+                        rc = false;
+                    }
+                }
+            }
+            return rc;
+        }
+    }
+
+
+#if RHINO_SDK
   /// <summary>
   /// Provides all the information for a single Curve Intersection event.
   /// </summary>
   public class IntersectionEvent
   {
-    #region members
+        #region members
     internal int m_type; // 1 == ccx_point
                          // 2 == ccx_overlap
                          // 3 == csx_point
@@ -26,9 +245,9 @@ namespace Rhino.Geometry.Intersect
     internal double m_b1; //Parameter on B (or last parameter of overlap) (or last U parameter on surface)
     internal double m_b2; //First V parameter on surface
     internal double m_b3; //Last V parameter on surface
-    #endregion
+        #endregion
 
-    #region properties
+        #region properties
     /// <summary>
     /// All curve intersection events are either a single point or an overlap.
     /// </summary>
@@ -244,10 +463,10 @@ namespace Rhino.Geometry.Intersect
       }
       return rc;
     }
-    #endregion
+        #endregion
   }
 
-#if RHINO_SDK
+
 
   /// <summary>
   /// Represents an element which is part of a ray shoot.
@@ -255,13 +474,13 @@ namespace Rhino.Geometry.Intersect
   /// <since>7.0</since>
   public struct RayShootEvent
   {
-    #region Members
+        #region Members
     private int m_geometry_index;
     private int m_brep_face_index;
     private Point3d m_point;
-    #endregion
+        #endregion
 
-    #region Properties
+        #region Properties
 
     /// <summary>
     /// The index of the surface or Brep that was hit.
@@ -294,21 +513,23 @@ namespace Rhino.Geometry.Intersect
       set { m_point = value; }
     }
 
-    #endregion
+        #endregion
   }
+#endif
 
-  /// <summary>
-  /// Maintains an ordered list of Curve Intersection results.
-  /// </summary>
-  public class CurveIntersections : IDisposable, IList<IntersectionEvent>
+#if MUSTHAVE
+    /// <summary>
+    /// Maintains an ordered list of Curve Intersection results.
+    /// </summary>
+    public class CurveIntersections : IDisposable, IList<IntersectionEvent>
   {
-    #region members
+        #region members
     IntPtr m_ptr; //ON_SimpleArray<ON_X_EVENT>
     IntersectionEvent[] m_events; // = null; initialized by runtime
     int m_count;
-    #endregion
+        #endregion
 
-    #region constructor
+        #region constructor
     internal static CurveIntersections Create(IntPtr pIntersectionArray)
     {
       if (IntPtr.Zero == pIntersectionArray)
@@ -363,9 +584,9 @@ namespace Rhino.Geometry.Intersect
         m_events = null;
       }
     }
-    #endregion
+        #endregion
 
-    #region properties
+        #region properties
     /// <summary>
     /// Gets the number of recorded intersection events.
     /// </summary>
@@ -404,9 +625,9 @@ namespace Rhino.Geometry.Intersect
         ref x.m_type, ref x.m_A0, ref x.m_A1, ref x.m_B0, ref x.m_B1,
         ref x.m_a0, ref x.m_a1, ref x.m_b0, ref x.m_b1, ref x.m_b2, ref x.m_b3);
     }
-    #endregion
+        #endregion
 
-    #region methods
+        #region methods
     private IntPtr ConstPointer() { return m_ptr; }
 
     /// <summary>
@@ -456,9 +677,9 @@ namespace Rhino.Geometry.Intersect
         yield return this[i];
       }
     }
-    #endregion
+        #endregion
 
-    #region explicit implementations of IList<IntersectionEvent> and its base types
+        #region explicit implementations of IList<IntersectionEvent> and its base types
       //that did not seem necessary in normal usage
 
     /// <summary>
@@ -581,7 +802,7 @@ namespace Rhino.Geometry.Intersect
     {
       return GetEnumerator();
     }
-    #endregion
+        #endregion
   }
 #endif
-}
+    }

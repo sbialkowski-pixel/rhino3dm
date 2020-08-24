@@ -325,6 +325,81 @@ RH_C_FUNCTION bool ON_Curve_FrameAt( const ON_Curve* pConstCurve, double t, ON_P
   return rc;
 }
 
+RH_C_FUNCTION bool ON_Curve_GetLength(const ON_Curve* pCurve, double* length, double fractional_tol, ON_INTERVAL_STRUCT sub_domain, bool ignoreSubDomain)
+{
+    const ON_Interval* _sub_domain = nullptr;
+    if (!ignoreSubDomain)
+        _sub_domain = (const ON_Interval*)&sub_domain;
+    bool rc = false;
+    if (pCurve && length)
+    {
+
+        // https://mcneel.myjetbrains.com/youtrack/issue/RH-46324
+        // For whatever reason, a ON_NurbsCurve*, not a TL_NurbsCurve*, was passed in
+        // which means it's vtable is incorrectly set. This fix will ensure NURBS
+        // curves always return a length.
+       // const ON_NurbsCurve* on_nc = ON_NurbsCurve::Cast(pCurve);
+       // if (nullptr != on_nc)
+       // {
+       //     const TL_NurbsCurve* tl_nc = TL_NurbsCurve::Promote(on_nc);
+       //     if (nullptr != tl_nc)
+       ///         rc = tl_nc->GetLength(length, fractional_tol, _sub_domain) ? true : false;
+      //  }
+        if (!rc)
+            rc = pCurve->GetLength(length, fractional_tol, _sub_domain) ? true : false;
+    }
+    return rc;
+}
+
+RH_C_FUNCTION bool ON_Curve_GetClosestPoint(const ON_Curve* pCurve, ON_3DPOINT_STRUCT test_point, double* t, double maximum_distance)
+{
+    bool rc = false;
+    if (pCurve)
+    {
+        const ON_3dPoint* pt = (const ON_3dPoint*)&test_point;
+        rc = pCurve->GetClosestPoint(*pt, t, maximum_distance);
+    }
+    return rc;
+}
+
+RH_C_FUNCTION bool ON_Curve_GetLocalClosestPoint(const ON_Curve* pCurve, ON_3DPOINT_STRUCT test_point, double s, double* t)
+{
+    bool rc = false;
+    if (pCurve && t)
+    {
+        const ON_3dPoint* pt = (const ON_3dPoint*)&test_point;
+        rc = pCurve->GetLocalClosestPoint(*pt, s, t);
+    }
+    return rc;
+}
+
+RH_C_FUNCTION bool ON_Curve_GetNormalizedArcLengthPoint(const ON_Curve* pCurve, double s, double* t, double fractional_tol, ON_INTERVAL_STRUCT sub_domain, bool ignoreSubDomain)
+{
+    bool rc = false;
+    const ON_Interval* _sub_domain = nullptr;
+    if (!ignoreSubDomain)
+        _sub_domain = (const ON_Interval*)&sub_domain;
+    if (pCurve && t)
+    {
+        rc = pCurve->GetNormalizedArcLengthPoint(s, t, fractional_tol, _sub_domain) ? true : false;
+    }
+    return rc;
+}
+
+RH_C_FUNCTION bool ON_Curve_GetNormalizedArcLengthPoints(const ON_Curve* pCurve, int count, /*ARRAY*/double* s, /*ARRAY*/double* t, double abs_tol, double frac_tol, ON_INTERVAL_STRUCT sub_domain, bool ignoreSubDomain)
+{
+    bool rc = false;
+    const ON_Interval* _sub_domain = nullptr;
+    if (!ignoreSubDomain)
+        _sub_domain = (const ON_Interval*)&sub_domain;
+    if (pCurve && count > 0 && s && t)
+    {
+        rc = pCurve->GetNormalizedArcLengthPoints(count, s, t, abs_tol, frac_tol, _sub_domain) ? true : false;
+    }
+    return rc;
+}
+
+
 // not currently available in stand alone OpenNURBS build
 #if !defined(RHINO3DM_BUILD)
 

@@ -5,336 +5,341 @@ using System.Runtime.InteropServices;
 using Rhino.Runtime.InteropWrappers;
 using System.Runtime.Serialization;
 using Rhino.Runtime;
+using ClipperLib;
+using Rhino.Geometry.Intersect;
+using Rhino.Geometry;
+using System.Linq;
+
 // don't wrap ON_MeshCurveParameters. It is only needed for the ON_Curve::MeshCurveFunction
 
 namespace Rhino.Geometry
 {
-  /// <summary>
-  /// Used in curve and surface blending functions
-  /// </summary>
-  public enum BlendContinuity : int
-  {
-    /// <summary></summary>
-    Position = 0,
-    /// <summary></summary>
-    Tangency = 1,
-    /// <summary></summary>
-    Curvature = 2
-  }
-
-  /// <summary>
-  /// Defines enumerated values for all implemented corner styles in curve offsets.
-  /// </summary>
-  public enum CurveOffsetCornerStyle : int
-  {
     /// <summary>
-    /// The default value.
+    /// Used in curve and surface blending functions
     /// </summary>
-    None = 0,
+    public enum BlendContinuity : int
+    {
+        /// <summary></summary>
+        Position = 0,
+        /// <summary></summary>
+        Tangency = 1,
+        /// <summary></summary>
+        Curvature = 2
+    }
 
     /// <summary>
-    /// Offsets and extends curves with a straight line until they intersect.
+    /// Defines enumerated values for all implemented corner styles in curve offsets.
     /// </summary>
-    Sharp = 1,
+    public enum CurveOffsetCornerStyle : int
+    {
+        /// <summary>
+        /// The default value.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Offsets and extends curves with a straight line until they intersect.
+        /// </summary>
+        Sharp = 1,
+
+        /// <summary>
+        /// Offsets and fillets curves with an arc of radius equal to the offset distance.
+        /// </summary>
+        Round = 2,
+
+        /// <summary>
+        /// Offsets and connects curves with a smooth (G1 continuity) curve.
+        /// </summary>
+        Smooth = 3,
+
+        /// <summary>
+        /// Offsets and connects curves with a straight line between their endpoints.
+        /// </summary>
+        Chamfer = 4
+    }
 
     /// <summary>
-    /// Offsets and fillets curves with an arc of radius equal to the offset distance.
+    /// Defines enumerated values for all implemented end styles in curve offsets.
     /// </summary>
-    Round = 2,
+    public enum CurveOffsetEndStyle : int
+    {
+        /// <summary>
+        /// No closing segments are added. 
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Straight-line segments are added between the curves.
+        /// </summary>
+        Flat = 1,
+        /// <summary>
+        /// Tangent arcs are added between the curves.
+        /// </summary>
+        Round = 2
+    }
 
     /// <summary>
-    /// Offsets and connects curves with a smooth (G1 continuity) curve.
+    /// Defines enumerated values for knot spacing styles in interpolated curves.
     /// </summary>
-    Smooth = 3,
+    public enum CurveKnotStyle : int
+    {
+        /// <summary>
+        /// Parameter spacing between consecutive knots is 1.0.
+        /// </summary>
+        Uniform = 0,
+
+        /// <summary>
+        /// Chord length spacing, requires degree=3 with CV1 and CVn1 specified.
+        /// </summary>
+        Chord = 1,
+
+        /// <summary>
+        /// Square root of chord length, requires degree=3 with CV1 and CVn1 specified.
+        /// </summary>
+        ChordSquareRoot = 2,
+
+        /// <summary>
+        /// Periodic with uniform spacing.
+        /// </summary>
+        UniformPeriodic = 3,
+
+        /// <summary>
+        /// Periodic with chord length spacing.
+        /// </summary>
+        ChordPeriodic = 4,
+
+        /// <summary>
+        /// Periodic with square root of chord length spacing. 
+        /// </summary>
+        ChordSquareRootPeriodic = 5
+    }
 
     /// <summary>
-    /// Offsets and connects curves with a straight line between their endpoints.
+    /// Defines enumerated values for closed curve orientations.
     /// </summary>
-    Chamfer = 4
-  }
+    public enum CurveOrientation : int
+    {
+        /// <summary>
+        /// Unable to compute the curve's orientation.
+        /// </summary>
+        Undefined = 0,
 
-  /// <summary>
-  /// Defines enumerated values for all implemented end styles in curve offsets.
-  /// </summary>
-  public enum CurveOffsetEndStyle : int
-  {
-    /// <summary>
-    /// No closing segments are added. 
-    /// </summary>
-    None = 0,
-    /// <summary>
-    /// Straight-line segments are added between the curves.
-    /// </summary>
-    Flat = 1,
-    /// <summary>
-    /// Tangent arcs are added between the curves.
-    /// </summary>
-    Round = 2
-  }
+        /// <summary>
+        /// The curve's orientation is clockwise in the XY plane.
+        /// </summary>
+        Clockwise = -1,
 
-  /// <summary>
-  /// Defines enumerated values for knot spacing styles in interpolated curves.
-  /// </summary>
-  public enum CurveKnotStyle : int
-  {
-    /// <summary>
-    /// Parameter spacing between consecutive knots is 1.0.
-    /// </summary>
-    Uniform = 0,
+        /// <summary>
+        /// The curve's orientation is counter clockwise in the XY plane.
+        /// </summary>
+        CounterClockwise = +1
+    }
 
     /// <summary>
-    /// Chord length spacing, requires degree=3 with CV1 and CVn1 specified.
+    /// Defines enumerated values for closed curve/point spatial relationships.
     /// </summary>
-    Chord = 1,
+    public enum PointContainment : int
+    {
+        /// <summary>
+        /// Relation is meaningless.
+        /// </summary>
+        Unset,
+
+        /// <summary>
+        /// Point is on the interior of the region implied by the closed curve.
+        /// </summary>
+        Inside,
+
+        /// <summary>
+        /// Point is on the exterior of the region implied by the closed curve.
+        /// </summary>
+        Outside,
+
+        /// <summary>
+        /// Point is coincident with the curve and therefor neither inside not outside.
+        /// </summary>
+        Coincident
+    }
 
     /// <summary>
-    /// Square root of chord length, requires degree=3 with CV1 and CVn1 specified.
+    /// Defines enumerated values for closed curve/closed curve relationships.
     /// </summary>
-    ChordSquareRoot = 2,
+    public enum RegionContainment : int
+    {
+        /// <summary>
+        /// There is no common area between the two regions.
+        /// </summary>
+        Disjoint = 0,
+
+        /// <summary>
+        /// The two curves intersect. There is therefore no full containment relationship either way.
+        /// </summary>
+        MutualIntersection = 1,
+
+        /// <summary>
+        /// Region bounded by curveA (first curve) is inside of curveB (second curve).
+        /// </summary>
+        AInsideB = 2,
+
+        /// <summary>
+        /// Region bounded by curveB (second curve) is inside of curveA (first curve).
+        /// </summary>
+        BInsideA = 3,
+    }
 
     /// <summary>
-    /// Periodic with uniform spacing.
+    /// Defines enumerated values for styles to use during curve extension, such as "Line", "Arc" or "Smooth".
     /// </summary>
-    UniformPeriodic = 3,
+    public enum CurveExtensionStyle : int
+    {
+        /// <summary>
+        /// Curve ends will be propagated linearly according to tangents.
+        /// </summary>
+        Line = 0,
+
+        /// <summary>
+        /// Curve ends will be propagated arc-wise according to curvature.
+        /// </summary>
+        Arc = 1,
+
+        /// <summary>
+        /// Curve ends will be propagated smoothly according to curvature.
+        /// </summary>
+        Smooth = 2,
+    }
 
     /// <summary>
-    /// Periodic with chord length spacing.
+    /// Enumerates the options to use when simplifying a curve.
     /// </summary>
-    ChordPeriodic = 4,
+    [FlagsAttribute]
+    public enum CurveSimplifyOptions : int
+    {
+        /// <summary>
+        /// No option is specified.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Split NurbsCurves at fully multiple knots. 
+        /// Effectively turning single NURBS segments with kinks into multiple segments.
+        /// </summary>
+        SplitAtFullyMultipleKnots = 1,
+
+        /// <summary>
+        /// Replace linear segments with LineCurves.
+        /// </summary>
+        RebuildLines = 2,
+
+        /// <summary>
+        /// Replace partially circular segments with ArcCurves.
+        /// </summary>
+        RebuildArcs = 4,
+
+        /// <summary>
+        /// Replace rational NURBS curve with constant weights 
+        /// with an equivalent non-rational NurbsCurve.
+        /// </summary>
+        RebuildRationals = 8,
+
+        /// <summary>
+        /// Adjust Curves at G1-joins.
+        /// </summary>
+        AdjustG1 = 16,
+
+        /// <summary>
+        /// Merge adjacent co-linear lines or co-circular arcs 
+        /// or combine consecutive line segments into a polyline.
+        /// </summary>
+        Merge = 32,
+
+        /// <summary>
+        /// Implies all of the simplification functions will be used.
+        /// </summary>
+        All = SplitAtFullyMultipleKnots | RebuildLines | RebuildArcs | RebuildRationals | AdjustG1 | Merge
+    }
 
     /// <summary>
-    /// Periodic with square root of chord length spacing. 
+    /// Defines the extremes of a curve through a flagged enumeration. 
     /// </summary>
-    ChordSquareRootPeriodic = 5
-  }
+    /// <example>
+    /// <code source='examples\vbnet\ex_extendcurve.vb' lang='vbnet'/>
+    /// <code source='examples\cs\ex_extendcurve.cs' lang='cs'/>
+    /// <code source='examples\py\ex_extendcurve.py' lang='py'/>
+    /// </example>
+    [FlagsAttribute]
+    public enum CurveEnd : int
+    {
+        /// <summary>
+        /// Not the start nor the end.
+        /// </summary>
+        None = 0,
 
-  /// <summary>
-  /// Defines enumerated values for closed curve orientations.
-  /// </summary>
-  public enum CurveOrientation : int
-  {
-    /// <summary>
-    /// Unable to compute the curve's orientation.
-    /// </summary>
-    Undefined = 0,
+        /// <summary>
+        /// The frontal part of the curve.
+        /// </summary>
+        Start = 1,
 
-    /// <summary>
-    /// The curve's orientation is clockwise in the XY plane.
-    /// </summary>
-    Clockwise = -1,
+        /// <summary>
+        /// The tail part of the curve.
+        /// </summary>
+        End = 2,
 
-    /// <summary>
-    /// The curve's orientation is counter clockwise in the XY plane.
-    /// </summary>
-    CounterClockwise = +1
-  }
-
-  /// <summary>
-  /// Defines enumerated values for closed curve/point spatial relationships.
-  /// </summary>
-  public enum PointContainment : int
-  {
-    /// <summary>
-    /// Relation is meaningless.
-    /// </summary>
-    Unset,
+        /// <summary>
+        /// Both the start and the end of the curve.
+        /// </summary>
+        Both = 3,
+    }
 
     /// <summary>
-    /// Point is on the interior of the region implied by the closed curve.
+    /// Defines enumerated values for the options that defines a curve evaluation side when evaluating kinks.
     /// </summary>
-    Inside,
+    public enum CurveEvaluationSide : int
+    {
+        /// <summary>
+        /// The default evaluation side.
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
+        /// The below evaluation side.
+        /// </summary>
+        Below = -1,
+
+        /// <summary>
+        /// The above evaluation side.
+        /// </summary>
+        Above = +1
+    }
 
     /// <summary>
-    /// Point is on the exterior of the region implied by the closed curve.
+    /// Defines enumerated values for types of conic sections.
     /// </summary>
-    Outside,
+    public enum ConicSectionType : int
+    {
+        /// <summary>
+        /// The curve shape is unknown.
+        /// </summary>
+        Unknown = 0,
 
-    /// <summary>
-    /// Point is coincident with the curve and therefor neither inside not outside.
-    /// </summary>
-    Coincident
-  }
+        /// <summary>
+        /// The curve has the shape of a circle.
+        /// </summary>
+        Circle = 1,
 
-  /// <summary>
-  /// Defines enumerated values for closed curve/closed curve relationships.
-  /// </summary>
-  public enum RegionContainment : int
-  {
-    /// <summary>
-    /// There is no common area between the two regions.
-    /// </summary>
-    Disjoint = 0,
+        /// <summary>
+        /// The curve has the shape of an ellipse.
+        /// </summary>
+        Ellipse = 2,
 
-    /// <summary>
-    /// The two curves intersect. There is therefore no full containment relationship either way.
-    /// </summary>
-    MutualIntersection = 1,
+        /// <summary>
+        /// The curve has the shape of a hyperbola.
+        /// </summary>
+        Hyperbola = 3,
 
-    /// <summary>
-    /// Region bounded by curveA (first curve) is inside of curveB (second curve).
-    /// </summary>
-    AInsideB = 2,
-
-    /// <summary>
-    /// Region bounded by curveB (second curve) is inside of curveA (first curve).
-    /// </summary>
-    BInsideA = 3,
-  }
-
-  /// <summary>
-  /// Defines enumerated values for styles to use during curve extension, such as "Line", "Arc" or "Smooth".
-  /// </summary>
-  public enum CurveExtensionStyle : int
-  {
-    /// <summary>
-    /// Curve ends will be propagated linearly according to tangents.
-    /// </summary>
-    Line = 0,
-
-    /// <summary>
-    /// Curve ends will be propagated arc-wise according to curvature.
-    /// </summary>
-    Arc = 1,
-
-    /// <summary>
-    /// Curve ends will be propagated smoothly according to curvature.
-    /// </summary>
-    Smooth = 2,
-  }
-
-  /// <summary>
-  /// Enumerates the options to use when simplifying a curve.
-  /// </summary>
-  [FlagsAttribute]
-  public enum CurveSimplifyOptions : int
-  {
-    /// <summary>
-    /// No option is specified.
-    /// </summary>
-    None = 0,
-
-    /// <summary>
-    /// Split NurbsCurves at fully multiple knots. 
-    /// Effectively turning single NURBS segments with kinks into multiple segments.
-    /// </summary>
-    SplitAtFullyMultipleKnots = 1,
-
-    /// <summary>
-    /// Replace linear segments with LineCurves.
-    /// </summary>
-    RebuildLines = 2,
-
-    /// <summary>
-    /// Replace partially circular segments with ArcCurves.
-    /// </summary>
-    RebuildArcs = 4,
-
-    /// <summary>
-    /// Replace rational NURBS curve with constant weights 
-    /// with an equivalent non-rational NurbsCurve.
-    /// </summary>
-    RebuildRationals = 8,
-
-    /// <summary>
-    /// Adjust Curves at G1-joins.
-    /// </summary>
-    AdjustG1 = 16,
-
-    /// <summary>
-    /// Merge adjacent co-linear lines or co-circular arcs 
-    /// or combine consecutive line segments into a polyline.
-    /// </summary>
-    Merge = 32,
-
-    /// <summary>
-    /// Implies all of the simplification functions will be used.
-    /// </summary>
-    All = SplitAtFullyMultipleKnots | RebuildLines | RebuildArcs | RebuildRationals | AdjustG1 | Merge
-  }
-
-  /// <summary>
-  /// Defines the extremes of a curve through a flagged enumeration. 
-  /// </summary>
-  /// <example>
-  /// <code source='examples\vbnet\ex_extendcurve.vb' lang='vbnet'/>
-  /// <code source='examples\cs\ex_extendcurve.cs' lang='cs'/>
-  /// <code source='examples\py\ex_extendcurve.py' lang='py'/>
-  /// </example>
-  [FlagsAttribute]
-  public enum CurveEnd : int
-  {
-    /// <summary>
-    /// Not the start nor the end.
-    /// </summary>
-    None = 0,
-
-    /// <summary>
-    /// The frontal part of the curve.
-    /// </summary>
-    Start = 1,
-
-    /// <summary>
-    /// The tail part of the curve.
-    /// </summary>
-    End = 2,
-
-    /// <summary>
-    /// Both the start and the end of the curve.
-    /// </summary>
-    Both = 3,
-  }
-
-  /// <summary>
-  /// Defines enumerated values for the options that defines a curve evaluation side when evaluating kinks.
-  /// </summary>
-  public enum CurveEvaluationSide : int
-  {
-    /// <summary>
-    /// The default evaluation side.
-    /// </summary>
-    Default = 0,
-
-    /// <summary>
-    /// The below evaluation side.
-    /// </summary>
-    Below = -1,
-
-    /// <summary>
-    /// The above evaluation side.
-    /// </summary>
-    Above = +1
-  }
-
-  /// <summary>
-  /// Defines enumerated values for types of conic sections.
-  /// </summary>
-  public enum ConicSectionType : int
-  {
-    /// <summary>
-    /// The curve shape is unknown.
-    /// </summary>
-    Unknown = 0,
-
-    /// <summary>
-    /// The curve has the shape of a circle.
-    /// </summary>
-    Circle = 1,
-
-    /// <summary>
-    /// The curve has the shape of an ellipse.
-    /// </summary>
-    Ellipse = 2,
-
-    /// <summary>
-    /// The curve has the shape of a hyperbola.
-    /// </summary>
-    Hyperbola = 3,
-
-    /// <summary>
-    /// The curve has the shape of a parabola.
-    /// </summary>
-    Parabola = 4
-  }
+        /// <summary>
+        /// The curve has the shape of a parabola.
+        /// </summary>
+        Parabola = 4
+    }
 
 
 #if RHINO_SDK
@@ -592,15 +597,15 @@ namespace Rhino.Geometry
 #endif // RHINO_SDK
 
 
-  /// <summary>
-  /// Represents a base class that is common to most RhinoCommon curve types.
-  /// <para>A curve represents an entity that can be all visited by providing
-  /// a single parameter, usually called t.</para>
-  /// </summary>
-  [Serializable]
-  public class Curve : GeometryBase
-  {
-    #region statics
+    /// <summary>
+    /// Represents a base class that is common to most RhinoCommon curve types.
+    /// <para>A curve represents an entity that can be all visited by providing
+    /// a single parameter, usually called t.</para>
+    /// </summary>
+    [Serializable]
+    public class Curve : GeometryBase
+    {
+        #region statics
 #if RHINO_SDK
 
     /// <summary>
@@ -769,37 +774,37 @@ namespace Rhino.Geometry
 
 #endif //RHINO_SDK
 
-    /// <summary>
-    /// Constructs a curve from a set of control-point locations.
-    /// </summary>
-    /// <param name="points">Control points.</param>
-    /// <param name="degree">Degree of curve. The number of control points must be at least degree+1.</param>
-    /// <since>5.0</since>
-    public static Curve CreateControlPointCurve(IEnumerable<Point3d> points, int degree)
-    {
-      int count;
-      Point3d[] ptArray = RhinoListHelpers.GetConstArray(points, out count);
-      if (null == ptArray || count < 2)
-        return null;
+        /// <summary>
+        /// Constructs a curve from a set of control-point locations.
+        /// </summary>
+        /// <param name="points">Control points.</param>
+        /// <param name="degree">Degree of curve. The number of control points must be at least degree+1.</param>
+        /// <since>5.0</since>
+        public static Curve CreateControlPointCurve(IEnumerable<Point3d> points, int degree)
+        {
+            int count;
+            Point3d[] ptArray = RhinoListHelpers.GetConstArray(points, out count);
+            if (null == ptArray || count < 2)
+                return null;
 
-      if (2 == count)
-        return new LineCurve(ptArray[0], ptArray[1]);
+            if (2 == count)
+                return new LineCurve(ptArray[0], ptArray[1]);
 
-      if (1 == degree && count > 2)
-        return PolylineCurve.Internal_FromArray(ptArray, count);
+            if (1 == degree && count > 2)
+                return PolylineCurve.Internal_FromArray(ptArray, count);
 
-      IntPtr ptr = UnsafeNativeMethods.ON_NurbsCurve_CreateControlPointCurve(count, ptArray, degree);
-      return GeometryBase.CreateGeometryHelper(ptr, null) as NurbsCurve;
-    }
-    /// <summary>
-    /// Constructs a control-point of degree=3 (or less).
-    /// </summary>
-    /// <param name="points">Control points of curve.</param>
-    /// <since>5.0</since>
-    public static Curve CreateControlPointCurve(IEnumerable<Point3d> points)
-    {
-      return CreateControlPointCurve(points, 3);
-    }
+            IntPtr ptr = UnsafeNativeMethods.ON_NurbsCurve_CreateControlPointCurve(count, ptArray, degree);
+            return GeometryBase.CreateGeometryHelper(ptr, null) as NurbsCurve;
+        }
+        /// <summary>
+        /// Constructs a control-point of degree=3 (or less).
+        /// </summary>
+        /// <param name="points">Control points of curve.</param>
+        /// <since>5.0</since>
+        public static Curve CreateControlPointCurve(IEnumerable<Point3d> points)
+        {
+            return CreateControlPointCurve(points, 3);
+        }
 
 #if RHINO_SDK
 
@@ -1063,69 +1068,168 @@ namespace Rhino.Geometry
       Runtime.CommonObject.GcProtect(curve0, curve1);
       return rc ? output.ToNonConstArray() : new Curve[0];
     }
+#endif
+#if SB_IMP
+        /// <summary>
+        /// Joins a collection of curve segments together.
+        /// </summary>
+        /// <param name="inputCurves">Curve segments to join.</param>
+        /// <returns>An array of curves which contains.</returns>
+        /// <since>5.0</since>
+        public static Curve[] JoinCurves(IEnumerable<Curve> inputCurves)
+        {
+            return JoinCurves(inputCurves, 0.0, false);
+        }
+        /// <summary>
+        /// Joins a collection of curve segments together.
+        /// </summary>
+        /// <param name="inputCurves">An array, a list or any enumerable set of curve segmenFEpsts to join.</param>
+        /// <param name="joinTolerance">Joining tolerance, 
+        /// i.e. the distance between segment end-points that is allowed.</param>
+        /// <returns>An array of joint curves. This array can be empty.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_dividebylength.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_dividebylength.cs' lang='cs'/>
+        /// <code source='examples\py\ex_dividebylength.py' lang='py'/>
+        /// </example>
+        /// <exception cref="ArgumentNullException">If inputCurves is null.</exception>
+        /// <since>5.0</since>
+        public static Curve[] JoinCurves(IEnumerable<Curve> inputCurves, double joinTolerance)
+        {
+            return JoinCurves(inputCurves, joinTolerance, false);
+        }
+        /// <summary>
+        /// Joins a collection of curve segments together.
+        /// </summary>
+        /// <param name="inputCurves">An array, a list or any enumerable set of curve segments to join.</param>
+        /// <param name="joinTolerance">Joining tolerance, 
+        /// i.e. the distance between segment end-points that is allowed.</param>
+        /// <param name="preserveDirection">
+        /// <para>If true, curve endpoints will be compared to curve start points.</para>
+        /// <para>If false, all start and endpoints will be compared and copies of input curves may be reversed in output.</para>
+        /// </param>
+        /// <returns>An array of joint curves. This array can be empty.</returns>
+        /// <exception cref="ArgumentNullException">If inputCurves is null.</exception>
+        /// <since>5.0</since>
+        /*
+        public static Curve[] JoinCurves(IEnumerable<Curve> inputCurves, double joinTolerance, bool preserveDirection)
+        {
+            // 1 March 2010 S. Baer
+            // JoinCurves calls the unmanaged RhinoMergeCurves function which appears to be a "better"
+            // implementation of ON_JoinCurves. We removed the wrapper for ON_JoinCurves for this reason.
+            if (null == inputCurves)
+                throw new ArgumentNullException("inputCurves");
 
-    /// <summary>
-    /// Joins a collection of curve segments together.
-    /// </summary>
-    /// <param name="inputCurves">Curve segments to join.</param>
-    /// <returns>An array of curves which contains.</returns>
-    /// <since>5.0</since>
-    public static Curve[] JoinCurves(IEnumerable<Curve> inputCurves)
-    {
-      return JoinCurves(inputCurves, 0.0, false);
-    }
-    /// <summary>
-    /// Joins a collection of curve segments together.
-    /// </summary>
-    /// <param name="inputCurves">An array, a list or any enumerable set of curve segments to join.</param>
-    /// <param name="joinTolerance">Joining tolerance, 
-    /// i.e. the distance between segment end-points that is allowed.</param>
-    /// <returns>An array of joint curves. This array can be empty.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_dividebylength.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_dividebylength.cs' lang='cs'/>
-    /// <code source='examples\py\ex_dividebylength.py' lang='py'/>
-    /// </example>
-    /// <exception cref="ArgumentNullException">If inputCurves is null.</exception>
-    /// <since>5.0</since>
-    public static Curve[] JoinCurves(IEnumerable<Curve> inputCurves, double joinTolerance)
-    {
-      return JoinCurves(inputCurves, joinTolerance, false);
-    }
-    /// <summary>
-    /// Joins a collection of curve segments together.
-    /// </summary>
-    /// <param name="inputCurves">An array, a list or any enumerable set of curve segments to join.</param>
-    /// <param name="joinTolerance">Joining tolerance, 
-    /// i.e. the distance between segment end-points that is allowed.</param>
-    /// <param name="preserveDirection">
-    /// <para>If true, curve endpoints will be compared to curve start points.</para>
-    /// <para>If false, all start and endpoints will be compared and copies of input curves may be reversed in output.</para>
-    /// </param>
-    /// <returns>An array of joint curves. This array can be empty.</returns>
-    /// <exception cref="ArgumentNullException">If inputCurves is null.</exception>
-    /// <since>5.0</since>
-    public static Curve[] JoinCurves(IEnumerable<Curve> inputCurves, double joinTolerance, bool preserveDirection)
-    {
-      // 1 March 2010 S. Baer
-      // JoinCurves calls the unmanaged RhinoMergeCurves function which appears to be a "better"
-      // implementation of ON_JoinCurves. We removed the wrapper for ON_JoinCurves for this reason.
-      if (null == inputCurves)
-        throw new ArgumentNullException("inputCurves");
+            using (SimpleArrayCurvePointer input = new SimpleArrayCurvePointer(inputCurves))
+            using (SimpleArrayCurvePointer output = new SimpleArrayCurvePointer())
+            {
+                IntPtr inputPtr = input.ConstPointer();
+                IntPtr outputPtr = output.NonConstPointer();
 
-      using (SimpleArrayCurvePointer input = new SimpleArrayCurvePointer(inputCurves))
-      using (SimpleArrayCurvePointer output = new SimpleArrayCurvePointer())
-      {
-        IntPtr inputPtr = input.ConstPointer();
-        IntPtr outputPtr = output.NonConstPointer();
+                bool rc = UnsafeNativeMethods.RHC_RhinoMergeCurves(inputPtr,
+                  outputPtr, joinTolerance, preserveDirection);
 
-        bool rc = UnsafeNativeMethods.RHC_RhinoMergeCurves(inputPtr,
-          outputPtr, joinTolerance, preserveDirection);
+                GC.KeepAlive(inputCurves);
+                return rc ? output.ToNonConstArray() : new Curve[0];
+            }
+        } */
+        public static Curve[] JoinCurves(IEnumerable<Curve> curves, double joinTolerance, bool preserveDirection)
+        {
+            List<Curve> stage_1 = JoinCurvesBase(curves.ToList(), joinTolerance, preserveDirection);
+            List<Curve> stage_2 = JoinCurvesBase(stage_1, joinTolerance, preserveDirection);
+            return stage_2.ToArray();
+        }
 
-        GC.KeepAlive(inputCurves);
-        return rc ? output.ToNonConstArray() : new Curve[0];
-      }
-    }
+        private static List<Curve> JoinCurvesBase(List<Curve> curves, double joinTolerance, bool preserveDirection)
+        {
+            List<Curve> outCrv = new List<Curve>(curves.Count);
+
+            int counter = 0;
+
+            outCrv.Add(curves[0]);
+            curves.RemoveAt(0);
+
+            while (curves.Count != 0)
+            {
+                for (int i = 0; i < curves.Count; i++)
+                {
+                    Curve currentCrv = curves[i];
+
+                    if (currentCrv.IsClosed)
+                    {
+                        outCrv.Add(currentCrv);
+                        curves.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                    bool added = false;
+                    for (int j = 0; j < outCrv.Count; j++)
+                    {
+                        Curve baseCrv = outCrv[j];
+                        if (baseCrv.IsClosed)
+                        {
+                            continue;
+                        }
+                        List<Curve> afterMerge = Join2Curves(baseCrv, currentCrv, joinTolerance, preserveDirection);
+                        if (afterMerge.Count == 2)
+                        {
+
+                        }
+                        else if (afterMerge.Count == 1)
+                        {
+                            outCrv[j] = afterMerge[0];
+                            curves.RemoveAt(i);
+                            i--;
+                            added = true;
+                            break;
+                        }
+                    }
+                    if (!added)
+                    {
+                        outCrv.Add(currentCrv);
+                        curves.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                if (counter > 1000) break;
+            }
+
+            return outCrv;
+
+
+        }
+
+
+        private static List<Curve> Join2Curves(Curve A, Curve B, double joinTolerance, bool preserveDirection)
+        {
+            PolyCurve pCurve = new PolyCurve();
+            if ((A.PointAtStart.DistanceTo(B.PointAtStart) < joinTolerance || A.PointAtEnd.DistanceTo(B.PointAtEnd) < joinTolerance) && !preserveDirection)
+            {
+                B.Reverse();
+            }
+            if (A.PointAtStart.DistanceTo(B.PointAtEnd) < joinTolerance)
+            {
+                pCurve.Append(B);
+                pCurve.Append(A);
+                return new List<Curve> { pCurve };
+            }
+            else if (B.PointAtStart.DistanceTo(A.PointAtEnd) < joinTolerance)
+            {
+                pCurve.Append(A);
+                pCurve.Append(B);
+                return new List<Curve> { pCurve };
+            }
+            else
+            {
+                return new List<Curve> { A, B };
+            }
+        }
+
+
+#endif
+
+#if RHINO_SDK
 
     /// <summary>
     /// Makes adjustments to the ends of one or both input curves so that they meet at a point.
@@ -1274,98 +1378,164 @@ namespace Rhino.Geometry
         return output_array.ToNonConstArray();
       }
     }
+#endif
 
-    const int idxBooleanUnion = 0;
-    const int idxBooleanIntersection = 1;
-    const int idxBooleanDifference = 2;
-    /// <summary>
-    /// Calculates the boolean union of two or more closed, planar curves. 
-    /// Note, curves must be co-planar.
-    /// </summary>
-    /// <param name="curves">The co-planar curves to union.</param>
-    /// <returns>Result curves on success, empty array if no union could be calculated.</returns>
-    /// <since>5.0</since>
-    [Obsolete("Use version that takes tolerance as input")]
-    public static Curve[] CreateBooleanUnion(IEnumerable<Curve> curves)
-    {
-      double tolerance, angle_tol;
-      RhinoDoc.ActiveDocTolerances(out tolerance, out angle_tol);
-      return CreateBooleanUnion(curves, tolerance);
-    }
-    /// <summary>
-    /// Calculates the boolean union of two or more closed, planar curves. 
-    /// Note, curves must be co-planar.
-    /// </summary>
-    /// <param name="curves">The co-planar curves to union.</param>
-    /// <param name="tolerance"></param>
-    /// <returns>Result curves on success, empty array if no union could be calculated.</returns>
-    /// <since>6.0</since>
-    public static Curve[] CreateBooleanUnion(IEnumerable<Curve> curves, double tolerance)
-    {
-      if (null == curves)
-        throw new ArgumentNullException("curves");
+#if SB_IMP
+        const int idxBooleanUnion = 0;
+        const int idxBooleanIntersection = 1;
+        const int idxBooleanDifference = 2;
 
-      using (SimpleArrayCurvePointer input = new SimpleArrayCurvePointer(curves))
-      using (SimpleArrayCurvePointer output = new SimpleArrayCurvePointer())
-      {
-        IntPtr inputPtr = input.ConstPointer();
-        IntPtr outputPtr = output.NonConstPointer();
+        /// <summary>
+        /// Calculates the boolean union of two or more closed, planar curves. 
+        /// Note, curves must be co-planar.
+        /// </summary>
+        /// <param name="curves">The co-planar curves to union.</param>
+        /// <returns>Result curves on success, empty array if no union could be calculated.</returns>
+        /// <since>6.0</since>   
+        public static List<Curve> CreateBooleanUnion(List<Curve> curves)
+        {
+            if (curves.Count <= 1) return null;
+            Clipper c = new Clipper();
 
-        int rc = UnsafeNativeMethods.ON_Curve_BooleanOperation(inputPtr, outputPtr, idxBooleanUnion, tolerance);
-        GC.KeepAlive(curves);
-        return rc < 1 ? new Curve[0] : output.ToNonConstArray();
-      }
-    }
+            List<List<IntPoint>> solution = new List<List<IntPoint>>();
+            List<List<IntPoint>> clip = new List<List<IntPoint>>();
+            solution.Add(ClipperInterop.ToClipper(curves[0]));
 
-    /// <summary>
-    /// Calculates the boolean intersection of two closed, planar curves. 
-    /// Note, curves must be co-planar.
-    /// </summary>
-    /// <param name="curveA">The first closed, planar curve.</param>
-    /// <param name="curveB">The second closed, planar curve.</param>
-    /// <returns>Result curves on success, empty array if no intersection could be calculated.</returns>
-    /// <since>5.0</since>
-    [Obsolete("Use version that takes tolerance as input")]
-    public static Curve[] CreateBooleanIntersection(Curve curveA, Curve curveB)
-    {
-      double tolerance, angle_tol;
-      RhinoDoc.ActiveDocTolerances(out tolerance, out angle_tol);
-      return CreateBooleanIntersection(curveA, curveB, tolerance);
-    }
-    /// <summary>
-    /// Calculates the boolean intersection of two closed, planar curves. 
-    /// Note, curves must be co-planar.
-    /// </summary>
-    /// <param name="curveA">The first closed, planar curve.</param>
-    /// <param name="curveB">The second closed, planar curve.</param>
-    /// <param name="tolerance"></param>
-    /// <returns>Result curves on success, empty array if no intersection could be calculated.</returns>
-    /// <since>6.0</since>
-    public static Curve[] CreateBooleanIntersection(Curve curveA, Curve curveB, double tolerance)
-    {
-      if (null == curveA || null == curveB)
-        throw new ArgumentNullException(null == curveA ? "curveA" : "curveB");
 
-      using (SimpleArrayCurvePointer input = new SimpleArrayCurvePointer(new Curve[] { curveA, curveB }))
-      using (SimpleArrayCurvePointer output = new SimpleArrayCurvePointer())
-      {
-        IntPtr inputPtr = input.ConstPointer();
-        IntPtr outputPtr = output.NonConstPointer();
-        int rc = UnsafeNativeMethods.ON_Curve_BooleanOperation(inputPtr, outputPtr, idxBooleanIntersection, tolerance);
-        Runtime.CommonObject.GcProtect(curveA, curveB);
-        return rc < 1 ? new Curve[0] : output.ToNonConstArray();
-      }
-    }
+            for (int i = 1; i < curves.Count; i++)
+            {
+                List<IntPoint> path = ClipperInterop.ToClipper(curves[i]);
+                c.AddPaths(solution, PolyType.ptSubject, true);
+                c.AddPath(path, PolyType.ptClip, true);
+                c.Execute(ClipType.ctUnion, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+                c.Clear();
+            }
+            List<Curve> outCrv = new List<Curve>();
+            foreach (List<IntPoint> path in solution)
+            {
+                outCrv.Add(ClipperInterop.FromClipper(path));
+            }
+            return outCrv;
+        }
 
-    /// <summary>
-    /// Calculates the boolean difference between two closed, planar curves. 
-    /// Note, curves must be co-planar.
-    /// </summary>
-    /// <param name="curveA">The first closed, planar curve.</param>
-    /// <param name="curveB">The second closed, planar curve.</param>
-    /// <returns>Result curves on success, empty array if no difference could be calculated.</returns>
-    /// <since>5.0</since>
-    [Obsolete("Use version that takes tolerance as input")]
+        /// <summary>
+        /// Calculates the boolean intersection of two closed, planar curves. 
+        /// Note, curves must be co-planar.
+        /// </summary>
+        /// <param name="curveA">The first closed, planar curve.</param>
+        /// <param name="curveB">The second closed, planar curve.</param>
+        /// <returns>Result curves on success, empty array if no intersection could be calculated.</returns>
+        /// <since>6.0</since>
+        public static List<Curve> CreateBooleanIntersection(Curve curveA, Curve curveB)
+        {
+            if (!curveA.IsClosed || !curveB.IsClosed) return null;
+
+            Clipper c = new Clipper();
+            c.AddPath(ClipperInterop.ToClipper(curveA), PolyType.ptSubject, true);
+            c.AddPath(ClipperInterop.ToClipper(curveB), PolyType.ptClip, true);
+            List<List<IntPoint>> solution = new List<List<IntPoint>>();
+            c.Execute(ClipType.ctIntersection, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+            List<Curve> outCrv = new List<Curve>();
+            foreach (List<IntPoint> path in solution)
+            {
+                outCrv.Add(ClipperInterop.FromClipper(path));
+            }
+            return outCrv;
+        }
+
+
+#endif
+#if RHINO_SDK
+
+        /// <summary>
+        /// Calculates the boolean union of two or more closed, planar curves. 
+        /// Note, curves must be co-planar.
+        /// </summary>
+        /// <param name="curves">The co-planar curves to union.</param>
+        /// <returns>Result curves on success, empty array if no union could be calculated.</returns>
+        /// <since>5.0</since>
+        // [Obsolete("Use version that takes tolerance as input")]
+        // public static Curve[] CreateBooleanUnion(IEnumerable<Curve> curves)
+        // {
+        //   double tolerance, angle_tol;
+        // RhinoDoc.ActiveDocTolerances(out tolerance, out angle_tol);
+        //  return CreateBooleanUnion(curves, tolerance);
+        // }
+        /// <summary>
+        /// Calculates the boolean union of two or more closed, planar curves. 
+        /// Note, curves must be co-planar.
+        /// </summary>
+        /// <param name="curves">The co-planar curves to union.</param>
+        /// <param name="tolerance"></param>
+        /// <returns>Result curves on success, empty array if no union could be calculated.</returns>
+        /// <since>6.0</since>
+        public static Curve[] CreateBooleanUnion(IEnumerable<Curve> curves, double tolerance)
+        {
+            if (null == curves)
+                throw new ArgumentNullException("curves");
+
+            using (SimpleArrayCurvePointer input = new SimpleArrayCurvePointer(curves))
+            using (SimpleArrayCurvePointer output = new SimpleArrayCurvePointer())
+            {
+                IntPtr inputPtr = input.ConstPointer();
+                IntPtr outputPtr = output.NonConstPointer();
+
+                int rc = UnsafeNativeMethods.ON_Curve_BooleanOperation(inputPtr, outputPtr, idxBooleanUnion, tolerance);
+                GC.KeepAlive(curves);
+                return rc < 1 ? new Curve[0] : output.ToNonConstArray();
+            }
+        }
+
+
+        /// <summary>
+        /// Calculates the boolean intersection of two closed, planar curves. 
+        /// Note, curves must be co-planar.
+        /// </summary>
+        /// <param name="curveA">The first closed, planar curve.</param>
+        /// <param name="curveB">The second closed, planar curve.</param>
+        /// <returns>Result curves on success, empty array if no intersection could be calculated.</returns>
+        /// <since>5.0</since>
+        // [Obsolete("Use version that takes tolerance as input")]
+        //public static Curve[] CreateBooleanIntersection(Curve curveA, Curve curveB)
+        //{
+        //  double tolerance, angle_tol;
+        //  RhinoDoc.ActiveDocTolerances(out tolerance, out angle_tol);
+        //   return CreateBooleanIntersection(curveA, curveB, tolerance);
+        // }
+
+        /// <summary>
+        /// Calculates the boolean intersection of two closed, planar curves. 
+        /// Note, curves must be co-planar.
+        /// </summary>
+        /// <param name="curveA">The first closed, planar curve.</param>
+        /// <param name="curveB">The second closed, planar curve.</param>
+        /// <param name="tolerance"></param>
+        /// <returns>Result curves on success, empty array if no intersection could be calculated.</returns>
+        /// <since>6.0</since>
+        public static Curve[] CreateBooleanIntersection(Curve curveA, Curve curveB, double tolerance)
+        {
+            if (null == curveA || null == curveB)
+                throw new ArgumentNullException(null == curveA ? "curveA" : "curveB");
+
+            using (SimpleArrayCurvePointer input = new SimpleArrayCurvePointer(new Curve[] { curveA, curveB }))
+            using (SimpleArrayCurvePointer output = new SimpleArrayCurvePointer())
+            {
+                IntPtr inputPtr = input.ConstPointer();
+                IntPtr outputPtr = output.NonConstPointer();
+                int rc = UnsafeNativeMethods.ON_Curve_BooleanOperation(inputPtr, outputPtr, idxBooleanIntersection, tolerance);
+                Runtime.CommonObject.GcProtect(curveA, curveB);
+                return rc < 1 ? new Curve[0] : output.ToNonConstArray();
+            }
+        }
+        /// <summary>
+        /// Calculates the boolean difference between two closed, planar curves. 
+        /// Note, curves must be co-planar.
+        /// </summary>
+        /// <param name="curveA">The first closed, planar curve.</param>
+        /// <param name="curveB">The second closed, planar curve.</param>
+        /// <returns>Result curves on success, empty array if no difference could be calculated.</returns>
+        /// <since>5.0</since>
+        [Obsolete("Use version that takes tolerance as input")]
     public static Curve[] CreateBooleanDifference(Curve curveA, Curve curveB)
     {
       double tolerance, angle_tol;
@@ -1862,39 +2032,65 @@ namespace Rhino.Geometry
       Runtime.CommonObject.GcProtect(curveA, curveB);
       return rc;
     }
+#endif
+#if SB_IMP
+        public static RegionContainment PlanarClosedCurveRelationship(Curve curveA, Curve curveB)
+        {
+            if (curveA.IsClosed && curveB.IsClosed)
+            {
+                IntPoint WorldXY = new IntPoint(0, 0);
+                List<IntPoint> pathA = ClipperInterop.ToClipper(curveA);
+                List<IntPoint> pathB = ClipperInterop.ToClipper(curveB);
+                List<List<IntPoint>> rawMinskowski = Clipper.MinkowskiDiff(pathA, pathB);
+                int result = 0; foreach (List<IntPoint> path in rawMinskowski)
+                {
+                    result += Math.Abs(Clipper.PointInPolygon(WorldXY, path));
+                }
+                if (result > 1)
+                {
+                    if (Clipper.PointInPolygon(pathA[0], pathB) == 1) return RegionContainment.AInsideB;
+                    else return RegionContainment.BInsideA;
+                }
+                else if (result == 1) return RegionContainment.MutualIntersection;
+                else return RegionContainment.Disjoint;
+            }
+            return RegionContainment.Disjoint;
+        }
+#endif
+#if RHINO_SDK
+        /// <summary>
+        /// Determines whether two coplanar simple closed curves are disjoint or intersect;
+        /// otherwise, if the regions have a containment relationship, discovers
+        /// which curve encloses the other.
+        /// </summary>
+        /// <param name="curveA">A first curve.</param>
+        /// <param name="curveB">A second curve.</param>
+        /// <param name="testPlane">A plane.</param>
+        /// <param name="tolerance">A tolerance value.</param>
+        /// <returns>
+        /// A value indicating the relationship between the first and the second curve.
+        /// </returns>
+        /// <since>5.0</since>
+        public static RegionContainment PlanarClosedCurveRelationship(Curve curveA, Curve curveB, Plane testPlane, double tolerance)
+        {
+            IntPtr pConstCurveA = curveA.ConstPointer();
+            IntPtr pConstCurveB = curveB.ConstPointer();
+            var rc = (RegionContainment)UnsafeNativeMethods.RHC_RhinoPlanarClosedCurveContainmentTest(pConstCurveA, pConstCurveB, ref testPlane, tolerance);
+            Runtime.CommonObject.GcProtect(curveA, curveB);
+            return rc;
+        }
 
-    /// <summary>
-    /// Determines whether two coplanar simple closed curves are disjoint or intersect;
-    /// otherwise, if the regions have a containment relationship, discovers
-    /// which curve encloses the other.
-    /// </summary>
-    /// <param name="curveA">A first curve.</param>
-    /// <param name="curveB">A second curve.</param>
-    /// <param name="testPlane">A plane.</param>
-    /// <param name="tolerance">A tolerance value.</param>
-    /// <returns>
-    /// A value indicating the relationship between the first and the second curve.
-    /// </returns>
-    /// <since>5.0</since>
-    public static RegionContainment PlanarClosedCurveRelationship(Curve curveA, Curve curveB, Plane testPlane, double tolerance)
-    {
-      IntPtr pConstCurveA = curveA.ConstPointer();
-      IntPtr pConstCurveB = curveB.ConstPointer();
-      var rc = (RegionContainment)UnsafeNativeMethods.RHC_RhinoPlanarClosedCurveContainmentTest(pConstCurveA, pConstCurveB, ref testPlane, tolerance);
-      Runtime.CommonObject.GcProtect(curveA, curveB);
-      return rc;
-    }
 
-    /// <summary>
-    /// Determines if two coplanar curves collide (intersect).
-    /// </summary>
-    /// <param name="curveA">A curve.</param>
-    /// <param name="curveB">Another curve.</param>
-    /// <param name="testPlane">A valid plane containing the curves.</param>
-    /// <param name="tolerance">A tolerance value for intersection.</param>
-    /// <returns>true if the curves intersect, otherwise false</returns>
-    /// <since>5.0</since>
-    public static bool PlanarCurveCollision(Curve curveA, Curve curveB, Plane testPlane, double tolerance)
+        /// <summary>
+        /// Determines if two coplanar curves collide (intersect).
+        /// </summary>
+        /// <param name="curveA">A curve.</param>
+        /// <param name="curveB">Another curve.</param>
+        /// <param name="testPlane">A valid plane containing the curves.</param>
+        /// <param name="tolerance">A tolerance value for intersection.</param>
+        /// <returns>true if the curves intersect, otherwise false</returns>
+        /// <since>5.0</since>
+        public static bool PlanarCurveCollision(Curve curveA, Curve curveB, Plane testPlane, double tolerance)
     {
       IntPtr pConstCurveA = curveA.ConstPointer();
       IntPtr pConstCurveB = curveB.ConstPointer();
@@ -1904,87 +2100,86 @@ namespace Rhino.Geometry
     }
 
 #endif
-    #endregion statics
-
-    #region constructors
-
-    /// <summary>
-    /// Protected constructor for internal use.
-    /// </summary>
-    // Giulio, 2016 Oct 2
-    // Do not make this public or protected: any user might attempt to use this otherwise.
-    internal Curve() { }
-
-    internal Curve(IntPtr ptr, object parent)
-      : this(ptr, parent, -1)
-    {
-    }
-    internal Curve(IntPtr ptr, object parent, int subobject_index)
-      : base(ptr, parent, subobject_index)
-    {
-    }
-
-    internal override IntPtr _InternalGetConstPointer()
-    {
-      Rhino.Geometry.CurveHolder holder2 = m__parent as Rhino.Geometry.CurveHolder;
-      if (null != holder2)
-      {
-        return holder2.ConstCurvePointer();
-      }
 
 
-      if (m_subobject_index >= 0)
-      {
-        Rhino.Geometry.PolyCurve polycurve_parent = m__parent as Rhino.Geometry.PolyCurve;
-        if (polycurve_parent != null)
+
+        /// <summary>
+        /// Protected constructor for internal use.
+        /// </summary>
+        // Giulio, 2016 Oct 2
+        // Do not make this public or protected: any user might attempt to use this otherwise.
+        internal Curve() { }
+
+        internal Curve(IntPtr ptr, object parent)
+          : this(ptr, parent, -1)
         {
-          IntPtr pConstPolycurve = polycurve_parent.ConstPointer();
-          IntPtr pConstThis = UnsafeNativeMethods.ON_PolyCurve_SegmentCurve(pConstPolycurve, m_subobject_index);
-          return pConstThis;
         }
-      }
-      return base._InternalGetConstPointer();
-    }
+        internal Curve(IntPtr ptr, object parent, int subobject_index)
+          : base(ptr, parent, subobject_index)
+        {
+        }
 
-    //private PolyCurve m_parent_polycurve; //runtime will initialize this to null
-    //internal void SetParentPolyCurve(PolyCurve curve)
-    //{
-    //  m_ptr = IntPtr.Zero;
-    //  m_parent_polycurve = curve;
-    //}
+        internal override IntPtr _InternalGetConstPointer()
+        {
+            Rhino.Geometry.CurveHolder holder2 = m__parent as Rhino.Geometry.CurveHolder;
+            if (null != holder2)
+            {
+                return holder2.ConstCurvePointer();
+            }
 
-    /// <summary>
-    /// Constructs an exact duplicate of this Curve.
-    /// </summary>
-    /// <seealso cref="DuplicateCurve"/>
-    /// <since>5.0</since>
-    public override GeometryBase Duplicate()
-    {
-      IntPtr ptr = ConstPointer();
-      IntPtr pNewCurve = UnsafeNativeMethods.ON_Curve_DuplicateCurve(ptr);
-      return GeometryBase.CreateGeometryHelper(pNewCurve, null) as Curve;
-    }
 
-    /// <summary>
-    /// Constructs an exact duplicate of this curve.
-    /// </summary>
-    /// <returns>An exact copy of this curve.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_curvereverse.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_curvereverse.cs' lang='cs'/>
-    /// <code source='examples\py\ex_curvereverse.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public Curve DuplicateCurve()
-    {
-      Curve rc = Duplicate() as Curve;
-      return rc;
-    }
+            if (m_subobject_index >= 0)
+            {
+                Rhino.Geometry.PolyCurve polycurve_parent = m__parent as Rhino.Geometry.PolyCurve;
+                if (polycurve_parent != null)
+                {
+                    IntPtr pConstPolycurve = polycurve_parent.ConstPointer();
+                    IntPtr pConstThis = UnsafeNativeMethods.ON_PolyCurve_SegmentCurve(pConstPolycurve, m_subobject_index);
+                    return pConstThis;
+                }
+            }
+            return base._InternalGetConstPointer();
+        }
 
-    internal override GeometryBase DuplicateShallowHelper()
-    {
-      return new Curve(IntPtr.Zero, null);
-    }
+        //private PolyCurve m_parent_polycurve; //runtime will initialize this to null
+        //internal void SetParentPolyCurve(PolyCurve curve)
+        //{
+        //  m_ptr = IntPtr.Zero;
+        //  m_parent_polycurve = curve;
+        //}
+
+        /// <summary>
+        /// Constructs an exact duplicate of this Curve.
+        /// </summary>
+        /// <seealso cref="DuplicateCurve"/>
+        /// <since>5.0</since>
+        public override GeometryBase Duplicate()
+        {
+            IntPtr ptr = ConstPointer();
+            IntPtr pNewCurve = UnsafeNativeMethods.ON_Curve_DuplicateCurve(ptr);
+            return GeometryBase.CreateGeometryHelper(pNewCurve, null) as Curve;
+        }
+
+        /// <summary>
+        /// Constructs an exact duplicate of this curve.
+        /// </summary>
+        /// <returns>An exact copy of this curve.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_curvereverse.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_curvereverse.cs' lang='cs'/>
+        /// <code source='examples\py\ex_curvereverse.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public Curve DuplicateCurve()
+        {
+            Curve rc = Duplicate() as Curve;
+            return rc;
+        }
+
+        internal override GeometryBase DuplicateShallowHelper()
+        {
+            return new Curve(IntPtr.Zero, null);
+        }
 
 #if RHINO_SDK
     /// <summary>
@@ -2108,23 +2303,23 @@ namespace Rhino.Geometry
 
 #endif
 
-    internal override IntPtr _InternalDuplicate(out bool applymempressure)
-    {
-      applymempressure = true;
-      IntPtr pConstPointer = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_DuplicateCurve(pConstPointer);
-    }
+        internal override IntPtr _InternalDuplicate(out bool applymempressure)
+        {
+            applymempressure = true;
+            IntPtr pConstPointer = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_DuplicateCurve(pConstPointer);
+        }
 
-    /// <summary>
-    /// For derived class implementers.
-    /// <para>This method is called with argument true when class user calls Dispose(), while with argument false when
-    /// the Garbage Collector invokes the finalizer, or Finalize() method.</para>
-    /// <para>You must reclaim all used unmanaged resources in both cases, and can use this chance to call Dispose on disposable fields if the argument is true.</para>
-    /// <para>Also, you must call the base virtual method within your overriding method.</para>
-    /// </summary>
-    /// <param name="disposing">true if the call comes from the Dispose() method; false if it comes from the Garbage Collector finalizer.</param>
-    protected override void Dispose(bool disposing)
-    {
+        /// <summary>
+        /// For derived class implementers.
+        /// <para>This method is called with argument true when class user calls Dispose(), while with argument false when
+        /// the Garbage Collector invokes the finalizer, or Finalize() method.</para>
+        /// <para>You must reclaim all used unmanaged resources in both cases, and can use this chance to call Dispose on disposable fields if the argument is true.</para>
+        /// <para>Also, you must call the base virtual method within your overriding method.</para>
+        /// </summary>
+        /// <param name="disposing">true if the call comes from the Dispose() method; false if it comes from the Garbage Collector finalizer.</param>
+        protected override void Dispose(bool disposing)
+        {
 #if RHINO_SDK
       if (IntPtr.Zero != m_pCurveDisplay)
       {
@@ -2132,31 +2327,31 @@ namespace Rhino.Geometry
         m_pCurveDisplay = IntPtr.Zero;
       }
 #endif
-      base.Dispose(disposing);
-    }
-    #endregion
+            base.Dispose(disposing);
+        }
+        #endregion
 
-    /// <summary>
-    /// Protected serialization constructor for internal use.
-    /// </summary>
-    /// <param name="info">Serialization data.</param>
-    /// <param name="context">Serialization stream.</param>
-    protected Curve(SerializationInfo info, StreamingContext context)
-      : base(info, context)
-    {
-    }
+        /// <summary>
+        /// Protected serialization constructor for internal use.
+        /// </summary>
+        /// <param name="info">Serialization data.</param>
+        /// <param name="context">Serialization stream.</param>
+        protected Curve(SerializationInfo info, StreamingContext context)
+          : base(info, context)
+        {
+        }
 
-    #region internal methods
-    const int idxIgnoreNone = 0;
-    const int idxIgnorePlane = 1;
-    const int idxIgnorePlaneArcOrEllipse = 2;
+        #region internal methods
+        const int idxIgnoreNone = 0;
+        const int idxIgnorePlane = 1;
+        const int idxIgnorePlaneArcOrEllipse = 2;
 
-    /// <summary>
-    /// For derived classes implementers.
-    /// <para>Defines the necessary implementation to free the instance from being constant.</para>
-    /// </summary>
-    protected override void NonConstOperation()
-    {
+        /// <summary>
+        /// For derived classes implementers.
+        /// <para>Defines the necessary implementation to free the instance from being constant.</para>
+        /// </summary>
+        protected override void NonConstOperation()
+        {
 #if RHINO_SDK
       if (IntPtr.Zero != m_pCurveDisplay)
       {
@@ -2164,8 +2359,8 @@ namespace Rhino.Geometry
         m_pCurveDisplay = IntPtr.Zero;
       }
 #endif
-      base.NonConstOperation();
-    }
+            base.NonConstOperation();
+        }
 
 #if RHINO_SDK
     internal IntPtr m_pCurveDisplay = IntPtr.Zero;
@@ -2178,595 +2373,645 @@ namespace Rhino.Geometry
       UnsafeNativeMethods.CRhinoDisplayPipeline_DrawCurve(pDisplayPipeline, ptr, argb, thickness);
     }
 #endif
-    #endregion
+        #endregion
 
-    #region properties
-    /// <summary>
-    /// Gets or sets the domain of the curve.
-    /// </summary>
-    /// <since>5.0</since>
-    public Interval Domain
-    {
-      get
-      {
-        Interval rc = new Interval();
-        IntPtr ptr = ConstPointer();
-        UnsafeNativeMethods.ON_Curve_Domain(ptr, false, ref rc);
-        return rc;
-      }
-      set
-      {
-        IntPtr ptr = NonConstPointer();
-        UnsafeNativeMethods.ON_Curve_Domain(ptr, true, ref value);
-      }
-    }
-
-    /// <summary>
-    /// Gets the dimension of the object.
-    /// <para>The dimension is typically three. For parameter space trimming
-    /// curves the dimension is two. In rare cases the dimension can
-    /// be one or greater than three.</para>
-    /// </summary>
-    /// <since>5.0</since>
-    public int Dimension
-    {
-      get
-      {
-        IntPtr const_ptr_this = ConstPointer();
-        return UnsafeNativeMethods.ON_Geometry_Dimension(const_ptr_this);
-      }
-    }
-
-    /// <summary>
-    /// Changes the dimension of a curve.
-    /// </summary>
-    /// <param name="desiredDimension">The desired dimension.</param>
-    /// <returns>
-    /// true if the curve's dimension was already desiredDimension
-    /// or if the curve's dimension was successfully changed to desiredDimension;
-    /// otherwise false.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool ChangeDimension(int desiredDimension)
-    {
-      // check dimension first so we don't need to switch to a non-const object
-      // if possible
-      if (Dimension == desiredDimension)
-        return true;
-
-      IntPtr pThis = NonConstPointer();
-      return UnsafeNativeMethods.ON_Curve_ChangeDimension(pThis, desiredDimension);
-    }
-
-    /// <summary>
-    /// Gets the number of non-empty smooth (c-infinity) spans in the curve.
-    /// </summary>
-    /// <since>5.0</since>
-    public int SpanCount
-    {
-      get
-      {
-        IntPtr ptr = ConstPointer();
-        return UnsafeNativeMethods.ON_Curve_SpanCount(ptr);
-      }
-    }
-
-    /// <summary>
-    /// Gets the maximum algebraic degree of any span
-    /// or a good estimate if curve spans are not algebraic.
-    /// </summary>
-    /// <since>5.0</since>
-    public int Degree
-    {
-      get
-      {
-        IntPtr ptr = ConstPointer();
-        return UnsafeNativeMethods.ON_Curve_Degree(ptr);
-      }
-    }
-
-    #region platonic shape properties
-    /// <summary>
-    /// Test a curve to see if it is linear to within RhinoMath.ZeroTolerance units (1e-12).
-    /// </summary>
-    /// <returns>true if the curve is linear.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
-    /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public bool IsLinear()
-    {
-      return IsLinear(RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Test a curve to see if it is linear to within the custom tolerance.
-    /// </summary>
-    /// <param name="tolerance">Tolerance to use when checking linearity.</param>
-    /// <returns>
-    /// true if the ends of the curve are farther than tolerance apart
-    /// and the maximum distance from any point on the curve to
-    /// the line segment connecting the curve ends is &lt;= tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsLinear(double tolerance)
-    {
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsLinear(ptr, tolerance);
-    }
-
-    /// <summary>
-    /// Several types of Curve can have the form of a polyline
-    /// including a degree 1 NurbsCurve, a PolylineCurve,
-    /// and a PolyCurve all of whose segments are some form of
-    /// polyline. IsPolyline tests a curve to see if it can be
-    /// represented as a polyline.
-    /// </summary>
-    /// <returns>true if this curve can be represented as a polyline; otherwise, false.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
-    /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public bool IsPolyline()
-    {
-      IntPtr ptr = ConstPointer();
-      return (UnsafeNativeMethods.ON_Curve_IsPolyline1(ptr, IntPtr.Zero) != 0);
-    }
-    /// <summary>
-    /// Several types of Curve can have the form of a polyline 
-    /// including a degree 1 NurbsCurve, a PolylineCurve, 
-    /// and a PolyCurve all of whose segments are some form of 
-    /// polyline. IsPolyline tests a curve to see if it can be 
-    /// represented as a polyline.
-    /// </summary>
-    /// <param name="polyline">
-    /// If true is returned, then the polyline form is returned here.
-    /// </param>
-    /// <returns>true if this curve can be represented as a polyline; otherwise, false.</returns>
-    /// <since>5.0</since>
-    public bool TryGetPolyline(out Polyline polyline)
-    {
-      polyline = null;
-
-      SimpleArrayPoint3d outputPts = new SimpleArrayPoint3d();
-      int pointCount = 0;
-      IntPtr pCurve = ConstPointer();
-      IntPtr outputPointsPointer = outputPts.NonConstPointer();
-
-      UnsafeNativeMethods.ON_Curve_IsPolyline2(pCurve, outputPointsPointer, ref pointCount, IntPtr.Zero);
-      if (pointCount > 0)
-      {
-        polyline = Polyline.PolyLineFromNativeArray(outputPts);
-      }
-
-      outputPts.Dispose();
-      return (pointCount != 0);
-    }
-    /// <summary>
-    /// Several types of Curve can have the form of a polyline 
-    /// including a degree 1 NurbsCurve, a PolylineCurve, 
-    /// and a PolyCurve all of whose segments are some form of 
-    /// polyline. IsPolyline tests a curve to see if it can be 
-    /// represented as a polyline.
-    /// </summary>
-    /// <param name="polyline">
-    /// If true is returned, then the polyline form is returned here.
-    /// </param>
-    /// <param name="parameters">
-    /// if true is returned, then the parameters of the polyline
-    /// points are returned here.
-    /// </param>
-    /// <returns>true if this curve can be represented as a polyline; otherwise, false.</returns>
-    /// <since>5.0</since>
-    public bool TryGetPolyline(out Polyline polyline, out double[] parameters)
-    {
-      polyline = null;
-      parameters = null;
-      SimpleArrayPoint3d outputPts = new SimpleArrayPoint3d();
-      int pointCount = 0;
-      IntPtr pCurve = ConstPointer();
-      IntPtr outputPointsPointer = outputPts.NonConstPointer();
-      Rhino.Runtime.InteropWrappers.SimpleArrayDouble tparams = new SimpleArrayDouble();
-      IntPtr ptparams = tparams.NonConstPointer();
-      UnsafeNativeMethods.ON_Curve_IsPolyline2(pCurve, outputPointsPointer, ref pointCount, ptparams);
-      if (pointCount > 0)
-      {
-        polyline = Polyline.PolyLineFromNativeArray(outputPts);
-        parameters = tparams.ToArray();
-      }
-
-      tparams.Dispose();
-      outputPts.Dispose();
-      return (pointCount != 0);
-    }
-
-    /// <summary>
-    /// Test a curve to see if it can be represented by an arc or circle within RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <returns>
-    /// true if the curve can be represented by an arc or a circle within tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsArc()
-    {
-      return IsArc(RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Test a curve to see if it can be represented by an arc or circle within the given tolerance.
-    /// </summary>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>
-    /// true if the curve can be represented by an arc or a circle within tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsArc(double tolerance)
-    {
-      Arc arc = new Arc();
-      Plane p = Plane.WorldXY;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsArc(ptr, idxIgnorePlaneArcOrEllipse, ref p, ref arc, tolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Arc using RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <param name="arc">On success, the Arc will be filled in.</param>
-    /// <returns>true if the curve could be converted into an arc.</returns>
-    /// <since>5.0</since>
-    public bool TryGetArc(out Arc arc)
-    {
-      return TryGetArc(out arc, RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Arc using a custom tolerance.
-    /// </summary>
-    /// <param name="arc">On success, the Arc will be filled in.</param>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>true if the curve could be converted into an arc.</returns>
-    /// <since>5.0</since>
-    public bool TryGetArc(out Arc arc, double tolerance)
-    {
-      arc = new Arc();
-      Plane p = Plane.WorldXY;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsArc(ptr, idxIgnorePlane, ref p, ref arc, tolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Arc using RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <param name="plane">Plane in which the comparison is performed.</param>
-    /// <param name="arc">On success, the Arc will be filled in.</param>
-    /// <returns>true if the curve could be converted into an arc within the given plane.</returns>
-    /// <since>5.0</since>
-    public bool TryGetArc(Plane plane, out Arc arc)
-    {
-      return TryGetArc(plane, out arc, RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Arc using a custom tolerance.
-    /// </summary>
-    /// <param name="plane">Plane in which the comparison is performed.</param>
-    /// <param name="arc">On success, the Arc will be filled in.</param>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>true if the curve could be converted into an arc within the given plane.</returns>
-    /// <since>5.0</since>
-    public bool TryGetArc(Plane plane, out Arc arc, double tolerance)
-    {
-      arc = new Arc();
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsArc(ptr, idxIgnoreNone, ref plane, ref arc, tolerance);
-    }
-
-    /// <summary>
-    /// Test a curve to see if it can be represented by a circle within RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <returns>
-    /// true if the Curve can be represented by a circle within tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsCircle()
-    {
-      return IsCircle(RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Test a curve to see if it can be represented by a circle within the given tolerance.
-    /// </summary>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>
-    /// true if the curve can be represented by a circle to within tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsCircle(double tolerance)
-    {
-      Arc arc;
-      return TryGetArc(out arc, tolerance) && arc.IsCircle;
-    }
-    /// <summary>
-    /// Try to convert this curve into a circle using RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <param name="circle">On success, the Circle will be filled in.</param>
-    /// <returns>true if the curve could be converted into a Circle.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_customgeometryfilter.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_customgeometryfilter.cs' lang='cs'/>
-    /// <code source='examples\py\ex_customgeometryfilter.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public bool TryGetCircle(out Circle circle)
-    {
-      return TryGetCircle(out circle, RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into a Circle using a custom tolerance.
-    /// </summary>
-    /// <param name="circle">On success, the Circle will be filled in.</param>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>true if the curve could be converted into a Circle within tolerance.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_circlecenter.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_circlecenter.cs' lang='cs'/>
-    /// <code source='examples\py\ex_circlecenter.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public bool TryGetCircle(out Circle circle, double tolerance)
-    {
-      circle = new Circle();
-
-      Arc arc;
-      if (TryGetArc(out arc, tolerance))
-      {
-        if (arc.IsCircle)
+        #region properties
+        /// <summary>
+        /// Gets or sets the domain of the curve.
+        /// </summary>
+        /// <since>5.0</since>
+        public Interval Domain
         {
-          circle = new Circle(arc);
-          return true;
+            get
+            {
+                Interval rc = new Interval();
+                IntPtr ptr = ConstPointer();
+                UnsafeNativeMethods.ON_Curve_Domain(ptr, false, ref rc);
+                return rc;
+            }
+            set
+            {
+                IntPtr ptr = NonConstPointer();
+                UnsafeNativeMethods.ON_Curve_Domain(ptr, true, ref value);
+            }
         }
-      }
-      return false;
-    }
 
-    /// <summary>
-    /// Test a curve to see if it can be represented by an ellipse within RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <returns>
-    /// true if the Curve can be represented by an ellipse within tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsEllipse()
-    {
-      return IsEllipse(RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Test a curve to see if it can be represented by an ellipse within a given tolerance.
-    /// </summary>
-    /// <param name="tolerance">Tolerance to use for checking.</param>
-    /// <returns>
-    /// true if the Curve can be represented by an ellipse within tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsEllipse(double tolerance)
-    {
-      Plane plane = Plane.WorldXY;
-      Ellipse ellipse = new Ellipse();
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsEllipse(ptr, idxIgnorePlaneArcOrEllipse, ref plane, ref ellipse, tolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Ellipse within RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
-    /// <returns>true if the curve could be converted into an Ellipse.</returns>
-    /// <since>5.0</since>
-    public bool TryGetEllipse(out Ellipse ellipse)
-    {
-      return TryGetEllipse(out ellipse, RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Ellipse using a custom tolerance.
-    /// </summary>
-    /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>true if the curve could be converted into an Ellipse.</returns>
-    /// <since>5.0</since>
-    public bool TryGetEllipse(out Ellipse ellipse, double tolerance)
-    {
-      Plane plane = Plane.WorldXY;
-      ellipse = new Ellipse();
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsEllipse(ptr, idxIgnorePlane, ref plane, ref ellipse, tolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Ellipse within RhinoMath.ZeroTolerance.
-    /// </summary>
-    /// <param name="plane">Plane in which the comparison is performed.</param>
-    /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
-    /// <returns>true if the curve could be converted into an Ellipse within the given plane.</returns>
-    /// <since>5.0</since>
-    public bool TryGetEllipse(Plane plane, out Ellipse ellipse)
-    {
-      return TryGetEllipse(plane, out ellipse, RhinoMath.ZeroTolerance);
-    }
-    /// <summary>
-    /// Try to convert this curve into an Ellipse using a custom tolerance.
-    /// </summary>
-    /// <param name="plane">Plane in which the comparison is performed.</param>
-    /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>true if the curve could be converted into an Ellipse within the given plane.</returns>
-    /// <since>5.0</since>
-    public bool TryGetEllipse(Plane plane, out Ellipse ellipse, double tolerance)
-    {
-      ellipse = new Ellipse();
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsEllipse(ptr, idxIgnoreNone, ref plane, ref ellipse, tolerance);
-    }
+        /// <summary>
+        /// Gets the dimension of the object.
+        /// <para>The dimension is typically three. For parameter space trimming
+        /// curves the dimension is two. In rare cases the dimension can
+        /// be one or greater than three.</para>
+        /// </summary>
+        /// <since>5.0</since>
+        public int Dimension
+        {
+            get
+            {
+                IntPtr const_ptr_this = ConstPointer();
+                return UnsafeNativeMethods.ON_Geometry_Dimension(const_ptr_this);
+            }
+        }
 
-    /// <summary>Test a curve for planarity.</summary>
-    /// <returns>
-    /// true if the curve is planar (flat) to within RhinoMath.ZeroTolerance units (1e-12).
-    /// </returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
-    /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public bool IsPlanar()
-    {
-      return IsPlanar(RhinoMath.ZeroTolerance);
-    }
-    /// <summary>Test a curve for planarity.</summary>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>
-    /// true if there is a plane such that the maximum distance from the curve to the plane is &lt;= tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsPlanar(double tolerance)
-    {
-      Plane plane = Plane.WorldXY;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsPlanar(ptr, true, ref plane, tolerance);
-    }
-    /// <summary>Test a curve for planarity and return the plane.</summary>
-    /// <param name="plane">On success, the plane parameters are filled in.</param>
-    /// <returns>
-    /// true if there is a plane such that the maximum distance from the curve to the plane is &lt;= RhinoMath.ZeroTolerance.
-    /// </returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_constrainedcopy.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_constrainedcopy.cs' lang='cs'/>
-    /// <code source='examples\py\ex_constrainedcopy.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public bool TryGetPlane(out Plane plane)
-    {
-      return TryGetPlane(out plane, RhinoMath.ZeroTolerance);
-    }
-    /// <summary>Test a curve for planarity and return the plane.</summary>
-    /// <param name="plane">On success, the plane parameters are filled in.</param>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>
-    /// true if there is a plane such that the maximum distance from the curve to the plane is &lt;= tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool TryGetPlane(out Plane plane, double tolerance)
-    {
-      plane = Plane.WorldXY;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsPlanar(ptr, false, ref plane, tolerance);
-    }
-    /// <summary>Test a curve to see if it lies in a specific plane.</summary>
-    /// <param name="testPlane">Plane to test for.</param>
-    /// <returns>
-    /// true if the maximum distance from the curve to the testPlane is &lt;= RhinoMath.ZeroTolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsInPlane(Plane testPlane)
-    {
-      return IsInPlane(testPlane, RhinoMath.ZeroTolerance);
-    }
-    /// <summary>Test a curve to see if it lies in a specific plane.</summary>
-    /// <param name="testPlane">Plane to test for.</param>
-    /// <param name="tolerance">Tolerance to use when checking.</param>
-    /// <returns>
-    /// true if the maximum distance from the curve to the testPlane is &lt;= tolerance.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool IsInPlane(Plane testPlane, double tolerance)
-    {
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsInPlane(ptr, ref testPlane, tolerance);
-    }
-    #endregion
-    #endregion
+        /// <summary>
+        /// Changes the dimension of a curve.
+        /// </summary>
+        /// <param name="desiredDimension">The desired dimension.</param>
+        /// <returns>
+        /// true if the curve's dimension was already desiredDimension
+        /// or if the curve's dimension was successfully changed to desiredDimension;
+        /// otherwise false.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool ChangeDimension(int desiredDimension)
+        {
+            // check dimension first so we don't need to switch to a non-const object
+            // if possible
+            if (Dimension == desiredDimension)
+                return true;
 
-    #region methods
-    /// <summary>
-    /// If this curve is closed, then modify it so that the start/end point is at curve parameter t.
-    /// </summary>
-    /// <param name="t">
-    /// Curve parameter of new start/end point. The returned curves domain will start at t.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    public bool ChangeClosedCurveSeam(double t)
-    {
-      IntPtr ptr = NonConstPointer();
-      bool rc = UnsafeNativeMethods.ON_Curve_ChangeClosedCurveSeam(ptr, t);
-      return rc;
-    }
+            IntPtr pThis = NonConstPointer();
+            return UnsafeNativeMethods.ON_Curve_ChangeDimension(pThis, desiredDimension);
+        }
 
-    const int idxIsClosed = 0;
-    const int idxIsPeriodic = 1;
+        /// <summary>
+        /// Gets the number of non-empty smooth (c-infinity) spans in the curve.
+        /// </summary>
+        /// <since>5.0</since>
+        public int SpanCount
+        {
+            get
+            {
+                IntPtr ptr = ConstPointer();
+                return UnsafeNativeMethods.ON_Curve_SpanCount(ptr);
+            }
+        }
 
-    /// <summary>
-    /// Gets a value indicating whether or not this curve is a closed curve.
-    /// </summary>
-    /// <since>5.0</since>
-    public bool IsClosed
-    {
-      get
-      {
-        IntPtr ptr = ConstPointer();
-        return UnsafeNativeMethods.ON_Curve_GetBool(ptr, idxIsClosed);
-      }
-    }
-    /// <summary>
-    /// Gets a value indicating whether or not this curve is considered to be Periodic.
-    /// </summary>
-    /// <since>5.0</since>
-    public bool IsPeriodic
-    {
-      get
-      {
-        IntPtr ptr = ConstPointer();
-        return UnsafeNativeMethods.ON_Curve_GetBool(ptr, idxIsPeriodic);
-      }
-    }
+        /// <summary>
+        /// Gets the maximum algebraic degree of any span
+        /// or a good estimate if curve spans are not algebraic.
+        /// </summary>
+        /// <since>5.0</since>
+        public int Degree
+        {
+            get
+            {
+                IntPtr ptr = ConstPointer();
+                return UnsafeNativeMethods.ON_Curve_Degree(ptr);
+            }
+        }
 
-    /// <summary>
-    /// Decide if it makes sense to close off this curve by moving the endpoint 
-    /// to the start based on start-end gap size and length of curve as 
-    /// approximated by chord defined by 6 points.
-    /// </summary>
-    /// <param name="tolerance">
-    /// Maximum allowable distance between start and end. 
-    /// If start - end gap is greater than tolerance, this function will return false.
-    /// </param>
-    /// <returns>true if start and end points are close enough based on above conditions.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool IsClosable(double tolerance)
-    {
-      return IsClosable(tolerance, 0.0, 10.0);
-    }
-    /// <summary>
-    /// Decide if it makes sense to close off this curve by moving the endpoint
-    /// to the start based on start-end gap size and length of curve as
-    /// approximated by chord defined by 6 points.
-    /// </summary>
-    /// <param name="tolerance">
-    /// Maximum allowable distance between start and end. 
-    /// If start - end gap is greater than tolerance, this function will return false.
-    /// </param>
-    /// <param name="minimumAbsoluteSize">
-    /// If greater than 0.0 and none of the interior sampled points are at
-    /// least minimumAbsoluteSize from start, this function will return false.
-    /// </param>
-    /// <param name="minimumRelativeSize">
-    /// If greater than 1.0 and chord length is less than 
-    /// minimumRelativeSize*gap, this function will return false.
-    /// </param>
-    /// <returns>true if start and end points are close enough based on above conditions.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool IsClosable(double tolerance, double minimumAbsoluteSize, double minimumRelativeSize)
-    {
-      IntPtr ptr = ConstPointer();
-      bool rc = UnsafeNativeMethods.ON_Curve_IsClosable(ptr, tolerance, minimumAbsoluteSize, minimumRelativeSize);
-      return rc;
-    }
+        #region platonic shape properties
+        /// <summary>
+        /// Test a curve to see if it is linear to within RhinoMath.ZeroTolerance units (1e-12).
+        /// </summary>
+        /// <returns>true if the curve is linear.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
+        /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public bool IsLinear()
+        {
+            return IsLinear(RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Test a curve to see if it is linear to within the custom tolerance.
+        /// </summary>
+        /// <param name="tolerance">Tolerance to use when checking linearity.</param>
+        /// <returns>
+        /// true if the ends of the curve are farther than tolerance apart
+        /// and the maximum distance from any point on the curve to
+        /// the line segment connecting the curve ends is &lt;= tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsLinear(double tolerance)
+        {
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsLinear(ptr, tolerance);
+        }
+
+        /// <summary>
+        /// Several types of Curve can have the form of a polyline
+        /// including a degree 1 NurbsCurve, a PolylineCurve,
+        /// and a PolyCurve all of whose segments are some form of
+        /// polyline. IsPolyline tests a curve to see if it can be
+        /// represented as a polyline.
+        /// </summary>
+        /// <returns>true if this curve can be represented as a polyline; otherwise, false.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
+        /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public bool IsPolyline()
+        {
+            IntPtr ptr = ConstPointer();
+            return (UnsafeNativeMethods.ON_Curve_IsPolyline1(ptr, IntPtr.Zero) != 0);
+        }
+        /// <summary>
+        /// Several types of Curve can have the form of a polyline 
+        /// including a degree 1 NurbsCurve, a PolylineCurve, 
+        /// and a PolyCurve all of whose segments are some form of 
+        /// polyline. IsPolyline tests a curve to see if it can be 
+        /// represented as a polyline.
+        /// </summary>
+        /// <param name="polyline">
+        /// If true is returned, then the polyline form is returned here.
+        /// </param>
+        /// <returns>true if this curve can be represented as a polyline; otherwise, false.</returns>
+        /// <since>5.0</since>
+        public bool TryGetPolyline(out Polyline polyline)
+        {
+            polyline = null;
+
+            SimpleArrayPoint3d outputPts = new SimpleArrayPoint3d();
+            int pointCount = 0;
+            IntPtr pCurve = ConstPointer();
+            IntPtr outputPointsPointer = outputPts.NonConstPointer();
+
+            UnsafeNativeMethods.ON_Curve_IsPolyline2(pCurve, outputPointsPointer, ref pointCount, IntPtr.Zero);
+            if (pointCount > 0)
+            {
+                polyline = Polyline.PolyLineFromNativeArray(outputPts);
+            }
+
+            outputPts.Dispose();
+            return (pointCount != 0);
+        }
+        /// <summary>
+        /// Several types of Curve can have the form of a polyline 
+        /// including a degree 1 NurbsCurve, a PolylineCurve, 
+        /// and a PolyCurve all of whose segments are some form of 
+        /// polyline. IsPolyline tests a curve to see if it can be 
+        /// represented as a polyline.
+        /// </summary>
+        /// <param name="polyline">
+        /// If true is returned, then the polyline form is returned here.
+        /// </param>
+        /// <param name="parameters">
+        /// if true is returned, then the parameters of the polyline
+        /// points are returned here.
+        /// </param>
+        /// <returns>true if this curve can be represented as a polyline; otherwise, false.</returns>
+        /// <since>5.0</since>
+        public bool TryGetPolyline(out Polyline polyline, out double[] parameters)
+        {
+            polyline = null;
+            parameters = null;
+            SimpleArrayPoint3d outputPts = new SimpleArrayPoint3d();
+            int pointCount = 0;
+            IntPtr pCurve = ConstPointer();
+            IntPtr outputPointsPointer = outputPts.NonConstPointer();
+            Rhino.Runtime.InteropWrappers.SimpleArrayDouble tparams = new SimpleArrayDouble();
+            IntPtr ptparams = tparams.NonConstPointer();
+            UnsafeNativeMethods.ON_Curve_IsPolyline2(pCurve, outputPointsPointer, ref pointCount, ptparams);
+            if (pointCount > 0)
+            {
+                polyline = Polyline.PolyLineFromNativeArray(outputPts);
+                parameters = tparams.ToArray();
+            }
+
+            tparams.Dispose();
+            outputPts.Dispose();
+            return (pointCount != 0);
+        }
+
+        /// <summary>
+        /// Gets a polyline approximation of a curve.
+        /// If curve is Nurbs type, approximate curve by dividing curve by 10 * ControlPoints.Counts verticies based on curvature.
+        /// </summary>
+        /// <returns>PolyCurve on success, null on error.</returns>
+        /// <since>6.0</since>
+        [ConstOperation]
+        public Polyline TryGetPolyline()
+        {
+            return TryGetPolyline(out double[] _);
+        }
+
+        /// <summary>
+        /// Gets a polyline approximation of a curve.
+        /// If curve is Nurbs type, approximate curve by dividing curve by 10 * ControlPoints.Counts verticies based on curvature.
+        /// </summary>
+        /// <returns>PolyCurve on success, null on error.</returns>
+        /// <since>6.0</since>
+        [ConstOperation]
+        public Polyline TryGetPolyline(out double[] parameters)
+        {
+            if (Degree > 1)
+            {
+                NurbsCurve nCurve = ToNurbsCurve();
+                int samples = 10 * nCurve.Points.Count;
+                Interval domain = nCurve.Domain;
+                parameters = Enumerable.Range(0, samples).Select(x => Interval.Map((double)x, new Interval(0, samples - 1), domain)).ToArray();
+                List<Point3d> testPoints = parameters.Select(paramT => PointAt(paramT)).ToList();
+                if (testPoints.Count > 0) return new Polyline(testPoints);
+                else return null;
+            }
+            else
+            {
+                Polyline pline = null;
+                if (this.IsLinear())
+                {
+                    Line ln = ((LineCurve)this).Line;
+                    pline = new Polyline(new Point3d[] { ln.From, ln.To });
+                }
+                else
+                {
+                    pline = ((PolylineCurve)this).ToPolyline();
+                }
+             
+               parameters = Enumerable.Range(0, pline.Count).Select(x => Interval.Map((double)x, new Interval(0, pline.Count - 1), Domain)).ToArray();
+                if (pline.Count > 0) return pline;
+                else return null;
+            }
+        }
+
+        /// <summary>
+        /// Test a curve to see if it can be represented by an arc or circle within RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <returns>
+        /// true if the curve can be represented by an arc or a circle within tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsArc()
+        {
+            return IsArc(RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Test a curve to see if it can be represented by an arc or circle within the given tolerance.
+        /// </summary>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>
+        /// true if the curve can be represented by an arc or a circle within tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsArc(double tolerance)
+        {
+            Arc arc = new Arc();
+            Plane p = Plane.WorldXY;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsArc(ptr, idxIgnorePlaneArcOrEllipse, ref p, ref arc, tolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Arc using RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <param name="arc">On success, the Arc will be filled in.</param>
+        /// <returns>true if the curve could be converted into an arc.</returns>
+        /// <since>5.0</since>
+        public bool TryGetArc(out Arc arc)
+        {
+            return TryGetArc(out arc, RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Arc using a custom tolerance.
+        /// </summary>
+        /// <param name="arc">On success, the Arc will be filled in.</param>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>true if the curve could be converted into an arc.</returns>
+        /// <since>5.0</since>
+        public bool TryGetArc(out Arc arc, double tolerance)
+        {
+            arc = new Arc();
+            Plane p = Plane.WorldXY;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsArc(ptr, idxIgnorePlane, ref p, ref arc, tolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Arc using RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <param name="plane">Plane in which the comparison is performed.</param>
+        /// <param name="arc">On success, the Arc will be filled in.</param>
+        /// <returns>true if the curve could be converted into an arc within the given plane.</returns>
+        /// <since>5.0</since>
+        public bool TryGetArc(Plane plane, out Arc arc)
+        {
+            return TryGetArc(plane, out arc, RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Arc using a custom tolerance.
+        /// </summary>
+        /// <param name="plane">Plane in which the comparison is performed.</param>
+        /// <param name="arc">On success, the Arc will be filled in.</param>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>true if the curve could be converted into an arc within the given plane.</returns>
+        /// <since>5.0</since>
+        public bool TryGetArc(Plane plane, out Arc arc, double tolerance)
+        {
+            arc = new Arc();
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsArc(ptr, idxIgnoreNone, ref plane, ref arc, tolerance);
+        }
+
+        /// <summary>
+        /// Test a curve to see if it can be represented by a circle within RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <returns>
+        /// true if the Curve can be represented by a circle within tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsCircle()
+        {
+            return IsCircle(RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Test a curve to see if it can be represented by a circle within the given tolerance.
+        /// </summary>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>
+        /// true if the curve can be represented by a circle to within tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsCircle(double tolerance)
+        {
+            Arc arc;
+            return TryGetArc(out arc, tolerance) && arc.IsCircle;
+        }
+        /// <summary>
+        /// Try to convert this curve into a circle using RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <param name="circle">On success, the Circle will be filled in.</param>
+        /// <returns>true if the curve could be converted into a Circle.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_customgeometryfilter.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_customgeometryfilter.cs' lang='cs'/>
+        /// <code source='examples\py\ex_customgeometryfilter.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public bool TryGetCircle(out Circle circle)
+        {
+            return TryGetCircle(out circle, RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into a Circle using a custom tolerance.
+        /// </summary>
+        /// <param name="circle">On success, the Circle will be filled in.</param>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>true if the curve could be converted into a Circle within tolerance.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_circlecenter.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_circlecenter.cs' lang='cs'/>
+        /// <code source='examples\py\ex_circlecenter.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public bool TryGetCircle(out Circle circle, double tolerance)
+        {
+            circle = new Circle();
+
+            Arc arc;
+            if (TryGetArc(out arc, tolerance))
+            {
+                if (arc.IsCircle)
+                {
+                    circle = new Circle(arc);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Test a curve to see if it can be represented by an ellipse within RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <returns>
+        /// true if the Curve can be represented by an ellipse within tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsEllipse()
+        {
+            return IsEllipse(RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Test a curve to see if it can be represented by an ellipse within a given tolerance.
+        /// </summary>
+        /// <param name="tolerance">Tolerance to use for checking.</param>
+        /// <returns>
+        /// true if the Curve can be represented by an ellipse within tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsEllipse(double tolerance)
+        {
+            Plane plane = Plane.WorldXY;
+            Ellipse ellipse = new Ellipse();
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsEllipse(ptr, idxIgnorePlaneArcOrEllipse, ref plane, ref ellipse, tolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Ellipse within RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
+        /// <returns>true if the curve could be converted into an Ellipse.</returns>
+        /// <since>5.0</since>
+        public bool TryGetEllipse(out Ellipse ellipse)
+        {
+            return TryGetEllipse(out ellipse, RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Ellipse using a custom tolerance.
+        /// </summary>
+        /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>true if the curve could be converted into an Ellipse.</returns>
+        /// <since>5.0</since>
+        public bool TryGetEllipse(out Ellipse ellipse, double tolerance)
+        {
+            Plane plane = Plane.WorldXY;
+            ellipse = new Ellipse();
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsEllipse(ptr, idxIgnorePlane, ref plane, ref ellipse, tolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Ellipse within RhinoMath.ZeroTolerance.
+        /// </summary>
+        /// <param name="plane">Plane in which the comparison is performed.</param>
+        /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
+        /// <returns>true if the curve could be converted into an Ellipse within the given plane.</returns>
+        /// <since>5.0</since>
+        public bool TryGetEllipse(Plane plane, out Ellipse ellipse)
+        {
+            return TryGetEllipse(plane, out ellipse, RhinoMath.ZeroTolerance);
+        }
+        /// <summary>
+        /// Try to convert this curve into an Ellipse using a custom tolerance.
+        /// </summary>
+        /// <param name="plane">Plane in which the comparison is performed.</param>
+        /// <param name="ellipse">On success, the Ellipse will be filled in.</param>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>true if the curve could be converted into an Ellipse within the given plane.</returns>
+        /// <since>5.0</since>
+        public bool TryGetEllipse(Plane plane, out Ellipse ellipse, double tolerance)
+        {
+            ellipse = new Ellipse();
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsEllipse(ptr, idxIgnoreNone, ref plane, ref ellipse, tolerance);
+        }
+
+        /// <summary>Test a curve for planarity.</summary>
+        /// <returns>
+        /// true if the curve is planar (flat) to within RhinoMath.ZeroTolerance units (1e-12).
+        /// </returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
+        /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public bool IsPlanar()
+        {
+            return IsPlanar(RhinoMath.ZeroTolerance);
+        }
+        /// <summary>Test a curve for planarity.</summary>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>
+        /// true if there is a plane such that the maximum distance from the curve to the plane is &lt;= tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsPlanar(double tolerance)
+        {
+            Plane plane = Plane.WorldXY;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsPlanar(ptr, true, ref plane, tolerance);
+        }
+        /// <summary>Test a curve for planarity and return the plane.</summary>
+        /// <param name="plane">On success, the plane parameters are filled in.</param>
+        /// <returns>
+        /// true if there is a plane such that the maximum distance from the curve to the plane is &lt;= RhinoMath.ZeroTolerance.
+        /// </returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_constrainedcopy.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_constrainedcopy.cs' lang='cs'/>
+        /// <code source='examples\py\ex_constrainedcopy.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public bool TryGetPlane(out Plane plane)
+        {
+            return TryGetPlane(out plane, RhinoMath.ZeroTolerance);
+        }
+        /// <summary>Test a curve for planarity and return the plane.</summary>
+        /// <param name="plane">On success, the plane parameters are filled in.</param>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>
+        /// true if there is a plane such that the maximum distance from the curve to the plane is &lt;= tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool TryGetPlane(out Plane plane, double tolerance)
+        {
+            plane = Plane.WorldXY;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsPlanar(ptr, false, ref plane, tolerance);
+        }
+        /// <summary>Test a curve to see if it lies in a specific plane.</summary>
+        /// <param name="testPlane">Plane to test for.</param>
+        /// <returns>
+        /// true if the maximum distance from the curve to the testPlane is &lt;= RhinoMath.ZeroTolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsInPlane(Plane testPlane)
+        {
+            return IsInPlane(testPlane, RhinoMath.ZeroTolerance);
+        }
+        /// <summary>Test a curve to see if it lies in a specific plane.</summary>
+        /// <param name="testPlane">Plane to test for.</param>
+        /// <param name="tolerance">Tolerance to use when checking.</param>
+        /// <returns>
+        /// true if the maximum distance from the curve to the testPlane is &lt;= tolerance.
+        /// </returns>
+        /// <since>5.0</since>
+        public bool IsInPlane(Plane testPlane, double tolerance)
+        {
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsInPlane(ptr, ref testPlane, tolerance);
+        }
+        #endregion
+        #endregion
+
+        #region methods
+        /// <summary>
+        /// If this curve is closed, then modify it so that the start/end point is at curve parameter t.
+        /// </summary>
+        /// <param name="t">
+        /// Curve parameter of new start/end point. The returned curves domain will start at t.
+        /// </param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        public bool ChangeClosedCurveSeam(double t)
+        {
+            IntPtr ptr = NonConstPointer();
+            bool rc = UnsafeNativeMethods.ON_Curve_ChangeClosedCurveSeam(ptr, t);
+            return rc;
+        }
+
+        const int idxIsClosed = 0;
+        const int idxIsPeriodic = 1;
+
+        /// <summary>
+        /// Gets a value indicating whether or not this curve is a closed curve.
+        /// </summary>
+        /// <since>5.0</since>
+        public bool IsClosed
+        {
+            get
+            {
+                IntPtr ptr = ConstPointer();
+                return UnsafeNativeMethods.ON_Curve_GetBool(ptr, idxIsClosed);
+            }
+        }
+        /// <summary>
+        /// Gets a value indicating whether or not this curve is considered to be Periodic.
+        /// </summary>
+        /// <since>5.0</since>
+        public bool IsPeriodic
+        {
+            get
+            {
+                IntPtr ptr = ConstPointer();
+                return UnsafeNativeMethods.ON_Curve_GetBool(ptr, idxIsPeriodic);
+            }
+        }
+
+        /// <summary>
+        /// Decide if it makes sense to close off this curve by moving the endpoint 
+        /// to the start based on start-end gap size and length of curve as 
+        /// approximated by chord defined by 6 points.
+        /// </summary>
+        /// <param name="tolerance">
+        /// Maximum allowable distance between start and end. 
+        /// If start - end gap is greater than tolerance, this function will return false.
+        /// </param>
+        /// <returns>true if start and end points are close enough based on above conditions.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool IsClosable(double tolerance)
+        {
+            return IsClosable(tolerance, 0.0, 10.0);
+        }
+        /// <summary>
+        /// Decide if it makes sense to close off this curve by moving the endpoint
+        /// to the start based on start-end gap size and length of curve as
+        /// approximated by chord defined by 6 points.
+        /// </summary>
+        /// <param name="tolerance">
+        /// Maximum allowable distance between start and end. 
+        /// If start - end gap is greater than tolerance, this function will return false.
+        /// </param>
+        /// <param name="minimumAbsoluteSize">
+        /// If greater than 0.0 and none of the interior sampled points are at
+        /// least minimumAbsoluteSize from start, this function will return false.
+        /// </param>
+        /// <param name="minimumRelativeSize">
+        /// If greater than 1.0 and chord length is less than 
+        /// minimumRelativeSize*gap, this function will return false.
+        /// </param>
+        /// <returns>true if start and end points are close enough based on above conditions.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool IsClosable(double tolerance, double minimumAbsoluteSize, double minimumRelativeSize)
+        {
+            IntPtr ptr = ConstPointer();
+            bool rc = UnsafeNativeMethods.ON_Curve_IsClosable(ptr, tolerance, minimumAbsoluteSize, minimumRelativeSize);
+            return rc;
+        }
 
 #if RHINO_SDK
 
@@ -2832,306 +3077,456 @@ namespace Rhino.Geometry
     }
 #endif
 
-    /// <summary>
-    /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve in the world XY plane.
-    /// Only works with simple (no self intersections) closed, planar curves.
-    /// </summary>
-    /// <returns>The orientation of this curve with respect to world XY plane.</returns>
-    /// <since>6.0</since>
-    [ConstOperation]
-    public CurveOrientation ClosedCurveOrientation()
-    {
-      // 10-Feb-2016 Dale Fugier, http://mcneel.myjetbrains.com/youtrack/issue/RH-32952
-      return ClosedCurveOrientation(Geometry.Transform.Identity);
-    }
+        /// <summary>
+        /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve in the world XY plane.
+        /// Only works with simple (no self intersections) closed, planar curves.
+        /// </summary>
+        /// <returns>The orientation of this curve with respect to world XY plane.</returns>
+        /// <since>6.0</since>
+        [ConstOperation]
+        public CurveOrientation ClosedCurveOrientation()
+        {
+            // 10-Feb-2016 Dale Fugier, http://mcneel.myjetbrains.com/youtrack/issue/RH-32952
+            return ClosedCurveOrientation(Geometry.Transform.Identity);
+        }
 
-    /// <summary>
-    /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve in a given plane.
-    /// Only works with simple (no self intersections) closed, planar curves.
-    /// </summary>
-    /// <param name="upDirection">A vector that is considered "up".</param>
-    /// <returns>The orientation of this curve with respect to a defined up direction.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public CurveOrientation ClosedCurveOrientation(Vector3d upDirection)
-    {
-      var plane = new Plane(Point3d.Origin, upDirection);
-      return ClosedCurveOrientation(plane);
-    }
-    /// <summary>
-    /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve in a given plane.
-    /// Only works with simple (no self intersections) closed, planar curves.
-    /// </summary>
-    /// <param name="plane">
-    /// The plane in which to solve the orientation.
-    /// </param>
-    /// <returns>The orientation of this curve in the given plane.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public CurveOrientation ClosedCurveOrientation(Plane plane)
-    {
-      if (!plane.IsValid) { return CurveOrientation.Undefined; }
+        /// <summary>
+        /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve in a given plane.
+        /// Only works with simple (no self intersections) closed, planar curves.
+        /// </summary>
+        /// <param name="upDirection">A vector that is considered "up".</param>
+        /// <returns>The orientation of this curve with respect to a defined up direction.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public CurveOrientation ClosedCurveOrientation(Vector3d upDirection)
+        {
+            var plane = new Plane(Point3d.Origin, upDirection);
+            return ClosedCurveOrientation(plane);
+        }
+        /// <summary>
+        /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve in a given plane.
+        /// Only works with simple (no self intersections) closed, planar curves.
+        /// </summary>
+        /// <param name="plane">
+        /// The plane in which to solve the orientation.
+        /// </param>
+        /// <returns>The orientation of this curve in the given plane.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public CurveOrientation ClosedCurveOrientation(Plane plane)
+        {
+            if (!plane.IsValid) { return CurveOrientation.Undefined; }
 
-      //WARNING! David wrote this code without testing it. Is the order of planes in the ChangeBasis function correct?
-      //Transform xform = Geometry.Transform.ChangeBasis(Plane.WorldXY, plane);
+            //WARNING! David wrote this code without testing it. Is the order of planes in the ChangeBasis function correct?
+            //Transform xform = Geometry.Transform.ChangeBasis(Plane.WorldXY, plane);
 
-      // 10-Feb-2016 Dale Fugier, http://mcneel.myjetbrains.com/youtrack/issue/RH-32952
-      var xform = Geometry.Transform.PlaneToPlane(plane, Plane.WorldXY);
-      return ClosedCurveOrientation(xform);
-    }
-    /// <summary>
-    /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve.
-    /// Only works with simple (no self intersections) closed, planar curves.
-    /// </summary>
-    /// <param name="xform">
-    /// Transformation to map the curve to the world XY plane.
-    /// </param>
-    /// <returns>The orientation of this curve in the world XY-plane.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public CurveOrientation ClosedCurveOrientation(Transform xform)
-    {
-      // 10-Feb-2016 Dale Fugier, http://mcneel.myjetbrains.com/youtrack/issue/RH-32952
-      var ptr = ConstPointer();
-      var retval = UnsafeNativeMethods.ON_Curve_ClosedCurveOrientation(ptr, ref xform);
-      var rc = CurveOrientation.Undefined;
-      switch (retval)
-      {
-        case 1:
-          // +1: The curve's orientation is counter clockwise in the XY plane.
-          rc = CurveOrientation.CounterClockwise;
-          break;
-        case -1:
-          // -1: The curve's orientation is clockwise in the XY plane.
-          rc = CurveOrientation.Clockwise;
-          break;
-      }
-      return rc;
-    }
+            // 10-Feb-2016 Dale Fugier, http://mcneel.myjetbrains.com/youtrack/issue/RH-32952
+            var xform = Geometry.Transform.PlaneToPlane(plane, Plane.WorldXY);
+            return ClosedCurveOrientation(xform);
+        }
+        /// <summary>
+        /// Determines the orientation (counterclockwise or clockwise) of a closed, planar curve.
+        /// Only works with simple (no self intersections) closed, planar curves.
+        /// </summary>
+        /// <param name="xform">
+        /// Transformation to map the curve to the world XY plane.
+        /// </param>
+        /// <returns>The orientation of this curve in the world XY-plane.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public CurveOrientation ClosedCurveOrientation(Transform xform)
+        {
+            // 10-Feb-2016 Dale Fugier, http://mcneel.myjetbrains.com/youtrack/issue/RH-32952
+            var ptr = ConstPointer();
+            var retval = UnsafeNativeMethods.ON_Curve_ClosedCurveOrientation(ptr, ref xform);
+            var rc = CurveOrientation.Undefined;
+            switch (retval)
+            {
+                case 1:
+                    // +1: The curve's orientation is counter clockwise in the XY plane.
+                    rc = CurveOrientation.CounterClockwise;
+                    break;
+                case -1:
+                    // -1: The curve's orientation is clockwise in the XY plane.
+                    rc = CurveOrientation.Clockwise;
+                    break;
+            }
+            return rc;
+        }
 
-    /// <summary>
-    /// Reverses the direction of the curve.
-    /// </summary>
-    /// <returns>true on success, false on failure.</returns>
-    /// <remarks>If reversed, the domain changes from [a,b] to [-b,-a]</remarks>
-    /// <example>
-    /// <code source='examples\vbnet\ex_curvereverse.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_curvereverse.cs' lang='cs'/>
-    /// <code source='examples\py\ex_curvereverse.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    public bool Reverse()
-    {
-      IntPtr ptr = NonConstPointer();
-      return UnsafeNativeMethods.ON_Curve_Reverse(ptr);
-    }
+        /// <summary>
+        /// Reverses the direction of the curve.
+        /// </summary>
+        /// <returns>true on success, false on failure.</returns>
+        /// <remarks>If reversed, the domain changes from [a,b] to [-b,-a]</remarks>
+        /// <example>
+        /// <code source='examples\vbnet\ex_curvereverse.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_curvereverse.cs' lang='cs'/>
+        /// <code source='examples\py\ex_curvereverse.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        public bool Reverse()
+        {
+            IntPtr ptr = NonConstPointer();
+            return UnsafeNativeMethods.ON_Curve_Reverse(ptr);
+        }
+
 
 #if RHINO_SDK
+        /// <summary>
+        /// Find parameter of the point on a curve that is locally closest to 
+        /// the testPoint.  The search for a local close point starts at
+        /// a seed parameter.
+        /// </summary>
+        /// <param name="testPoint">A point to test against.</param>
+        /// <param name="seed">The seed parameter.</param>
+        /// <param name="t">>Parameter of the curve that is closest to testPoint.</param>
+        /// <returns>true if the search is successful, false if the search fails.</returns>
+        /// <since>6.3</since>
+        [ConstOperation]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Typo: use LocalClosestPoint")]
+        public bool LcoalClosestPoint(Point3d testPoint, double seed, out double t)
+        {
+            return LocalClosestPoint(testPoint, seed, out t);
+        }
 
-    /// <summary>
-    /// Find parameter of the point on a curve that is locally closest to 
-    /// the testPoint.  The search for a local close point starts at
-    /// a seed parameter.
-    /// </summary>
-    /// <param name="testPoint">A point to test against.</param>
-    /// <param name="seed">The seed parameter.</param>
-    /// <param name="t">>Parameter of the curve that is closest to testPoint.</param>
-    /// <returns>true if the search is successful, false if the search fails.</returns>
-    /// <since>6.3</since>
-    [ConstOperation]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    [Obsolete("Typo: use LocalClosestPoint")]
-    public bool LcoalClosestPoint(Point3d testPoint, double seed, out double t)
-    {
-      return LocalClosestPoint(testPoint, seed, out t);
-    }
+        /// <summary>
+        /// Find parameter of the point on a curve that is locally closest to 
+        /// the testPoint.  The search for a local close point starts at
+        /// a seed parameter.
+        /// </summary>
+        /// <param name="testPoint">A point to test against.</param>
+        /// <param name="seed">The seed parameter.</param>
+        /// <param name="t">>Parameter of the curve that is closest to testPoint.</param>
+        /// <returns>true if the search is successful, false if the search fails.</returns>
+        /// <since>6.18</since>
+        [ConstOperation]
+        public bool LocalClosestPoint(Point3d testPoint, double seed, out double t)
+        {
+            t = 0.0;
+            IntPtr ptr = ConstPointer();
+            bool rc = UnsafeNativeMethods.ON_Curve_GetLocalClosestPoint(ptr, testPoint, seed, ref t);
+            return rc;
+        }
+#endif
+#if SB_IMP
+        /// <summary>
+        /// Finds parameter of the point on a curve that is closest to testPoint.
+        /// If the maximumDistance parameter is > 0, then only points whose distance
+        /// to the given point is &lt;= maximumDistance will be returned.  Using a 
+        /// positive value of maximumDistance can substantially speed up the search.
+        /// </summary>
+        /// <param name="testPoint">Point to search from.</param>
+        /// <param name="t">Parameter of local closest point.</param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool ClosestPoint(Point3d testPoint, out double t)
+        {
+            return ClosestPoint(testPoint, out t, -1.0);
+        }
 
-    /// <summary>
-    /// Find parameter of the point on a curve that is locally closest to 
-    /// the testPoint.  The search for a local close point starts at
-    /// a seed parameter.
-    /// </summary>
-    /// <param name="testPoint">A point to test against.</param>
-    /// <param name="seed">The seed parameter.</param>
-    /// <param name="t">>Parameter of the curve that is closest to testPoint.</param>
-    /// <returns>true if the search is successful, false if the search fails.</returns>
-    /// <since>6.18</since>
-    [ConstOperation]
-    public bool LocalClosestPoint(Point3d testPoint, double seed, out double t)
-    {
-      t = 0.0;
-      IntPtr ptr = ConstPointer();
-      bool rc = UnsafeNativeMethods.ON_Curve_GetLocalClosestPoint(ptr, testPoint, seed, ref t);
-      return rc;
-    }
+        /// <summary>
+        /// Finds the parameter of the point on a curve that is closest to testPoint.
+        /// If the maximumDistance parameter is > 0, then only points whose distance
+        /// to the given point is &lt;= maximumDistance will be returned.  Using a 
+        /// positive value of maximumDistance can substantially speed up the search.
+        /// </summary>
+        /// <param name="testPoint">Point to project.</param>
+        /// <param name="t">parameter of local closest point returned here.</param>
+        /// <param name="maximumDistance">The maximum allowed distance.
+        /// <para>Past this distance, the search is given up and false is returned.</para>
+        /// <para>Use 0 to turn off this parameter.</para></param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public virtual bool ClosestPoint(Point3d testPoint, out double t, double maximumDistance)
+        {
+            t = 0.0;
+            return false;
+        }
 
-    /// <summary>
-    /// Finds parameter of the point on a curve that is closest to testPoint.
-    /// If the maximumDistance parameter is > 0, then only points whose distance
-    /// to the given point is &lt;= maximumDistance will be returned.  Using a 
-    /// positive value of maximumDistance can substantially speed up the search.
-    /// </summary>
-    /// <param name="testPoint">Point to search from.</param>
-    /// <param name="t">Parameter of local closest point.</param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool ClosestPoint(Point3d testPoint, out double t)
-    {
-      return ClosestPoint(testPoint, out t, -1.0);
-    }
 
-    /// <summary>
-    /// Finds the parameter of the point on a curve that is closest to testPoint.
-    /// If the maximumDistance parameter is > 0, then only points whose distance
-    /// to the given point is &lt;= maximumDistance will be returned.  Using a 
-    /// positive value of maximumDistance can substantially speed up the search.
-    /// </summary>
-    /// <param name="testPoint">Point to project.</param>
-    /// <param name="t">parameter of local closest point returned here.</param>
-    /// <param name="maximumDistance">The maximum allowed distance.
-    /// <para>Past this distance, the search is given up and false is returned.</para>
-    /// <para>Use 0 to turn off this parameter.</para></param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool ClosestPoint(Point3d testPoint, out double t, double maximumDistance)
-    {
-      t = 0.0;
-      IntPtr ptr = ConstPointer();
-      bool rc = UnsafeNativeMethods.ON_Curve_GetClosestPoint(ptr, testPoint, ref t, maximumDistance);
-      return rc;
-    }
+#endif
 
-    /// <summary>
-    /// Finds the object (and the closest point in that object) that is closest to
-    /// this curve. <para><see cref="Brep">Breps</see>, <see cref="Surface">surfaces</see>,
-    /// <see cref="Curve">curves</see> and <see cref="PointCloud">point clouds</see> are examples of
-    /// objects that can be passed to this function.</para>
-    /// </summary>
-    /// <param name="geometry">A list, an array or any enumerable set of geometry to search.</param>
-    /// <param name="pointOnCurve">The point on curve. This out parameter is assigned during this call.</param>
-    /// <param name="pointOnObject">The point on geometry. This out parameter is assigned during this call.</param>
-    /// <param name="whichGeometry">The index of the geometry. This out parameter is assigned during this call.</param>
-    /// <param name="maximumDistance">Maximum allowable distance. Past this distance, the research is given up and false is returned.</param>
-    /// <returns>true on success; false if no object was found or selected.</returns>
-    /// <exception cref="ArgumentNullException">If geometry is null.</exception>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool ClosestPoints(IEnumerable<GeometryBase> geometry,
-      out Point3d pointOnCurve,
-      out Point3d pointOnObject,
-      out int whichGeometry,
-      double maximumDistance)
-    {
-      if (geometry == null) throw new ArgumentNullException("geometry");
+#if MUSTHAVE
 
-      using (SimpleArrayGeometryPointer geom = new SimpleArrayGeometryPointer(geometry))
-      {
-        pointOnCurve = Point3d.Unset;
-        pointOnObject = Point3d.Unset;
-        IntPtr pConstThis = ConstPointer();
-        IntPtr pGeometryArray = geom.ConstPointer();
-        whichGeometry = 0;
-        bool rc = UnsafeNativeMethods.RHC_RhinoGetClosestPoint(pConstThis, pGeometryArray, maximumDistance, ref pointOnCurve, ref pointOnObject, ref whichGeometry);
-        GC.KeepAlive(geometry);
-        return rc;
-      }
-    }
+        /// <summary>
+        /// Find parameter of the point on a curve that is locally closest to 
+        /// the testPoint.  The search for a local close point starts at
+        /// a seed parameter.
+        /// </summary>
+        /// <param name="testPoint">A point to test against.</param>
+        /// <param name="seed">The seed parameter.</param>
+        /// <param name="t">>Parameter of the curve that is closest to testPoint.</param>
+        /// <returns>true if the search is successful, false if the search fails.</returns>
+        /// <since>6.3</since>
+        [ConstOperation]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Obsolete("Typo: use LocalClosestPoint")]
+        public bool LcoalClosestPoint(Point3d testPoint, double seed, out double t)
+        {
+            return LocalClosestPoint(testPoint, seed, out t);
+        }
 
-    /// <summary>
-    /// Finds the object (and the closest point in that object) that is closest to
-    /// this curve. <para><see cref="Brep">Breps</see>, <see cref="Surface">surfaces</see>,
-    /// <see cref="Curve">curves</see> and <see cref="PointCloud">point clouds</see> are examples of
-    /// objects that can be passed to this function.</para>
-    /// </summary>
-    /// <param name="geometry">A list, an array or any enumerable set of geometry to search.</param>
-    /// <param name="pointOnCurve">The point on curve. This out parameter is assigned during this call.</param>
-    /// <param name="pointOnObject">The point on geometry. This out parameter is assigned during this call.</param>
-    /// <param name="whichGeometry">The index of the geometry. This out parameter is assigned during this call.</param>
-    /// <returns>true on success; false if no object was found or selected.</returns>
-    /// <exception cref="ArgumentNullException">If geometry is null.</exception>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool ClosestPoints(IEnumerable<GeometryBase> geometry,
-      out Point3d pointOnCurve,
-      out Point3d pointOnObject,
-      out int whichGeometry)
-    {
-      return ClosestPoints(geometry, out pointOnCurve, out pointOnObject, out whichGeometry, 0.0);
-    }
+        /// <summary>
+        /// Find parameter of the point on a curve that is locally closest to 
+        /// the testPoint.  The search for a local close point starts at
+        /// a seed parameter.
+        /// </summary>
+        /// <param name="testPoint">A point to test against.</param>
+        /// <param name="seed">The seed parameter.</param>
+        /// <param name="t">>Parameter of the curve that is closest to testPoint.</param>
+        /// <returns>true if the search is successful, false if the search fails.</returns>
+        /// <since>6.18</since>
+        [ConstOperation]
+        public bool LocalClosestPoint(Point3d testPoint, double seed, out double t)
+        {
+            t = 0.0;
+            IntPtr ptr = ConstPointer();
+            bool rc = UnsafeNativeMethods.ON_Curve_GetLocalClosestPoint(ptr, testPoint, seed, ref t);
+            return rc;
+        }
 
-    /// <summary>
-    /// Gets closest points between this and another curves.
-    /// </summary>
-    /// <param name="otherCurve">The other curve.</param>
-    /// <param name="pointOnThisCurve">The point on this curve. This out parameter is assigned during this call.</param>
-    /// <param name="pointOnOtherCurve">The point on other curve. This out parameter is assigned during this call.</param>
-    /// <returns>true on success; false on error.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool ClosestPoints(Curve otherCurve, out Point3d pointOnThisCurve, out Point3d pointOnOtherCurve)
-    {
-      GeometryBase[] a = new GeometryBase[] { otherCurve };
-      int which;
-      return ClosestPoints(a, out pointOnThisCurve, out pointOnOtherCurve, out which, 0.0);
-    }
+        /// <summary>
+        /// Finds parameter of the point on a curve that is closest to testPoint.
+        /// If the maximumDistance parameter is > 0, then only points whose distance
+        /// to the given point is &lt;= maximumDistance will be returned.  Using a 
+        /// positive value of maximumDistance can substantially speed up the search.
+        /// </summary>
+        /// <param name="testPoint">Point to search from.</param>
+        /// <param name="t">Parameter of local closest point.</param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool ClosestPoint(Point3d testPoint, out double t)
+        {
+            return ClosestPoint(testPoint, out t, -1.0);
+        }
 
-    /// <summary>
-    /// Computes the relationship between a point and a closed curve region. 
-    /// This curve must be closed or the return value will be Unset.
-    /// Both curve and point are projected to the World XY plane.
-    /// </summary>
-    /// <param name="testPoint">Point to test.</param>
-    /// <returns>Relationship between point and curve region.</returns>
-    /// <since>5.0</since>
-    [Obsolete("Use version that takes a tolerance")]
-    [ConstOperation]
-    public PointContainment Contains(Point3d testPoint)
-    {
-      return Contains(testPoint, Plane.WorldXY, RhinoMath.UnsetValue);
-    }
-    /// <summary>
-    /// Computes the relationship between a point and a closed curve region. 
-    /// This curve must be closed or the return value will be Unset.
-    /// </summary>
-    /// <param name="testPoint">Point to test.</param>
-    /// <param name="plane">Plane in which to compare point and region.</param>
-    /// <returns>Relationship between point and curve region.</returns>
-    /// <since>5.0</since>
-    [Obsolete("Use version that takes a tolerance")]
-    [ConstOperation]
-    public PointContainment Contains(Point3d testPoint, Plane plane)
-    {
-      return Contains(testPoint, plane, RhinoMath.UnsetValue);
-    }
-    /// <summary>
-    /// Computes the relationship between a point and a closed curve region. 
-    /// This curve must be closed or the return value will be Unset.
-    /// </summary>
-    /// <param name="testPoint">Point to test.</param>
-    /// <param name="plane">Plane in which to compare point and region.</param>
-    /// <param name="tolerance">Tolerance to use during comparison.</param>
-    /// <returns>Relationship between point and curve region.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public PointContainment Contains(Point3d testPoint, Plane plane, double tolerance)
-    {
-      if (testPoint.IsValid && plane.IsValid && IsClosed)
-      {
-        IntPtr ptr = ConstPointer();
-        int rc = UnsafeNativeMethods.RHC_PointInClosedRegion(ptr, testPoint, plane, tolerance);
+        /// <summary>
+        /// Finds the parameter of the point on a curve that is closest to testPoint.
+        /// If the maximumDistance parameter is > 0, then only points whose distance
+        /// to the given point is &lt;= maximumDistance will be returned.  Using a 
+        /// positive value of maximumDistance can substantially speed up the search.
+        /// </summary>
+        /// <param name="testPoint">Point to project.</param>
+        /// <param name="t">parameter of local closest point returned here.</param>
+        /// <param name="maximumDistance">The maximum allowed distance.
+        /// <para>Past this distance, the search is given up and false is returned.</para>
+        /// <para>Use 0 to turn off this parameter.</para></param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool ClosestPoint(Point3d testPoint, out double t, double maximumDistance)
+        {
+            t = 0.0;
+            IntPtr ptr = ConstPointer();
+            bool rc = UnsafeNativeMethods.ON_Curve_GetClosestPoint(ptr, testPoint, ref t, maximumDistance);
+            return rc;
+        }
 
-        if (0 == rc)
-          return PointContainment.Outside;
-        if (1 == rc)
-          return PointContainment.Inside;
-        if (2 == rc)
-          return PointContainment.Coincident;
-      }
-      return PointContainment.Unset;
-    }
+#endif
+#if SB_IMP
+        /// <summary>
+        /// Computes the relationship between a point and a closed curve region. 
+        /// This curve must be closed or the return value will be Unset.
+        /// </summary>
+        /// <param name="testPoint">Point to test.</param>
+        /// <param name="plane">Plane in which to compare point and region.</param>
+        /// <param name="tolerance">Tolerance to use during comparison.</param>
+        /// <returns>Relationship between point and curve region.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public PointContainment Contains(Point3d testPoint, Plane plane, double tolerance)
+        {
+            if (testPoint.IsValid && plane.IsValid && IsClosed)
+            {
+                //Returns 0 if false, -1 if pt is on poly and +1 if pt is in poly.
+                int result = Clipper.PointInPolygon(ClipperInterop.ToClipper(testPoint), ClipperInterop.ToClipper(this));
+                switch (result)
+                {
+                    case -1:
+                        return PointContainment.Coincident;
+                    case 0:
+                        return PointContainment.Outside;
+                    case 1:
+                        return PointContainment.Inside;
+                    default:
+                        return PointContainment.Unset;
+                }
 
+            }
+            return PointContainment.Unset;
+
+        }
+
+
+        /// <summary>
+        /// Gets closest points between this and another curves.
+        /// </summary>
+        /// <param name="otherCurve">The other curve.</param>
+        /// <param name="pointOnThisCurve">The point on this curve. This out parameter is assigned during this call.</param>
+        /// <param name="pointOnOtherCurve">The point on other curve. This out parameter is assigned during this call.</param>
+        /// <returns>true on success; false on error.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public virtual bool ClosestPoints(Curve otherCurve, out Point3d pointOnThisCurve, out Point3d pointOnOtherCurve)
+        {
+            Polyline thisPline;
+            Polyline otherPline;
+            if (this.TryGetPolyline(out thisPline) && otherCurve.TryGetPolyline(out otherPline))
+            {
+                // Get Pline-Pline Closes Point
+                Tuple<double, double, double> parameters;
+                Tuple<Point3d, Point3d> points = thisPline.Proximity(otherPline, out parameters);
+                pointOnThisCurve = points.Item1;
+                pointOnOtherCurve = points.Item2;
+                return true;
+            }
+            else
+            {
+                return otherCurve.ToNurbsCurve().ClosestPoints(otherCurve, out pointOnThisCurve, out pointOnOtherCurve);
+            }
+        }
+
+
+
+
+#endif
+#if MUSTHAVE
+
+        /// <summary>
+        /// Finds the object (and the closest point in that object) that is closest to
+        /// this curve. <para><see cref="Brep">Breps</see>, <see cref="Surface">surfaces</see>,
+        /// <see cref="Curve">curves</see> and <see cref="PointCloud">point clouds</see> are examples of
+        /// objects that can be passed to this function.</para>
+        /// </summary>
+        /// <param name="geometry">A list, an array or any enumerable set of geometry to search.</param>
+        /// <param name="pointOnCurve">The point on curve. This out parameter is assigned during this call.</param>
+        /// <param name="pointOnObject">The point on geometry. This out parameter is assigned during this call.</param>
+        /// <param name="whichGeometry">The index of the geometry. This out parameter is assigned during this call.</param>
+        /// <param name="maximumDistance">Maximum allowable distance. Past this distance, the research is given up and false is returned.</param>
+        /// <returns>true on success; false if no object was found or selected.</returns>
+        /// <exception cref="ArgumentNullException">If geometry is null.</exception>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool ClosestPoints(IEnumerable<GeometryBase> geometry,
+          out Point3d pointOnCurve,
+          out Point3d pointOnObject,
+          out int whichGeometry,
+          double maximumDistance)
+        {
+            if (geometry == null) throw new ArgumentNullException("geometry");
+
+            using (SimpleArrayGeometryPointer geom = new SimpleArrayGeometryPointer(geometry))
+            {
+                pointOnCurve = Point3d.Unset;
+                pointOnObject = Point3d.Unset;
+                IntPtr pConstThis = ConstPointer();
+                IntPtr pGeometryArray = geom.ConstPointer();
+                whichGeometry = 0;
+                bool rc = UnsafeNativeMethods.RHC_RhinoGetClosestPoint(pConstThis, pGeometryArray, maximumDistance, ref pointOnCurve, ref pointOnObject, ref whichGeometry);
+                GC.KeepAlive(geometry);
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Finds the object (and the closest point in that object) that is closest to
+        /// this curve. <para><see cref="Brep">Breps</see>, <see cref="Surface">surfaces</see>,
+        /// <see cref="Curve">curves</see> and <see cref="PointCloud">point clouds</see> are examples of
+        /// objects that can be passed to this function.</para>
+        /// </summary>
+        /// <param name="geometry">A list, an array or any enumerable set of geometry to search.</param>
+        /// <param name="pointOnCurve">The point on curve. This out parameter is assigned during this call.</param>
+        /// <param name="pointOnObject">The point on geometry. This out parameter is assigned during this call.</param>
+        /// <param name="whichGeometry">The index of the geometry. This out parameter is assigned during this call.</param>
+        /// <returns>true on success; false if no object was found or selected.</returns>
+        /// <exception cref="ArgumentNullException">If geometry is null.</exception>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool ClosestPoints(IEnumerable<GeometryBase> geometry,
+          out Point3d pointOnCurve,
+          out Point3d pointOnObject,
+          out int whichGeometry)
+        {
+            return ClosestPoints(geometry, out pointOnCurve, out pointOnObject, out whichGeometry, 0.0);
+        }
+
+        /// <summary>
+        /// Gets closest points between this and another curves.
+        /// </summary>
+        /// <param name="otherCurve">The other curve.</param>
+        /// <param name="pointOnThisCurve">The point on this curve. This out parameter is assigned during this call.</param>
+        /// <param name="pointOnOtherCurve">The point on other curve. This out parameter is assigned during this call.</param>
+        /// <returns>true on success; false on error.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool ClosestPoints(Curve otherCurve, out Point3d pointOnThisCurve, out Point3d pointOnOtherCurve)
+        {
+            GeometryBase[] a = new GeometryBase[] { otherCurve };
+            int which;
+            return ClosestPoints(a, out pointOnThisCurve, out pointOnOtherCurve, out which, 0.0);
+        }
+
+        /// <summary>
+        /// Computes the relationship between a point and a closed curve region. 
+        /// This curve must be closed or the return value will be Unset.
+        /// Both curve and point are projected to the World XY plane.
+        /// </summary>
+        /// <param name="testPoint">Point to test.</param>
+        /// <returns>Relationship between point and curve region.</returns>
+        /// <since>5.0</since>
+        [Obsolete("Use version that takes a tolerance")]
+        [ConstOperation]
+        public PointContainment Contains(Point3d testPoint)
+        {
+            return Contains(testPoint, Plane.WorldXY, RhinoMath.UnsetValue);
+        }
+        /// <summary>
+        /// Computes the relationship between a point and a closed curve region. 
+        /// This curve must be closed or the return value will be Unset.
+        /// </summary>
+        /// <param name="testPoint">Point to test.</param>
+        /// <param name="plane">Plane in which to compare point and region.</param>
+        /// <returns>Relationship between point and curve region.</returns>
+        /// <since>5.0</since>
+        [Obsolete("Use version that takes a tolerance")]
+        [ConstOperation]
+        public PointContainment Contains(Point3d testPoint, Plane plane)
+        {
+            return Contains(testPoint, plane, RhinoMath.UnsetValue);
+        }
+        /// <summary>
+        /// Computes the relationship between a point and a closed curve region. 
+        /// This curve must be closed or the return value will be Unset.
+        /// </summary>
+        /// <param name="testPoint">Point to test.</param>
+        /// <param name="plane">Plane in which to compare point and region.</param>
+        /// <param name="tolerance">Tolerance to use during comparison.</param>
+        /// <returns>Relationship between point and curve region.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public PointContainment Contains(Point3d testPoint, Plane plane, double tolerance)
+        {
+            if (testPoint.IsValid && plane.IsValid && IsClosed)
+            {
+                IntPtr ptr = ConstPointer();
+                int rc = UnsafeNativeMethods.RHC_PointInClosedRegion(ptr, testPoint, plane, tolerance);
+
+                if (0 == rc)
+                    return PointContainment.Outside;
+                if (1 == rc)
+                    return PointContainment.Inside;
+                if (2 == rc)
+                    return PointContainment.Coincident;
+            }
+            return PointContainment.Unset;
+        }
+#endif
+#if RHINO_SDK
     /// <summary>
     /// Returns the parameter values of all local extrema. 
     /// Parameter values are in increasing order so consecutive extrema 
@@ -3186,231 +3581,231 @@ namespace Rhino.Geometry
 
 #endif
 
-    #region evaluators
-    // [skipping]
-    // BOOL EvPoint
-    // BOOL Ev1Der
-    // BOOL Ev2Der
-    // BOOL EvTangent
-    // BOOL EvCurvature
-    // BOOL Evaluate
+        #region evaluators
+        // [skipping]
+        // BOOL EvPoint
+        // BOOL Ev1Der
+        // BOOL Ev2Der
+        // BOOL EvTangent
+        // BOOL EvCurvature
+        // BOOL Evaluate
 
-    const int idxPointAtT = 0;
-    const int idxPointAtStart = 1;
-    const int idxPointAtEnd = 2;
+        const int idxPointAtT = 0;
+        const int idxPointAtStart = 1;
+        const int idxPointAtEnd = 2;
 
-    /// <summary>Evaluates point at a curve parameter.</summary>
-    /// <param name="t">Evaluation parameter.</param>
-    /// <returns>Point (location of curve at the parameter t).</returns>
-    /// <remarks>No error handling.</remarks>
-    /// <example>
-    /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
-    /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Point3d PointAt(double t)
-    {
-      Point3d rc = new Point3d();
-      IntPtr ptr = ConstPointer();
-      UnsafeNativeMethods.ON_Curve_PointAt(ptr, t, ref rc, idxPointAtT);
-      return rc;
-    }
-    /// <summary>
-    /// Evaluates point at the start of the curve.
-    /// </summary>
-    /// <since>5.0</since>
-    public Point3d PointAtStart
-    {
-      get
-      {
-        Point3d rc = new Point3d();
-        IntPtr ptr = ConstPointer();
-        UnsafeNativeMethods.ON_Curve_PointAt(ptr, 0, ref rc, idxPointAtStart);
-        return rc;
-      }
-    }
-    /// <summary>
-    /// Evaluates point at the end of the curve.
-    /// </summary>
-    /// <since>5.0</since>
-    public Point3d PointAtEnd
-    {
-      get
-      {
-        Point3d rc = new Point3d();
-        IntPtr ptr = ConstPointer();
-        UnsafeNativeMethods.ON_Curve_PointAt(ptr, 1, ref rc, idxPointAtEnd);
-        return rc;
-      }
-    }
+        /// <summary>Evaluates point at a curve parameter.</summary>
+        /// <param name="t">Evaluation parameter.</param>
+        /// <returns>Point (location of curve at the parameter t).</returns>
+        /// <remarks>No error handling.</remarks>
+        /// <example>
+        /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
+        /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Point3d PointAt(double t)
+        {
+            Point3d rc = new Point3d();
+            IntPtr ptr = ConstPointer();
+            UnsafeNativeMethods.ON_Curve_PointAt(ptr, t, ref rc, idxPointAtT);
+            return rc;
+        }
+        /// <summary>
+        /// Evaluates point at the start of the curve.
+        /// </summary>
+        /// <since>5.0</since>
+        public Point3d PointAtStart
+        {
+            get
+            {
+                Point3d rc = new Point3d();
+                IntPtr ptr = ConstPointer();
+                UnsafeNativeMethods.ON_Curve_PointAt(ptr, 0, ref rc, idxPointAtStart);
+                return rc;
+            }
+        }
+        /// <summary>
+        /// Evaluates point at the end of the curve.
+        /// </summary>
+        /// <since>5.0</since>
+        public Point3d PointAtEnd
+        {
+            get
+            {
+                Point3d rc = new Point3d();
+                IntPtr ptr = ConstPointer();
+                UnsafeNativeMethods.ON_Curve_PointAt(ptr, 1, ref rc, idxPointAtEnd);
+                return rc;
+            }
+        }
 
-#if RHINO_SDK
-    /// <summary>
-    /// Gets a point at a certain length along the curve. The length must be 
-    /// non-negative and less than or equal to the length of the curve. 
-    /// Lengths will not be wrapped when the curve is closed or periodic.
-    /// </summary>
-    /// <param name="length">Length along the curve between the start point and the returned point.</param>
-    /// <returns>Point on the curve at the specified length from the start point or Poin3d.Unset on failure.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_arclengthpoint.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_arclengthpoint.cs' lang='cs'/>
-    /// <code source='examples\py\ex_arclengthpoint.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Point3d PointAtLength(double length)
-    {
-      double t;
-      return !LengthParameter(length, out t) ? Point3d.Unset : PointAt(t);
-    }
-    /// <summary>
-    /// Gets a point at a certain normalized length along the curve. The length must be 
-    /// between or including 0.0 and 1.0, where 0.0 equals the start of the curve and 
-    /// 1.0 equals the end of the curve. 
-    /// </summary>
-    /// <param name="length">Normalized length along the curve between the start point and the returned point.</param>
-    /// <returns>Point on the curve at the specified normalized length from the start point or Poin3d.Unset on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Point3d PointAtNormalizedLength(double length)
-    {
-      double t;
-      return !NormalizedLengthParameter(length, out t) ? Point3d.Unset : PointAt(t);
-    }
+#if SB_IMP
+        /// <summary>
+        /// Gets a point at a certain length along the curve. The length must be 
+        /// non-negative and less than or equal to the length of the curve. 
+        /// Lengths will not be wrapped when the curve is closed or periodic.
+        /// </summary>
+        /// <param name="length">Length along the curve between the start point and the returned point.</param>
+        /// <returns>Point on the curve at the specified length from the start point or Poin3d.Unset on failure.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_arclengthpoint.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_arclengthpoint.cs' lang='cs'/>
+        /// <code source='examples\py\ex_arclengthpoint.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Point3d PointAtLength(double length)
+        {
+            double t;
+            return !LengthParameter(length, out t) ? Point3d.Unset : PointAt(t);
+        }
+        /// <summary>
+        /// Gets a point at a certain normalized length along the curve. The length must be 
+        /// between or including 0.0 and 1.0, where 0.0 equals the start of the curve and 
+        /// 1.0 equals the end of the curve. 
+        /// </summary>
+        /// <param name="length">Normalized length along the curve between the start point and the returned point.</param>
+        /// <returns>Point on the curve at the specified normalized length from the start point or Poin3d.Unset on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Point3d PointAtNormalizedLength(double length)
+        {
+            double t;
+            return !NormalizedLengthParameter(length, out t) ? Point3d.Unset : PointAt(t);
+        }
 #endif
 
-    /// <summary>Forces the curve to start at a specified point. 
-    /// Not all curve types support this operation.</summary>
-    /// <param name="point">New start point of curve.</param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <remarks>Some start points cannot be moved. Be sure to check return code.</remarks>
-    /// <since>5.0</since>
-    public bool SetStartPoint(Point3d point)
-    {
-      IntPtr ptr = NonConstPointer();
-      return UnsafeNativeMethods.ON_Curve_SetPoint(ptr, point, true);
-    }
-    /// <summary>Forces the curve to end at a specified point. 
-    /// Not all curve types support this operation.</summary>
-    /// <param name="point">New end point of curve.</param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <remarks>Some end points cannot be moved. Be sure to check return code</remarks>
-    /// <since>5.0</since>
-    public bool SetEndPoint(Point3d point)
-    {
-      IntPtr ptr = NonConstPointer();
-      return UnsafeNativeMethods.ON_Curve_SetPoint(ptr, point, false);
-    }
-
-    /// <summary>Evaluates the unit tangent vector at a curve parameter.</summary>
-    /// <param name="t">Evaluation parameter.</param>
-    /// <returns>Unit tangent vector of the curve at the parameter t.</returns>
-    /// <remarks>No error handling.</remarks>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Vector3d TangentAt(double t)
-    {
-      Vector3d rc = new Vector3d();
-      IntPtr ptr = ConstPointer();
-      UnsafeNativeMethods.ON_Curve_GetVector(ptr, idxTangentAt, t, ref rc);
-      return rc;
-    }
-    /// <summary>Evaluates the unit tangent vector at the start of the curve.</summary>
-    /// <returns>Unit tangent vector of the curve at the start point.</returns>
-    /// <remarks>No error handling.</remarks>
-    /// <since>5.0</since>
-    public Vector3d TangentAtStart
-    {
-      get { return TangentAt(Domain.Min); }
-    }
-    /// <summary>Evaluate unit tangent vector at the end of the curve.</summary>
-    /// <returns>Unit tangent vector of the curve at the end point.</returns>
-    /// <remarks>No error handling.</remarks>
-    /// <since>5.0</since>
-    public Vector3d TangentAtEnd
-    {
-      get { return TangentAt(Domain.Max); }
-    }
-
-    const int idxDerivativeAt = 0;
-    const int idxTangentAt = 1;
-    const int idxCurvatureAt = 2;
-
-    /// <summary>Returns a 3d frame at a parameter.</summary>
-    /// <param name="t">Evaluation parameter.</param>
-    /// <param name="plane">The frame is returned here.</param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool FrameAt(double t, out Plane plane)
-    {
-      plane = Plane.WorldXY;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_FrameAt(ptr, t, ref plane, false);
-    }
-
-    /// <summary>
-    /// Evaluate the derivatives at the specified curve parameter.
-    /// </summary>
-    /// <param name="t">Curve parameter to evaluate.</param>
-    /// <param name="derivativeCount">Number of derivatives to evaluate, must be at least 0.</param>
-    /// <returns>An array of vectors that represents all the derivatives starting at zero.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Vector3d[] DerivativeAt(double t, int derivativeCount)
-    {
-      return DerivativeAt(t, derivativeCount, CurveEvaluationSide.Default);
-    }
-    /// <summary>
-    /// Evaluate the derivatives at the specified curve parameter.
-    /// </summary>
-    /// <param name="t">Curve parameter to evaluate.</param>
-    /// <param name="derivativeCount">Number of derivatives to evaluate, must be at least 0.</param>
-    /// <param name="side">Side of parameter to evaluate. If the parameter is at a kink, 
-    /// it makes a big difference whether the evaluation is from below or above.</param>
-    /// <returns>An array of vectors that represents all the derivatives starting at zero.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Vector3d[] DerivativeAt(double t, int derivativeCount, CurveEvaluationSide side)
-    {
-      if (derivativeCount < 0) { throw new InvalidOperationException("The derivativeCount must be larger than or equal to zero"); }
-
-      Vector3d[] rc = null;
-      SimpleArrayPoint3d points = new SimpleArrayPoint3d();
-      IntPtr pPoints = points.NonConstPointer();
-      if (UnsafeNativeMethods.ON_Curve_Evaluate(ConstPointer(), derivativeCount, (int)side, t, pPoints))
-      {
-        Point3d[] pts = points.ToArray();
-        rc = new Vector3d[pts.Length];
-        for (int i = 0; i < pts.Length; i++)
+        /// <summary>Forces the curve to start at a specified point. 
+        /// Not all curve types support this operation.</summary>
+        /// <param name="point">New start point of curve.</param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <remarks>Some start points cannot be moved. Be sure to check return code.</remarks>
+        /// <since>5.0</since>
+        public bool SetStartPoint(Point3d point)
         {
-          rc[i] = new Vector3d(pts[i]);
+            IntPtr ptr = NonConstPointer();
+            return UnsafeNativeMethods.ON_Curve_SetPoint(ptr, point, true);
         }
-      }
-      points.Dispose();
-      return rc;
-    }
-    /// <summary>Evaluate the curvature vector at a curve parameter.</summary>
-    /// <param name="t">Evaluation parameter.</param>
-    /// <returns>Curvature vector of the curve at the parameter t.</returns>
-    /// <remarks>No error handling.</remarks>
-    /// <example>
-    /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
-    /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Vector3d CurvatureAt(double t)
-    {
-      Vector3d rc = new Vector3d();
-      IntPtr ptr = ConstPointer();
-      UnsafeNativeMethods.ON_Curve_GetVector(ptr, idxCurvatureAt, t, ref rc);
-      return rc;
-    }
+        /// <summary>Forces the curve to end at a specified point. 
+        /// Not all curve types support this operation.</summary>
+        /// <param name="point">New end point of curve.</param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <remarks>Some end points cannot be moved. Be sure to check return code</remarks>
+        /// <since>5.0</since>
+        public bool SetEndPoint(Point3d point)
+        {
+            IntPtr ptr = NonConstPointer();
+            return UnsafeNativeMethods.ON_Curve_SetPoint(ptr, point, false);
+        }
+
+        /// <summary>Evaluates the unit tangent vector at a curve parameter.</summary>
+        /// <param name="t">Evaluation parameter.</param>
+        /// <returns>Unit tangent vector of the curve at the parameter t.</returns>
+        /// <remarks>No error handling.</remarks>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Vector3d TangentAt(double t)
+        {
+            Vector3d rc = new Vector3d();
+            IntPtr ptr = ConstPointer();
+            UnsafeNativeMethods.ON_Curve_GetVector(ptr, idxTangentAt, t, ref rc);
+            return rc;
+        }
+        /// <summary>Evaluates the unit tangent vector at the start of the curve.</summary>
+        /// <returns>Unit tangent vector of the curve at the start point.</returns>
+        /// <remarks>No error handling.</remarks>
+        /// <since>5.0</since>
+        public Vector3d TangentAtStart
+        {
+            get { return TangentAt(Domain.Min); }
+        }
+        /// <summary>Evaluate unit tangent vector at the end of the curve.</summary>
+        /// <returns>Unit tangent vector of the curve at the end point.</returns>
+        /// <remarks>No error handling.</remarks>
+        /// <since>5.0</since>
+        public Vector3d TangentAtEnd
+        {
+            get { return TangentAt(Domain.Max); }
+        }
+
+        const int idxDerivativeAt = 0;
+        const int idxTangentAt = 1;
+        const int idxCurvatureAt = 2;
+
+        /// <summary>Returns a 3d frame at a parameter.</summary>
+        /// <param name="t">Evaluation parameter.</param>
+        /// <param name="plane">The frame is returned here.</param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool FrameAt(double t, out Plane plane)
+        {
+            plane = Plane.WorldXY;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_FrameAt(ptr, t, ref plane, false);
+        }
+
+        /// <summary>
+        /// Evaluate the derivatives at the specified curve parameter.
+        /// </summary>
+        /// <param name="t">Curve parameter to evaluate.</param>
+        /// <param name="derivativeCount">Number of derivatives to evaluate, must be at least 0.</param>
+        /// <returns>An array of vectors that represents all the derivatives starting at zero.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Vector3d[] DerivativeAt(double t, int derivativeCount)
+        {
+            return DerivativeAt(t, derivativeCount, CurveEvaluationSide.Default);
+        }
+        /// <summary>
+        /// Evaluate the derivatives at the specified curve parameter.
+        /// </summary>
+        /// <param name="t">Curve parameter to evaluate.</param>
+        /// <param name="derivativeCount">Number of derivatives to evaluate, must be at least 0.</param>
+        /// <param name="side">Side of parameter to evaluate. If the parameter is at a kink, 
+        /// it makes a big difference whether the evaluation is from below or above.</param>
+        /// <returns>An array of vectors that represents all the derivatives starting at zero.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Vector3d[] DerivativeAt(double t, int derivativeCount, CurveEvaluationSide side)
+        {
+            if (derivativeCount < 0) { throw new InvalidOperationException("The derivativeCount must be larger than or equal to zero"); }
+
+            Vector3d[] rc = null;
+            SimpleArrayPoint3d points = new SimpleArrayPoint3d();
+            IntPtr pPoints = points.NonConstPointer();
+            if (UnsafeNativeMethods.ON_Curve_Evaluate(ConstPointer(), derivativeCount, (int)side, t, pPoints))
+            {
+                Point3d[] pts = points.ToArray();
+                rc = new Vector3d[pts.Length];
+                for (int i = 0; i < pts.Length; i++)
+                {
+                    rc[i] = new Vector3d(pts[i]);
+                }
+            }
+            points.Dispose();
+            return rc;
+        }
+        /// <summary>Evaluate the curvature vector at a curve parameter.</summary>
+        /// <param name="t">Evaluation parameter.</param>
+        /// <returns>Curvature vector of the curve at the parameter t.</returns>
+        /// <remarks>No error handling.</remarks>
+        /// <example>
+        /// <code source='examples\vbnet\ex_addradialdimension.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_addradialdimension.cs' lang='cs'/>
+        /// <code source='examples\py\ex_addradialdimension.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Vector3d CurvatureAt(double t)
+        {
+            Vector3d rc = new Vector3d();
+            IntPtr ptr = ConstPointer();
+            UnsafeNativeMethods.ON_Curve_GetVector(ptr, idxCurvatureAt, t, ref rc);
+            return rc;
+        }
 
 #if RHINO_SDK
     /// <summary>
@@ -3475,526 +3870,300 @@ namespace Rhino.Geometry
     }
 #endif
 
-    /// <summary>
-    /// Test continuity at a curve parameter value.
-    /// </summary>
-    /// <param name="continuityType">Type of continuity to test for.</param>
-    /// <param name="t">Parameter to test.</param>
-    /// <returns>
-    /// true if the curve has at least the c type continuity at the parameter t.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool IsContinuous(Continuity continuityType, double t)
-    {
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsContinuous(ptr, (int)continuityType, t);
-    }
-    /// <summary>
-    /// Searches for a derivative, tangent, or curvature discontinuity.
-    /// </summary>
-    /// <param name="continuityType">Type of continuity to search for.</param>
-    /// <param name="t0">
-    /// Search begins at t0. If there is a discontinuity at t0, it will be ignored. This makes it
-    /// possible to repeatedly call GetNextDiscontinuity() and step through the discontinuities.
-    /// </param>
-    /// <param name="t1">
-    /// (t0 != t1)  If there is a discontinuity at t1 it will be ignored unless continuityType is
-    /// a locus discontinuity type and t1 is at the start or end of the curve.
-    /// </param>
-    /// <param name="t">If a discontinuity is found, then t reports the parameter at the discontinuity.</param>
-    /// <returns>
-    /// Parametric continuity tests c = (C0_continuous, ..., G2_continuous):
-    ///  true if a parametric discontinuity was found strictly between t0 and t1. Note well that
-    ///  all curves are parametrically continuous at the ends of their domains.
-    /// 
-    /// Locus continuity tests c = (C0_locus_continuous, ...,G2_locus_continuous):
-    ///  true if a locus discontinuity was found strictly between t0 and t1 or at t1 is the at the end
-    ///  of a curve. Note well that all open curves (IsClosed()=false) are locus discontinuous at the
-    ///  ends of their domains.  All closed curves (IsClosed()=true) are at least C0_locus_continuous at 
-    ///  the ends of their domains.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool GetNextDiscontinuity(Continuity continuityType, double t0, double t1, out double t)
-    {
-      t = RhinoMath.UnsetValue;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_GetNextDiscontinuity(ptr, (int)continuityType, t0, t1, ref t);
-    }
-    #endregion
+        /// <summary>
+        /// Test continuity at a curve parameter value.
+        /// </summary>
+        /// <param name="continuityType">Type of continuity to test for.</param>
+        /// <param name="t">Parameter to test.</param>
+        /// <returns>
+        /// true if the curve has at least the c type continuity at the parameter t.
+        /// </returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool IsContinuous(Continuity continuityType, double t)
+        {
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsContinuous(ptr, (int)continuityType, t);
+        }
+        /// <summary>
+        /// Searches for a derivative, tangent, or curvature discontinuity.
+        /// </summary>
+        /// <param name="continuityType">Type of continuity to search for.</param>
+        /// <param name="t0">
+        /// Search begins at t0. If there is a discontinuity at t0, it will be ignored. This makes it
+        /// possible to repeatedly call GetNextDiscontinuity() and step through the discontinuities.
+        /// </param>
+        /// <param name="t1">
+        /// (t0 != t1)  If there is a discontinuity at t1 it will be ignored unless continuityType is
+        /// a locus discontinuity type and t1 is at the start or end of the curve.
+        /// </param>
+        /// <param name="t">If a discontinuity is found, then t reports the parameter at the discontinuity.</param>
+        /// <returns>
+        /// Parametric continuity tests c = (C0_continuous, ..., G2_continuous):
+        ///  true if a parametric discontinuity was found strictly between t0 and t1. Note well that
+        ///  all curves are parametrically continuous at the ends of their domains.
+        /// 
+        /// Locus continuity tests c = (C0_locus_continuous, ...,G2_locus_continuous):
+        ///  true if a locus discontinuity was found strictly between t0 and t1 or at t1 is the at the end
+        ///  of a curve. Note well that all open curves (IsClosed()=false) are locus discontinuous at the
+        ///  ends of their domains.  All closed curves (IsClosed()=true) are at least C0_locus_continuous at 
+        ///  the ends of their domains.
+        /// </returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool GetNextDiscontinuity(Continuity continuityType, double t0, double t1, out double t)
+        {
+            t = RhinoMath.UnsetValue;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_GetNextDiscontinuity(ptr, (int)continuityType, t0, t1, ref t);
+        }
+        #endregion
 
-    #region size related methods
+
+        #region size related methods
+#if SB_IMP
+
+        #region VIRTUAL METHODS
+
+        /// <summary>
+        /// Gets the length of the curve with a fractional tolerance of 1.0e-8.
+        /// </summary>
+        /// <returns>The length of the curve on success, or zero on failure.</returns>
+        [ConstOperation]
+        public virtual double GetLength() { return 0; }
+
+        /// <summary>
+        /// Gets the parameter along the curve which coincides with a given length along the curve. 
+        /// </summary>
+        /// <param name="segmentLength">
+        /// Length of segment to measure. Must be less than or equal to the length of the curve.
+        /// </param>
+        /// <param name="t">
+        /// Parameter such that the length of the curve from the curve start point to t equals length.
+        /// </param>
+        /// <returns>true on success, false on failure.</returns>
+        [ConstOperation]
+        public virtual bool LengthParameter(double segmentLength, out double t)
+        {
+            t = 0.0;
+            return false;
+        }
+        /// <summary>
+        /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve. 
+        /// A fractional tolerance of 1e-8 is used in this version of the function.
+        /// </summary>
+        /// <param name="s">
+        /// Normalized arc length parameter. 
+        /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
+        /// </param>
+        /// <param name="t">
+        /// Parameter such that the length of the curve from its start to t is arc_length.
+        /// </param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public virtual bool NormalizedLengthParameter(double s, out double t)
+        {
+            t = 0.0;
+            return false;
+        }
+
+        /// <summary>
+        /// Compute area of the closed Curve
+        /// </summary>
+        /// <returns>Polyline area; only if closed, else area will be 0.0.</returns>
+        public virtual double Area()
+        {
+            return 0.0;
+        }
+
+        /// <summary>
+        /// Compute the center point of the curve as the weighted average of all segments.
+        /// </summary>
+        /// <returns>The weighted average of all segments.</returns>
+        [ConstOperation]
+        public virtual Point3d CenterPoint()
+        {
+            return Point3d.Origin;
+        }
+
+        /// <summary>
+        /// Looks for segments that are shorter than tolerance that can be removed. 
+        /// Does not change the domain, but it will change the relative parameterization.
+        /// </summary>
+        /// <param name="tolerance">Tolerance which defines "short" segments.</param>
+        /// <returns>
+        /// true if removable short segments were found. 
+        /// false if no removable short segments were found.
+        /// </returns>
+        /// <since>5.0</since>
+        public virtual bool RemoveShortSegments(double tolerance)
+        {
+            return false;
+        }
+
+
+        #endregion
+
+#endif
+
+
+#if MUSTHAVE
+
+        /// <summary>Used to quickly find short curves.</summary>
+        /// <param name="tolerance">Length threshold value for "shortness".</param>
+        /// <returns>true if the length of the curve is &lt;= tolerance.</returns>
+        /// <remarks>Faster than calling Length() and testing the result.</remarks>
+        /// <example>
+        /// <code source='examples\vbnet\ex_dividebylength.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_dividebylength.cs' lang='cs'/>
+        /// <code source='examples\py\ex_dividebylength.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool IsShort(double tolerance)
+        {
+            Interval subdomain = Interval.Unset;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsShort(ptr, tolerance, subdomain, true);
+        }
+        /// <summary>Used to quickly find short curves.</summary>
+        /// <param name="tolerance">Length threshold value for "shortness".</param>
+        /// <param name="subdomain">
+        /// The test is performed on the interval that is the intersection of sub-domain with Domain()
+        /// </param>
+        /// <returns>true if the length of the curve is &lt;= tolerance.</returns>
+        /// <remarks>Faster than calling Length() and testing the result.</remarks>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool IsShort(double tolerance, Interval subdomain)
+        {
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_IsShort(ptr, tolerance, subdomain, false);
+        }
+
+#endif
+#if SB_IMP
+        /// <summary>
+        /// Divide the curve into a number of equal-length segments.
+        /// </summary>
+        /// <param name="segmentCount">Segment count. Note that the number of division points may differ from the segment count.</param>
+        /// <param name="includeEnds">If true, then the point at the start of the first division segment is returned.</param>
+        /// <returns>
+        /// List of curve parameters at the division points on success, null on failure.
+        /// </returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public double[] DivideByCount(int segmentCount, bool includeEnds)
+        {
+            Point3d[] unused_points;
+            return DivideByCount(segmentCount, includeEnds, out unused_points);
+        }
+
+        /// <summary>
+        /// Divide the curve into a number of equal-length segments.
+        /// </summary>
+        /// <param name="segmentCount">Segment count. Note that the number of division points may differ from the segment count.</param>
+        /// <param name="includeEnds">If true, then the point at the start of the first division segment is returned.</param>
+        /// <param name="points">A list of division points. If the function returns successfully, this point-array will be filled in.</param>
+        /// <returns>Array containing division curve parameters on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public double[] DivideByCount(int segmentCount, bool includeEnds, out Point3d[] points)
+        {
+            points = null;
+            List<double> ts = new List<double>(segmentCount + 1);
+            List<Point3d> pointss = new List<Point3d>(segmentCount + 1);
+
+
+            if (segmentCount < 1)
+                return null;
+
+            double len = this.GetLength();
+            double segLength = len / segmentCount;
+
+            for (int i = 0; i < segmentCount + 1; i++)
+            {
+                if ((i == 0 || i == segmentCount) && !includeEnds)
+                    continue;
+                double t;
+                this.LengthParameter(segLength * i, out t);
+                ts.Add(t);
+                pointss.Add(this.PointAt(t));
+            }
+            if (pointss.Count < 1 || ts.Count < 1) return null;
+            points = pointss.ToArray();
+            return ts.ToArray();
+        }
+
+        /// <summary>
+        /// Divide the curve into specific length segments.
+        /// </summary>
+        /// <param name="segmentLength">The length of each and every segment (except potentially the last one).</param>
+        /// <param name="includeEnds">If true, then the point at the start of the first division segment is returned.</param>
+        /// <returns>Array containing division curve parameters if successful, null on failure.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_dividebylength.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_dividebylength.cs' lang='cs'/>
+        /// <code source='examples\py\ex_dividebylength.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public double[] DivideByLength(double segmentLength, bool includeEnds)
+        {
+            Point3d[] unused_points;
+            return DivideByLength(segmentLength, includeEnds, out unused_points);
+        }
+
+        /// <summary>
+        /// Divide the curve into specific length segments.
+        /// </summary>
+        /// <param name="segmentLength">The length of each and every segment (except potentially the last one).</param>
+        /// <param name="includeEnds">If true, then the point at the start of the first division segment is returned.</param>
+        /// <param name="points">If function is successful, points at each parameter value are returned in points.</param>
+        /// <returns>Array containing division curve parameters if successful, null on failure.</returns>
+        /// <example>
+        /// <code source='examples\vbnet\ex_dividebylength.vb' lang='vbnet'/>
+        /// <code source='examples\cs\ex_dividebylength.cs' lang='cs'/>
+        /// <code source='examples\py\ex_dividebylength.py' lang='py'/>
+        /// </example>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public double[] DivideByLength(double segmentLength, bool includeEnds, out Point3d[] points)
+        {
+            points = null;
+
+            double len = this.GetLength();
+            int segmentCount = (int)Math.Ceiling((len / segmentLength));
+
+            List<double> ts = new List<double>(segmentCount + 1);
+            List<Point3d> pointss = new List<Point3d>(segmentCount + 1);
+
+            if (segmentCount < 1)
+                return null;
+
+            for (int i = 0; i < segmentCount + 1; i++)
+            {
+                if ((i == 0 || i == segmentCount) && !includeEnds)
+                    continue;
+                double t;
+                this.LengthParameter(segmentLength * i, out t);
+                if (t > this.Domain.T1)
+                {
+                    ts.Add(this.Domain.T1);
+                    pointss.Add(this.PointAtEnd);
+                    break;
+                }
+                ts.Add(t);
+                pointss.Add(this.PointAt(t));
+            }
+            if (pointss.Count < 1 || ts.Count < 1) return null;
+            points = pointss.ToArray();
+            return ts.ToArray();
+        }
+#endif
+
 #if RHINO_SDK
-    /// <summary>
-    /// Gets the length of the curve with a fractional tolerance of 1.0e-8.
-    /// </summary>
-    /// <returns>The length of the curve on success, or zero on failure.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_arclengthpoint.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_arclengthpoint.cs' lang='cs'/>
-    /// <code source='examples\py\ex_arclengthpoint.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double GetLength()
-    {
-      // default tolerance used in OpenNURBS
-      return GetLength(1.0e-8);
-    }
-    /// <summary>Get the length of the curve.</summary>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision. 
-    /// fabs(("exact" length from start to t) - arc_length)/arc_length &lt;= fractionalTolerance.
-    /// </param>
-    /// <returns>The length of the curve on success, or zero on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double GetLength(double fractionalTolerance)
-    {
-      double length = 0.0;
-      Interval sub_domain = Interval.Unset;
-      IntPtr ptr = ConstPointer();
-      if (UnsafeNativeMethods.ON_Curve_GetLength(ptr, ref length, fractionalTolerance, sub_domain, true))
-        return length;
-      return 0;
-    }
-    /// <summary>Get the length of a sub-section of the curve with a fractional tolerance of 1e-8.</summary>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve (must be non-decreasing).
-    /// </param>
-    /// <returns>The length of the sub-curve on success, or zero on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double GetLength(Interval subdomain)
-    {
-      // default tolerance used in OpenNURBS
-      return GetLength(1.0e-8, subdomain);
-    }
-    /// <summary>Get the length of a sub-section of the curve.</summary>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision. 
-    /// fabs(("exact" length from start to t) - arc_length)/arc_length &lt;= fractionalTolerance.
-    /// </param>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve (must be non-decreasing).
-    /// </param>
-    /// <returns>The length of the sub-curve on success, or zero on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double GetLength(double fractionalTolerance, Interval subdomain)
-    {
-      double length = 0.0;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_GetLength(ptr, ref length, fractionalTolerance, subdomain, false) ? length : 0;
-    }
-
-    /// <summary>Used to quickly find short curves.</summary>
-    /// <param name="tolerance">Length threshold value for "shortness".</param>
-    /// <returns>true if the length of the curve is &lt;= tolerance.</returns>
-    /// <remarks>Faster than calling Length() and testing the result.</remarks>
-    /// <example>
-    /// <code source='examples\vbnet\ex_dividebylength.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_dividebylength.cs' lang='cs'/>
-    /// <code source='examples\py\ex_dividebylength.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool IsShort(double tolerance)
-    {
-      Interval subdomain = Interval.Unset;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsShort(ptr, tolerance, subdomain, true);
-    }
-    /// <summary>Used to quickly find short curves.</summary>
-    /// <param name="tolerance">Length threshold value for "shortness".</param>
-    /// <param name="subdomain">
-    /// The test is performed on the interval that is the intersection of sub-domain with Domain()
-    /// </param>
-    /// <returns>true if the length of the curve is &lt;= tolerance.</returns>
-    /// <remarks>Faster than calling Length() and testing the result.</remarks>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool IsShort(double tolerance, Interval subdomain)
-    {
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_IsShort(ptr, tolerance, subdomain, false);
-    }
-
-    /// <summary>
-    /// Looks for segments that are shorter than tolerance that can be removed. 
-    /// Does not change the domain, but it will change the relative parameterization.
-    /// </summary>
-    /// <param name="tolerance">Tolerance which defines "short" segments.</param>
-    /// <returns>
-    /// true if removable short segments were found. 
-    /// false if no removable short segments were found.
-    /// </returns>
-    /// <since>5.0</since>
-    public bool RemoveShortSegments(double tolerance)
-    {
-      IntPtr ptr = NonConstPointer();
-      return UnsafeNativeMethods.ON_Curve_RemoveShortSegments(ptr, tolerance);
-    }
-
-    /// <summary>
-    /// Gets the parameter along the curve which coincides with a given length along the curve. 
-    /// A fractional tolerance of 1e-8 is used in this version of the function.
-    /// </summary>
-    /// <param name="segmentLength">
-    /// Length of segment to measure. Must be less than or equal to the length of the curve.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from the curve start point to t equals length.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool LengthParameter(double segmentLength, out double t)
-    {
-      return LengthParameter(segmentLength, out t, 1.0e-8);
-    }
-    /// <summary>
-    /// Gets the parameter along the curve which coincides with a given length along the curve.
-    /// </summary>
-    /// <param name="segmentLength">
-    /// Length of segment to measure. Must be less than or equal to the length of the curve.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from the curve start point to t equals s.
-    /// </param>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision.
-    /// fabs(("exact" length from start to t) - arc_length)/arc_length &lt;= fractionalTolerance.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool LengthParameter(double segmentLength, out double t, double fractionalTolerance)
-    {
-      t = 0.0;
-
-      double length = GetLength(fractionalTolerance);
-      if (segmentLength > length) { return false; }
-      if (length == 0.0) { return false; }
-
-      segmentLength /= length;
-
-      return NormalizedLengthParameter(segmentLength, out t, fractionalTolerance);
-    }
-    /// <summary>
-    /// Gets the parameter along the curve which coincides with a given length along the curve. 
-    /// A fractional tolerance of 1e-8 is used in this version of the function.
-    /// </summary>
-    /// <param name="segmentLength">
-    /// Length of segment to measure. Must be less than or equal to the length of the sub-domain.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from the start of the sub-domain to t is s.
-    /// </param>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve rather than the whole curve.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool LengthParameter(double segmentLength, out double t, Interval subdomain)
-    {
-      return LengthParameter(segmentLength, out t, 1.0e-8, subdomain);
-    }
-    /// <summary>
-    /// Gets the parameter along the curve which coincides with a given length along the curve.
-    /// </summary>
-    /// <param name="segmentLength">
-    /// Length of segment to measure. Must be less than or equal to the length of the sub-domain.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from the start of the sub-domain to t is s.
-    /// </param>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision. 
-    /// fabs(("exact" length from start to t) - arc_length)/arc_length &lt;= fractionalTolerance.
-    /// </param>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve rather than the whole curve.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool LengthParameter(double segmentLength, out double t, double fractionalTolerance, Interval subdomain)
-    {
-      t = 0.0;
-
-      double length = GetLength(fractionalTolerance);
-      if (segmentLength > length) { return false; }
-      if (length == 0.0) { return false; }
-
-      segmentLength /= length;
-
-      return NormalizedLengthParameter(segmentLength, out t, fractionalTolerance, subdomain);
-    }
-
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve. 
-    /// A fractional tolerance of 1e-8 is used in this version of the function.
-    /// </summary>
-    /// <param name="s">
-    /// Normalized arc length parameter. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from its start to t is arc_length.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool NormalizedLengthParameter(double s, out double t)
-    {
-      return NormalizedLengthParameter(s, out t, 1.0e-8);
-    }
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve.
-    /// </summary>
-    /// <param name="s">
-    /// Normalized arc length parameter. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from its start to t is arc_length.
-    /// </param>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision. 
-    /// fabs(("exact" length from start to t) - arc_length)/arc_length &lt;= fractionalTolerance.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool NormalizedLengthParameter(double s, out double t, double fractionalTolerance)
-    {
-      t = 0.0;
-      Interval subdomain = Interval.Unset;
-      IntPtr ptr = ConstPointer();
-      bool rc = UnsafeNativeMethods.ON_Curve_GetNormalizedArcLengthPoint(ptr, s, ref t, fractionalTolerance, subdomain, true);
-      return rc;
-    }
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve. 
-    /// A fractional tolerance of 1e-8 is used in this version of the function.
-    /// </summary>
-    /// <param name="s">
-    /// Normalized arc length parameter. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from its start to t is arc_length.
-    /// </param>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool NormalizedLengthParameter(double s, out double t, Interval subdomain)
-    {
-      return NormalizedLengthParameter(s, out t, 1.0e-8, subdomain);
-    }
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve.
-    /// </summary>
-    /// <param name="s">
-    /// Normalized arc length parameter. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="t">
-    /// Parameter such that the length of the curve from its start to t is arc_length.
-    /// </param>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision. 
-    /// fabs(("exact" length from start to t) - arc_length)/arc_length &lt;= fractionalTolerance.
-    /// </param>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve.
-    /// </param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool NormalizedLengthParameter(double s, out double t, double fractionalTolerance, Interval subdomain)
-    {
-      t = 0.0;
-      IntPtr ptr = ConstPointer();
-      bool rc = UnsafeNativeMethods.ON_Curve_GetNormalizedArcLengthPoint(ptr, s, ref t, fractionalTolerance, subdomain, false);
-      return rc;
-    }
-
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve. 
-    /// A fractional tolerance of 1e-8 is used in this version of the function.
-    /// </summary>
-    /// <param name="s">
-    /// Array of normalized arc length parameters. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="absoluteTolerance">
-    /// If absoluteTolerance > 0, then the difference between (s[i+1]-s[i])*curve_length 
-    /// and the length of the curve segment from t[i] to t[i+1] will be &lt;= absoluteTolerance.
-    /// </param>
-    /// <returns>
-    /// If successful, array of curve parameters such that the length of the curve from its start to t[i] is s[i]*curve_length. 
-    /// Null on failure.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double[] NormalizedLengthParameters(double[] s, double absoluteTolerance)
-    {
-      return NormalizedLengthParameters(s, absoluteTolerance, 1.0e-8);
-    }
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve.
-    /// </summary>
-    /// <param name="s">
-    /// Array of normalized arc length parameters. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="absoluteTolerance">
-    /// If absoluteTolerance > 0, then the difference between (s[i+1]-s[i])*curve_length 
-    /// and the length of the curve segment from t[i] to t[i+1] will be &lt;= absoluteTolerance.
-    /// </param>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision for each segment. 
-    /// fabs("true" length - actual length)/(actual length) &lt;= fractionalTolerance.
-    /// </param>
-    /// <returns>
-    /// If successful, array of curve parameters such that the length of the curve from its start to t[i] is s[i]*curve_length. 
-    /// Null on failure.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double[] NormalizedLengthParameters(double[] s, double absoluteTolerance, double fractionalTolerance)
-    {
-      int count = s.Length;
-      double[] t = new double[count];
-      Interval sub_domain = Interval.Unset;
-      IntPtr ptr = ConstPointer();
-      if (UnsafeNativeMethods.ON_Curve_GetNormalizedArcLengthPoints(ptr, count, s, t, absoluteTolerance, fractionalTolerance, sub_domain, true))
-        return t;
-      return null;
-    }
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve. 
-    /// A fractional tolerance of 1e-8 is used in this version of the function.
-    /// </summary>
-    /// <param name="s">
-    /// Array of normalized arc length parameters. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="absoluteTolerance">
-    /// If absoluteTolerance > 0, then the difference between (s[i+1]-s[i])*curve_length 
-    /// and the length of the curve segment from t[i] to t[i+1] will be &lt;= absoluteTolerance.
-    /// </param>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve. 
-    /// A 0.0 s value corresponds to sub-domain->Min() and a 1.0 s value corresponds to sub-domain->Max().
-    /// </param>
-    /// <returns>
-    /// If successful, array of curve parameters such that the length of the curve from its start to t[i] is s[i]*curve_length. 
-    /// Null on failure.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double[] NormalizedLengthParameters(double[] s, double absoluteTolerance, Interval subdomain)
-    {
-      return NormalizedLengthParameters(s, absoluteTolerance, 1.0e-8, subdomain);
-    }
-    /// <summary>
-    /// Input the parameter of the point on the curve that is a prescribed arc length from the start of the curve.
-    /// </summary>
-    /// <param name="s">
-    /// Array of normalized arc length parameters. 
-    /// E.g., 0 = start of curve, 1/2 = midpoint of curve, 1 = end of curve.
-    /// </param>
-    /// <param name="absoluteTolerance">
-    /// If absoluteTolerance > 0, then the difference between (s[i+1]-s[i])*curve_length 
-    /// and the length of the curve segment from t[i] to t[i+1] will be &lt;= absoluteTolerance.
-    /// </param>
-    /// <param name="fractionalTolerance">
-    /// Desired fractional precision for each segment. 
-    /// fabs("true" length - actual length)/(actual length) &lt;= fractionalTolerance.
-    /// </param>
-    /// <param name="subdomain">
-    /// The calculation is performed on the specified sub-domain of the curve. 
-    /// A 0.0 s value corresponds to sub-domain->Min() and a 1.0 s value corresponds to sub-domain->Max().
-    /// </param>
-    /// <returns>
-    /// If successful, array of curve parameters such that the length of the curve from its start to t[i] is s[i]*curve_length. 
-    /// Null on failure.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double[] NormalizedLengthParameters(double[] s, double absoluteTolerance, double fractionalTolerance, Interval subdomain)
-    {
-      int count = s.Length;
-      double[] t = new double[count];
-      IntPtr ptr = ConstPointer();
-      if (UnsafeNativeMethods.ON_Curve_GetNormalizedArcLengthPoints(ptr, count, s, t, absoluteTolerance, fractionalTolerance, subdomain, false))
-        return t;
-      return null;
-    }
-
-    /// <summary>
-    /// Divide the curve into a number of equal-length segments.
-    /// </summary>
-    /// <param name="segmentCount">Segment count. Note that the number of division points may differ from the segment count.</param>
-    /// <param name="includeEnds">If true, then the point at the start of the first division segment is returned.</param>
-    /// <returns>
-    /// List of curve parameters at the division points on success, null on failure.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double[] DivideByCount(int segmentCount, bool includeEnds)
-    {
-      Point3d[] unused_points;
-      return DivideByCount(segmentCount, includeEnds, out unused_points);
-    }
-
-    /// <summary>
-    /// Divide the curve into a number of equal-length segments.
-    /// </summary>
-    /// <param name="segmentCount">Segment count. Note that the number of division points may differ from the segment count.</param>
-    /// <param name="includeEnds">If true, then the point at the start of the first division segment is returned.</param>
-    /// <param name="points">A list of division points. If the function returns successfully, this point-array will be filled in.</param>
-    /// <returns>Array containing division curve parameters on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public double[] DivideByCount(int segmentCount, bool includeEnds, out Point3d[] points)
-    {
-      points = null;
-
-      if (segmentCount < 1)
-        return null;
-
-      IntPtr const_ptr_curve = ConstPointer();
-
-      SimpleArrayPoint3d curve_points = new SimpleArrayPoint3d();
-      IntPtr ptr_curve_points = curve_points.NonConstPointer();
-
-      SimpleArrayDouble curve_parameters = new SimpleArrayDouble();
-      IntPtr ptr_curve_parameters = curve_parameters.NonConstPointer();
-
-      bool success = UnsafeNativeMethods.RHC_RhinoDivideCurve1(const_ptr_curve, segmentCount, includeEnds, ptr_curve_points, ptr_curve_parameters);
-
-      double[] rc = null;
-      if (success)
-      {
-        points = curve_points.ToArray();
-        rc = curve_parameters.ToArray();
-      }
-
-      curve_points.Dispose();
-      curve_parameters.Dispose();
-
-      return success ? rc : null;
-    }
-
     /// <summary>
     /// Divide the curve into specific length segments.
     /// </summary>
@@ -4141,220 +4310,220 @@ namespace Rhino.Geometry
     }
 #endif
 
-    //David: Do we really need these two functions? Me thinks they are a bit too geeky.
-    /// <summary>
-    /// Convert a NURBS curve parameter to a curve parameter.
-    /// </summary>
-    /// <param name="nurbsParameter">NURBS form parameter.</param>
-    /// <param name="curveParameter">Curve parameter.</param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <remarks>
-    /// If HasNurbForm returns 2, this function converts the curve parameter to the NURBS curve parameter.
-    /// </remarks>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool GetCurveParameterFromNurbsFormParameter(double nurbsParameter, out double curveParameter)
-    {
-      curveParameter = 0.0;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_GetNurbParameter(ptr, nurbsParameter, ref curveParameter, true);
-    }
-    /// <summary>Convert a curve parameter to a NURBS curve parameter.</summary>
-    /// <param name="curveParameter">Curve parameter.</param>
-    /// <param name="nurbsParameter">NURBS form parameter.</param>
-    /// <returns>true on success, false on failure.</returns>
-    /// <remarks>
-    /// If GetNurbForm returns 2, this function converts the curve parameter to the NURBS curve parameter.
-    /// </remarks>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public bool GetNurbsFormParameterFromCurveParameter(double curveParameter, out double nurbsParameter)
-    {
-      nurbsParameter = 0.0;
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_GetNurbParameter(ptr, curveParameter, ref nurbsParameter, false);
-    }
-    #endregion
-
-    #region shape related methods
-    private Curve TrimExtendHelper(double t0, double t1, bool trimming)
-    {
-      IntPtr ptr = ConstPointer();
-      IntPtr rc = UnsafeNativeMethods.ON_Curve_TrimExtend(ptr, t0, t1, trimming);
-      return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
-    }
-
-    /// <summary>
-    /// Removes portions of the curve outside the specified interval.
-    /// </summary>
-    /// <param name="t0">
-    /// Start of the trimming interval. Portions of the curve before curve(t0) are removed.
-    /// </param>
-    /// <param name="t1">
-    /// End of the trimming interval. Portions of the curve after curve(t1) are removed.
-    /// </param>
-    /// <returns>Trimmed portion of this curve is successful, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve Trim(double t0, double t1)
-    {
-      return TrimExtendHelper(t0, t1, true);
-    }
-    /// <summary>
-    /// Removes portions of the curve outside the specified interval.
-    /// </summary>
-    /// <param name="domain">
-    /// Trimming interval. Portions of the curve before curve(domain[0])
-    /// and after curve(domain[1]) are removed.
-    /// </param>
-    /// <returns>Trimmed curve if successful, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve Trim(Interval domain)
-    {
-      return Trim(domain.T0, domain.T1);
-    }
-
-#if RHINO_SDK
-    /// <summary>
-    /// Shortens a curve by a given length
-    /// </summary>
-    /// <param name="side"></param>
-    /// <param name="length"></param>
-    /// <returns>Trimmed curve if successful, null on failure.</returns>
-    /// <since>5.1</since>
-    [ConstOperation]
-    public Curve Trim(CurveEnd side, double length)
-    {
-      if (length <= 0)
-        throw new ArgumentException("length must be > 0", "length");
-      double cLength = GetLength();
-      if (IsClosed || length >= cLength)
-        return null;
-      if (side == CurveEnd.Both && length >= 2.0 * cLength)
-        return null;
-
-      double t0 = Domain[0];
-      double t1 = Domain[1];
-      if (side == CurveEnd.Start || side == CurveEnd.Both)
-      {
-        double s = length / cLength;
-        NormalizedLengthParameter(s, out t0);
-      }
-      if (side == CurveEnd.End || side == CurveEnd.Both)
-      {
-        double s = (cLength - length) / cLength;
-        NormalizedLengthParameter(s, out t1);
-      }
-      return Trim(t0, t1);
-    }
-#endif
-
-    /// <summary>
-    /// Splits (divides) the curve at the specified parameter. 
-    /// The parameter must be in the interior of the curve's domain.
-    /// </summary>
-    /// <param name="t">
-    /// Parameter to split the curve at in the interval returned by Domain().
-    /// </param>
-    /// <returns>
-    /// Two curves on success, null on failure.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve[] Split(double t)
-    {
-      IntPtr leftptr = IntPtr.Zero;
-      IntPtr rightptr = IntPtr.Zero;
-      IntPtr pConstThis = ConstPointer();
-      bool rc = UnsafeNativeMethods.ON_Curve_Split(pConstThis, t, ref leftptr, ref rightptr);
-      Curve[] output = new Curve[2];
-      if (leftptr != IntPtr.Zero)
-        output[0] = GeometryBase.CreateGeometryHelper(leftptr, null) as Curve;
-      if (rightptr != IntPtr.Zero)
-        output[1] = GeometryBase.CreateGeometryHelper(rightptr, null) as Curve;
-      return rc ? output : null;
-    }
-
-    /// <summary>
-    /// Splits (divides) the curve at a series of specified parameters. 
-    /// The parameter must be in the interior of the curve domain.
-    /// </summary>
-    /// <param name="t">
-    /// Parameters to split the curve at in the interval returned by Domain().
-    /// </param>
-    /// <returns>Multiple curves on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve[] Split(IEnumerable<double> t)
-    {
-      Interval domain = Domain;
-      double t0 = domain.Min;
-      double t1 = domain.Max;
-
-      RhinoList<double> parameters = new RhinoList<double>(t);
-      parameters.Sort();
-
-      // Remove invalid and duplicate parameters.
-      for (int i = parameters.Count - 1; i >= 0; i--)
-      {
-        if (parameters[i] < t0)
-          parameters.RemoveAt(i);
-        else if (parameters[i] > t1)
-          parameters.RemoveAt(i);
-        else if (i > 0)
-          if (parameters[i].Equals(parameters[i - 1]))
-            parameters.RemoveAt(i);
-      }
-      if (parameters.Count == 0)
-        return new Curve[0];
-
-      // Ensure parameters at the curve tips.
-      bool t0Added = false;
-      bool t1Added = false;
-      if (parameters[0] > t0 + RhinoMath.ZeroTolerance)
-      {
-        t0Added = true;
-        parameters.Insert(0, t0);
-      }
-      if (parameters[parameters.Count - 1] < t1 - RhinoMath.ZeroTolerance)
-      {
-        t1Added = true;
-        parameters.Add(t1);
-      }
-
-      RhinoList<Curve> rc = new RhinoList<Curve>();
-      for (int i = 0; i < parameters.Count - 1; i++)
-      {
-        double start = parameters[i];
-        double end = parameters[i + 1];
-        if ((end - start) > RhinoMath.ZeroTolerance)
+        //David: Do we really need these two functions? Me thinks they are a bit too geeky.
+        /// <summary>
+        /// Convert a NURBS curve parameter to a curve parameter.
+        /// </summary>
+        /// <param name="nurbsParameter">NURBS form parameter.</param>
+        /// <param name="curveParameter">Curve parameter.</param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <remarks>
+        /// If HasNurbForm returns 2, this function converts the curve parameter to the NURBS curve parameter.
+        /// </remarks>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool GetCurveParameterFromNurbsFormParameter(double nurbsParameter, out double curveParameter)
         {
-          Curve trimcurve = Trim(start, end);
-          if (trimcurve != null)
-            rc.Add(trimcurve);
+            curveParameter = 0.0;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_GetNurbParameter(ptr, nurbsParameter, ref curveParameter, true);
         }
-      }
+        /// <summary>Convert a curve parameter to a NURBS curve parameter.</summary>
+        /// <param name="curveParameter">Curve parameter.</param>
+        /// <param name="nurbsParameter">NURBS form parameter.</param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <remarks>
+        /// If GetNurbForm returns 2, this function converts the curve parameter to the NURBS curve parameter.
+        /// </remarks>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public bool GetNurbsFormParameterFromCurveParameter(double curveParameter, out double nurbsParameter)
+        {
+            nurbsParameter = 0.0;
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_GetNurbParameter(ptr, curveParameter, ref nurbsParameter, false);
+        }
+        #endregion
 
-      // If we had to add parameters at both curve extremes, and the curve is closed,
-      // then the first and last segments are on either side of the seam and should be 
-      // joined.
-      if (t0Added && t1Added && IsClosed)
-      {
-        Curve segment0 = rc[0];
-        Curve segment1 = rc[rc.Count - 1];
-        PolyCurve join = new PolyCurve();
-        join.Append(segment1);
-        join.Append(segment0);
-        join.RemoveNesting();
+        #region shape related methods
+        private Curve TrimExtendHelper(double t0, double t1, bool trimming)
+        {
+            IntPtr ptr = ConstPointer();
+            IntPtr rc = UnsafeNativeMethods.ON_Curve_TrimExtend(ptr, t0, t1, trimming);
+            return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
+        }
 
-        // The joint segment is at the end of the segment list.
-        rc.RemoveAt(0);
-        rc[rc.Count - 1] = join;
-      }
+        /// <summary>
+        /// Removes portions of the curve outside the specified interval.
+        /// </summary>
+        /// <param name="t0">
+        /// Start of the trimming interval. Portions of the curve before curve(t0) are removed.
+        /// </param>
+        /// <param name="t1">
+        /// End of the trimming interval. Portions of the curve after curve(t1) are removed.
+        /// </param>
+        /// <returns>Trimmed portion of this curve is successful, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve Trim(double t0, double t1)
+        {
+            return TrimExtendHelper(t0, t1, true);
+        }
+        /// <summary>
+        /// Removes portions of the curve outside the specified interval.
+        /// </summary>
+        /// <param name="domain">
+        /// Trimming interval. Portions of the curve before curve(domain[0])
+        /// and after curve(domain[1]) are removed.
+        /// </param>
+        /// <returns>Trimmed curve if successful, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve Trim(Interval domain)
+        {
+            return Trim(domain.T0, domain.T1);
+        }
 
-      return rc.Count == 0 ? null : rc.ToArray();
-    }
+        //#if RHINO_SDK
+        /// <summary>
+        /// Shortens a curve by a given length
+        /// </summary>
+        /// <param name="side"></param>
+        /// <param name="length"></param>
+        /// <returns>Trimmed curve if successful, null on failure.</returns>
+        /// <since>5.1</since>
+        [ConstOperation]
+        public Curve Trim(CurveEnd side, double length)
+        {
+            if (length <= 0)
+                throw new ArgumentException("length must be > 0", "length");
+            double cLength = GetLength();
+            if (IsClosed || length >= cLength)
+                return null;
+            if (side == CurveEnd.Both && length >= 2.0 * cLength)
+                return null;
+
+            double t0 = Domain[0];
+            double t1 = Domain[1];
+            if (side == CurveEnd.Start || side == CurveEnd.Both)
+            {
+                double s = length / cLength;
+                NormalizedLengthParameter(s, out t0);
+            }
+            if (side == CurveEnd.End || side == CurveEnd.Both)
+            {
+                double s = (cLength - length) / cLength;
+                NormalizedLengthParameter(s, out t1);
+            }
+            return Trim(t0, t1);
+        }
+        //#endif
+
+        /// <summary>
+        /// Splits (divides) the curve at the specified parameter. 
+        /// The parameter must be in the interior of the curve's domain.
+        /// </summary>
+        /// <param name="t">
+        /// Parameter to split the curve at in the interval returned by Domain().
+        /// </param>
+        /// <returns>
+        /// Two curves on success, null on failure.
+        /// </returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve[] Split(double t)
+        {
+            IntPtr leftptr = IntPtr.Zero;
+            IntPtr rightptr = IntPtr.Zero;
+            IntPtr pConstThis = ConstPointer();
+            bool rc = UnsafeNativeMethods.ON_Curve_Split(pConstThis, t, ref leftptr, ref rightptr);
+            Curve[] output = new Curve[2];
+            if (leftptr != IntPtr.Zero)
+                output[0] = GeometryBase.CreateGeometryHelper(leftptr, null) as Curve;
+            if (rightptr != IntPtr.Zero)
+                output[1] = GeometryBase.CreateGeometryHelper(rightptr, null) as Curve;
+            return rc ? output : null;
+        }
+
+        /// <summary>
+        /// Splits (divides) the curve at a series of specified parameters. 
+        /// The parameter must be in the interior of the curve domain.
+        /// </summary>
+        /// <param name="t">
+        /// Parameters to split the curve at in the interval returned by Domain().
+        /// </param>
+        /// <returns>Multiple curves on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve[] Split(IEnumerable<double> t)
+        {
+            Interval domain = Domain;
+            double t0 = domain.Min;
+            double t1 = domain.Max;
+
+            RhinoList<double> parameters = new RhinoList<double>(t);
+            parameters.Sort();
+
+            // Remove invalid and duplicate parameters.
+            for (int i = parameters.Count - 1; i >= 0; i--)
+            {
+                if (parameters[i] < t0)
+                    parameters.RemoveAt(i);
+                else if (parameters[i] > t1)
+                    parameters.RemoveAt(i);
+                else if (i > 0)
+                    if (parameters[i].Equals(parameters[i - 1]))
+                        parameters.RemoveAt(i);
+            }
+            if (parameters.Count == 0)
+                return new Curve[0];
+
+            // Ensure parameters at the curve tips.
+            bool t0Added = false;
+            bool t1Added = false;
+            if (parameters[0] > t0 + RhinoMath.ZeroTolerance)
+            {
+                t0Added = true;
+                parameters.Insert(0, t0);
+            }
+            if (parameters[parameters.Count - 1] < t1 - RhinoMath.ZeroTolerance)
+            {
+                t1Added = true;
+                parameters.Add(t1);
+            }
+
+            RhinoList<Curve> rc = new RhinoList<Curve>();
+            for (int i = 0; i < parameters.Count - 1; i++)
+            {
+                double start = parameters[i];
+                double end = parameters[i + 1];
+                if ((end - start) > RhinoMath.ZeroTolerance)
+                {
+                    Curve trimcurve = Trim(start, end);
+                    if (trimcurve != null)
+                        rc.Add(trimcurve);
+                }
+            }
+
+            // If we had to add parameters at both curve extremes, and the curve is closed,
+            // then the first and last segments are on either side of the seam and should be 
+            // joined.
+            if (t0Added && t1Added && IsClosed)
+            {
+                Curve segment0 = rc[0];
+                Curve segment1 = rc[rc.Count - 1];
+                PolyCurve join = new PolyCurve();
+                join.Append(segment1);
+                join.Append(segment0);
+                join.RemoveNesting();
+
+                // The joint segment is at the end of the segment list.
+                rc.RemoveAt(0);
+                rc[rc.Count - 1] = join;
+            }
+
+            return rc.Count == 0 ? null : rc.ToArray();
+        }
 
 #if RHINO_SDK
     /// <summary>
@@ -4434,137 +4603,177 @@ namespace Rhino.Geometry
         return pieces.ToNonConstArray();
       }
     }
+#endif
 
-    /// <summary>
-    /// Where possible, analytically extends curve to include the given domain. 
-    /// This will not work on closed curves. The original curve will be identical to the 
-    /// restriction of the resulting curve to the original curve domain.
-    /// </summary>
-    /// <param name="t0">Start of extension domain, if the start is not inside the 
-    /// Domain of this curve, an attempt will be made to extend the curve.</param>
-    /// <param name="t1">End of extension domain, if the end is not inside the 
-    /// Domain of this curve, an attempt will be made to extend the curve.</param>
-    /// <returns>Extended curve on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve Extend(double t0, double t1)
-    {
-      return TrimExtendHelper(t0, t1, false);
-    }
-    /// <summary>
-    /// Where possible, analytically extends curve to include the given domain. 
-    /// This will not work on closed curves. The original curve will be identical to the 
-    /// restriction of the resulting curve to the original curve domain.
-    /// </summary>
-    /// <param name="domain">Extension domain.</param>
-    /// <returns>Extended curve on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve Extend(Interval domain)
-    {
-      return Extend(domain.T0, domain.T1);
-    }
+#if SB_IMP
+        /// <summary>
+        /// Where possible, analytically extends curve to include the given domain. 
+        /// This will not work on closed curves. The original curve will be identical to the 
+        /// restriction of the resulting curve to the original curve domain.
+        /// </summary>
+        /// <param name="t0">Start of extension domain, if the start is not inside the 
+        /// Domain of this curve, an attempt will be made to extend the curve.</param>
+        /// <param name="t1">End of extension domain, if the end is not inside the 
+        /// Domain of this curve, an attempt will be made to extend the curve.</param>
+        /// <returns>Extended curve on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve Extend(double t0, double t1)
+        {
+            return TrimExtendHelper(t0, t1, false);
+        }
+        /// <summary>
+        /// Where possible, analytically extends curve to include the given domain. 
+        /// This will not work on closed curves. The original curve will be identical to the 
+        /// restriction of the resulting curve to the original curve domain.
+        /// </summary>
+        /// <param name="domain">Extension domain.</param>
+        /// <returns>Extended curve on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve Extend(Interval domain)
+        {
+            return Extend(domain.T0, domain.T1);
+        }
+        /*
+       static UnsafeNativeMethods.ExtendCurveConsts ConvertExtensionStyle(CurveExtensionStyle style)
+       {
+           if (style == CurveExtensionStyle.Arc)
+               return UnsafeNativeMethods.ExtendCurveConsts.ExtendTypeArc;
+           if (style == CurveExtensionStyle.Line)
+               return UnsafeNativeMethods.ExtendCurveConsts.ExtendTypeLine;
 
-    static UnsafeNativeMethods.ExtendCurveConsts ConvertExtensionStyle(CurveExtensionStyle style)
-    {
-      if (style == CurveExtensionStyle.Arc)
-        return UnsafeNativeMethods.ExtendCurveConsts.ExtendTypeArc;
-      if (style == CurveExtensionStyle.Line)
-        return UnsafeNativeMethods.ExtendCurveConsts.ExtendTypeLine;
+           return UnsafeNativeMethods.ExtendCurveConsts.ExtendTypeSmooth;
+       }
+         */
+        /// <summary>
+        /// Extends a curve with straigth line by a specific length.
+        /// </summary>
+        /// <param name="side">Curve end to extend.</param>
+        /// <param name="length">Length to add to the curve end.</param>
+        /// <returns>A curve with extended ends or null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve Extend(CurveEnd side, double length)
+        {
+            Curve new_crv = DuplicateCurve();
+            if (side == CurveEnd.None)
+                return new_crv;
+            length = Math.Max(length, 0.0);
 
-      return UnsafeNativeMethods.ExtendCurveConsts.ExtendTypeSmooth;
-    }
+            bool s_status = false;
+            bool e_status = false;
 
-    /// <summary>
-    /// Extends a curve by a specific length.
-    /// </summary>
-    /// <param name="side">Curve end to extend.</param>
-    /// <param name="length">Length to add to the curve end.</param>
-    /// <param name="style">Extension style.</param>
-    /// <returns>A curve with extended ends or null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve Extend(CurveEnd side, double length, CurveExtensionStyle style)
-    {
-      if (side == CurveEnd.None)
-        return DuplicateCurve();
+            if (side == CurveEnd.End)
+            {
+                Point3d newPoint = this.PointAtEnd + (this.TangentAtEnd * length);
+                e_status = new_crv.SetEndPoint(newPoint);
+            }
 
-      length = Math.Max(length, 0.0);
+            if (side == CurveEnd.Start)
+            {
+                Point3d newPoint = this.PointAtStart + (this.TangentAtStart * length);
+                e_status = new_crv.SetStartPoint(newPoint);
+            }
 
-      double l0 = length;
-      double l1 = length;
+            if (s_status || e_status) return null;
+            return new_crv;
+        }
+        /*
+       /// <summary>
+       /// Extends a curve by a specific length.
+       /// </summary>
+       /// <param name="side">Curve end to extend.</param>
+       /// <param name="length">Length to add to the curve end.</param>
+       /// <param name="style">Extension style.</param>
+       /// <returns>A curve with extended ends or null on failure.</returns>
+       /// <since>5.0</since>
+       [ConstOperation]
+       public Curve Extend(CurveEnd side, double length, CurveExtensionStyle style)
+       {
+         if (side == CurveEnd.None)
+           return DuplicateCurve();
 
-      if (side == CurveEnd.End)
-        l0 = 0.0;
-      if (side == CurveEnd.Start)
-        l1 = 0.0;
+         length = Math.Max(length, 0.0);
 
-      IntPtr ptr = ConstPointer();
-      IntPtr rc = UnsafeNativeMethods.RHC_RhinoExtendCurve(ptr, l0, l1, ConvertExtensionStyle(style));
-      return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
-    }
+         double l0 = length;
+         double l1 = length;
 
-    /// <summary>
-    /// Extends a curve until it intersects a collection of objects.
-    /// </summary>
-    /// <param name="side">The end of the curve to extend.</param>
-    /// <param name="style">The style or type of extension to use.</param>
-    /// <param name="geometry">A collection of objects. Allowable object types are Curve, Surface, Brep.</param>
-    /// <returns>New extended curve result on success, null on failure.</returns>
-    /// <example>
-    /// <code source='examples\vbnet\ex_extendcurve.vb' lang='vbnet'/>
-    /// <code source='examples\cs\ex_extendcurve.cs' lang='cs'/>
-    /// <code source='examples\py\ex_extendcurve.py' lang='py'/>
-    /// </example>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve Extend(CurveEnd side, CurveExtensionStyle style, System.Collections.Generic.IEnumerable<GeometryBase> geometry)
-    {
-      if (CurveEnd.None == side)
-        return null;
-      int _side = 0;
-      if (CurveEnd.End == side)
-        _side = 1;
-      else if (CurveEnd.Both == side)
-        _side = 2;
+         if (side == CurveEnd.End)
+           l0 = 0.0;
+         if (side == CurveEnd.Start)
+           l1 = 0.0;
 
-      IntPtr pConstPtr = ConstPointer();
+         Curve new_crv = DuplicateCurve();
+         new_crv.SetStartPoint = this.PointAtStart + (this.TangentAtStart.Unitize() * length)
+               IntPtr ptr = ConstPointer();
+         IntPtr rc = UnsafeNativeMethods.RHC_RhinoExtendCurve(ptr, l0, l1, ConvertExtensionStyle(style));
+         return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
+       }
 
-      using (SimpleArrayGeometryPointer geometryArray = new SimpleArrayGeometryPointer(geometry))
-      {
-        IntPtr geometryArrayPtr = geometryArray.ConstPointer();
+       /// <summary>
+       /// Extends a curve until it intersects a collection of objects.
+       /// </summary>
+       /// <param name="side">The end of the curve to extend.</param>
+       /// <param name="style">The style or type of extension to use.</param>
+       /// <param name="geometry">A collection of objects. Allowable object types are Curve, Surface, Brep.</param>
+       /// <returns>New extended curve result on success, null on failure.</returns>
+       /// <example>
+       /// <code source='examples\vbnet\ex_extendcurve.vb' lang='vbnet'/>
+       /// <code source='examples\cs\ex_extendcurve.cs' lang='cs'/>
+       /// <code source='examples\py\ex_extendcurve.py' lang='py'/>
+       /// </example>
+       /// <since>5.0</since>
+       [ConstOperation]
+       public Curve Extend(CurveEnd side, CurveExtensionStyle style, System.Collections.Generic.IEnumerable<GeometryBase> geometry)
+       {
+         if (CurveEnd.None == side)
+           return null;
+         int _side = 0;
+         if (CurveEnd.End == side)
+           _side = 1;
+         else if (CurveEnd.Both == side)
+           _side = 2;
 
-        IntPtr rc = UnsafeNativeMethods.RHC_RhinoExtendCurve1(pConstPtr, ConvertExtensionStyle(style), _side, geometryArrayPtr);
-        GC.KeepAlive(geometry);
-        return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
-      }
-    }
+         IntPtr pConstPtr = ConstPointer();
 
-    /// <summary>
-    /// Extends a curve to a point.
-    /// </summary>
-    /// <param name="side">The end of the curve to extend.</param>
-    /// <param name="style">The style or type of extension to use.</param>
-    /// <param name="endPoint">A new end point.</param>
-    /// <returns>New extended curve result on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve Extend(CurveEnd side, CurveExtensionStyle style, Point3d endPoint)
-    {
-      if (CurveEnd.None == side)
-        return null;
-      int _side = 0;
-      if (CurveEnd.End == side)
-        _side = 1;
-      else if (CurveEnd.Both == side)
-        _side = 2;
+         using (SimpleArrayGeometryPointer geometryArray = new SimpleArrayGeometryPointer(geometry))
+         {
+           IntPtr geometryArrayPtr = geometryArray.ConstPointer();
 
-      IntPtr pConstPtr = ConstPointer();
+           IntPtr rc = UnsafeNativeMethods.RHC_RhinoExtendCurve1(pConstPtr, ConvertExtensionStyle(style), _side, geometryArrayPtr);
+           GC.KeepAlive(geometry);
+           return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
+         }
+       }
 
-      IntPtr rc = UnsafeNativeMethods.RHC_RhinoExtendCurve2(pConstPtr, ConvertExtensionStyle(style), _side, endPoint);
-      return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
-    }
+       /// <summary>
+       /// Extends a curve to a point.
+       /// </summary>
+       /// <param name="side">The end of the curve to extend.</param>
+       /// <param name="style">The style or type of extension to use.</param>
+       /// <param name="endPoint">A new end point.</param>
+       /// <returns>New extended curve result on success, null on failure.</returns>
+       /// <since>5.0</since>
+       [ConstOperation]
+       public Curve Extend(CurveEnd side, CurveExtensionStyle style, Point3d endPoint)
+       {
+         if (CurveEnd.None == side)
+           return null;
+         int _side = 0;
+         if (CurveEnd.End == side)
+           _side = 1;
+         else if (CurveEnd.Both == side)
+           _side = 2;
 
+         IntPtr pConstPtr = ConstPointer();
+
+         IntPtr rc = UnsafeNativeMethods.RHC_RhinoExtendCurve2(pConstPtr, ConvertExtensionStyle(style), _side, endPoint);
+         return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
+       }
+       */
+#endif
+#if RHINO_SDK
     /// <summary>
     /// Extends a curve on a surface.
     /// </summary>
@@ -4757,21 +4966,23 @@ namespace Rhino.Geometry
       IntPtr rc = UnsafeNativeMethods.RHC_RhinoFairCurve(ptr, distanceTolerance, angleTolerance, clampStart, clampEnd, iterations);
       return GeometryBase.CreateGeometryHelper(rc, null) as Curve;
     }
+#endif
+#if MUSTHAVE
 
-    /// <summary>
-    /// Fits a new curve through an existing curve.
-    /// </summary>
-    /// <param name="degree">The degree of the returned Curve. Must be bigger than 1.</param>
-    /// <param name="fitTolerance">The fitting tolerance. If fitTolerance is RhinoMath.UnsetValue or &lt;=0.0,
-    /// the document absolute tolerance is used.</param>
-    /// <param name="angleTolerance">The kink smoothing tolerance in radians.
-    /// <para>If angleTolerance is 0.0, all kinks are smoothed</para>
-    /// <para>If angleTolerance is &gt;0.0, kinks smaller than angleTolerance are smoothed</para>  
-    /// <para>If angleTolerance is RhinoMath.UnsetValue or &lt;0.0, the document angle tolerance is used for the kink smoothing</para>
-    /// </param>
-    /// <returns>Returns a new fitted Curve if successful, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
+        /// <summary>
+        /// Fits a new curve through an existing curve.
+        /// </summary>
+        /// <param name="degree">The degree of the returned Curve. Must be bigger than 1.</param>
+        /// <param name="fitTolerance">The fitting tolerance. If fitTolerance is RhinoMath.UnsetValue or &lt;=0.0,
+        /// the document absolute tolerance is used.</param>
+        /// <param name="angleTolerance">The kink smoothing tolerance in radians.
+        /// <para>If angleTolerance is 0.0, all kinks are smoothed</para>
+        /// <para>If angleTolerance is &gt;0.0, kinks smaller than angleTolerance are smoothed</para>  
+        /// <para>If angleTolerance is RhinoMath.UnsetValue or &lt;0.0, the document angle tolerance is used for the kink smoothing</para>
+        /// </param>
+        /// <returns>Returns a new fitted Curve if successful, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
     public Curve Fit(int degree, double fitTolerance, double angleTolerance)
     {
       IntPtr ptr = ConstPointer();
@@ -4799,211 +5010,213 @@ namespace Rhino.Geometry
       return GeometryBase.CreateGeometryHelper(rc, null) as NurbsCurve;
     }
 #endif
-    #endregion
+        #endregion
 
-    //David: we should use an Enum here. This function should also be a Property I think.
-    /// <summary>
-    /// Does a NURBS curve representation of this curve exist?
-    /// </summary>
-    /// <returns>
-    /// 0   unable to create NURBS representation with desired accuracy.
-    /// 1   success - NURBS parameterization matches the curve's to the desired accuracy
-    /// 2   success - NURBS point locus matches the curve's and the domain of the NURBS
-    ///               curve is correct. However, This curve's parameterization and the
-    ///               NURBS curve parameterization may not match. This situation happens
-    ///               when getting NURBS representations of curves that have a
-    ///               transcendental parameterization like circles.
-    /// </returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public int HasNurbsForm()
-    {
-      IntPtr ptr = ConstPointer();
-      return UnsafeNativeMethods.ON_Curve_HasNurbForm(ptr);
-    }
+        //David: we should use an Enum here. This function should also be a Property I think.
+        /// <summary>
+        /// Does a NURBS curve representation of this curve exist?
+        /// </summary>
+        /// <returns>
+        /// 0   unable to create NURBS representation with desired accuracy.
+        /// 1   success - NURBS parameterization matches the curve's to the desired accuracy
+        /// 2   success - NURBS point locus matches the curve's and the domain of the NURBS
+        ///               curve is correct. However, This curve's parameterization and the
+        ///               NURBS curve parameterization may not match. This situation happens
+        ///               when getting NURBS representations of curves that have a
+        ///               transcendental parameterization like circles.
+        /// </returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public int HasNurbsForm()
+        {
+            IntPtr ptr = ConstPointer();
+            return UnsafeNativeMethods.ON_Curve_HasNurbForm(ptr);
 
-    /// <summary>
-    /// Constructs a NURBS curve representation of this curve.
-    /// </summary>
-    /// <returns>NURBS representation of the curve on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public NurbsCurve ToNurbsCurve()
-    {
-      const double tolerance = 0.0;
-      Interval sub_domain = Interval.Unset;
-      IntPtr ptr = ConstPointer();
-      IntPtr rc = UnsafeNativeMethods.ON_Curve_NurbsCurve(ptr, tolerance, sub_domain, true);
-      return GeometryBase.CreateGeometryHelper(rc, null) as NurbsCurve;
-    }
-    /// <summary>
-    /// Constructs a NURBS curve representation of this curve.
-    /// </summary>
-    /// <param name="subdomain">The NURBS representation for this portion of the curve is returned.</param>
-    /// <returns>NURBS representation of the curve on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public NurbsCurve ToNurbsCurve(Interval subdomain)
-    {
-      const double tolerance = 0.0;
-      IntPtr ptr = ConstPointer();
-      IntPtr rc = UnsafeNativeMethods.ON_Curve_NurbsCurve(ptr, tolerance, subdomain, false);
-      return GeometryBase.CreateGeometryHelper(rc, null) as NurbsCurve;
-    }
+        }
 
-    /// <summary>
-    /// Get the domain of the curve span with the given index. 
-    /// Use the SpanCount property to test how many spans there are.
-    /// </summary>
-    /// <param name="spanIndex">Index of span.</param>
-    /// <returns>Interval of the span with the given index.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Interval SpanDomain(int spanIndex)
-    {
-      if (spanIndex < 0) { throw new IndexOutOfRangeException("spanIndex must be larger than or equal to zero"); }
-      if (spanIndex >= SpanCount) { throw new IndexOutOfRangeException("spanIndex must be smaller than spanCount"); }
+        /// <summary>
+        /// Constructs a NURBS curve representation of this curve.
+        /// </summary>
+        /// <returns>NURBS representation of the curve on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public NurbsCurve ToNurbsCurve()
+        {
+            const double tolerance = 0.0;
+            Interval sub_domain = Interval.Unset;
+            IntPtr ptr = ConstPointer();
+            IntPtr rc = UnsafeNativeMethods.ON_Curve_NurbsCurve(ptr, tolerance, sub_domain, true);
+            return GeometryBase.CreateGeometryHelper(rc, null) as NurbsCurve;
+        }
+        /// <summary>
+        /// Constructs a NURBS curve representation of this curve.
+        /// </summary>
+        /// <param name="subdomain">The NURBS representation for this portion of the curve is returned.</param>
+        /// <returns>NURBS representation of the curve on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public NurbsCurve ToNurbsCurve(Interval subdomain)
+        {
+            const double tolerance = 0.0;
+            IntPtr ptr = ConstPointer();
+            IntPtr rc = UnsafeNativeMethods.ON_Curve_NurbsCurve(ptr, tolerance, subdomain, false);
+            return GeometryBase.CreateGeometryHelper(rc, null) as NurbsCurve;
+        }
 
-      Interval domain = Interval.Unset;
-      if (UnsafeNativeMethods.ON_Curve_SpanInterval(ConstPointer(), spanIndex, ref domain))
-        return domain;
+        /// <summary>
+        /// Get the domain of the curve span with the given index. 
+        /// Use the SpanCount property to test how many spans there are.
+        /// </summary>
+        /// <param name="spanIndex">Index of span.</param>
+        /// <returns>Interval of the span with the given index.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Interval SpanDomain(int spanIndex)
+        {
+            if (spanIndex < 0) { throw new IndexOutOfRangeException("spanIndex must be larger than or equal to zero"); }
+            if (spanIndex >= SpanCount) { throw new IndexOutOfRangeException("spanIndex must be smaller than spanCount"); }
 
-      return Interval.Unset;
-    }
+            Interval domain = Interval.Unset;
+            if (UnsafeNativeMethods.ON_Curve_SpanInterval(ConstPointer(), spanIndex, ref domain))
+                return domain;
 
+            return Interval.Unset;
+        }
 #if RHINO_SDK
-    /// <summary>
-    /// Gets a polyline approximation of a curve.
-    /// </summary>
-    /// <param name="mainSegmentCount">
-    /// If mainSegmentCount &lt;= 0, then both subSegmentCount and mainSegmentCount are ignored. 
-    /// If mainSegmentCount &gt; 0, then subSegmentCount must be &gt;= 1. In this 
-    /// case the NURBS will be broken into mainSegmentCount equally spaced 
-    /// chords. If needed, each of these chords can be split into as many 
-    /// subSegmentCount sub-parts if the subdivision is necessary for the 
-    /// mesh to meet the other meshing constraints. In particular, if 
-    /// subSegmentCount = 0, then the curve is broken into mainSegmentCount 
-    /// pieces and no further testing is performed.</param>
-    /// <param name="subSegmentCount">An amount of subsegments.</param>
-    /// <param name="maxAngleRadians">
-    /// ( 0 to pi ) Maximum angle (in radians) between unit tangents at 
-    /// adjacent vertices.</param>
-    /// <param name="maxChordLengthRatio">Maximum permitted value of 
-    /// (distance chord midpoint to curve) / (length of chord).</param>
-    /// <param name="maxAspectRatio">If maxAspectRatio &lt; 1.0, the parameter is ignored. 
-    /// If 1 &lt;= maxAspectRatio &lt; sqrt(2), it is treated as if maxAspectRatio = sqrt(2). 
-    /// This parameter controls the maximum permitted value of 
-    /// (length of longest chord) / (length of shortest chord).</param>
-    /// <param name="tolerance">If tolerance = 0, the parameter is ignored. 
-    /// This parameter controls the maximum permitted value of the 
-    /// distance from the curve to the polyline.</param>
-    /// <param name="minEdgeLength">The minimum permitted edge length.</param>
-    /// <param name="maxEdgeLength">If maxEdgeLength = 0, the parameter 
-    /// is ignored. This parameter controls the maximum permitted edge length.
-    /// </param>
-    /// <param name="keepStartPoint">If true the starting point of the curve 
-    /// is added to the polyline. If false the starting point of the curve is 
-    /// not added to the polyline.</param>
-    /// <returns>PolylineCurve on success, null on error.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public PolylineCurve ToPolyline(int mainSegmentCount, int subSegmentCount,
-                                    double maxAngleRadians, double maxChordLengthRatio, double maxAspectRatio,
-                                    double tolerance, double minEdgeLength, double maxEdgeLength, bool keepStartPoint)
-    {
-      IntPtr ptr = ConstPointer();
-      PolylineCurve poly = new PolylineCurve();
-      IntPtr polyOut = poly.NonConstPointer();
-      Interval curve_domain = Interval.Unset;
 
-      bool rc = UnsafeNativeMethods.RHC_RhinoConvertCurveToPolyline(ptr,
-        mainSegmentCount, subSegmentCount, maxAngleRadians,
-        maxChordLengthRatio, maxAspectRatio, tolerance, minEdgeLength, maxEdgeLength, polyOut,
-        keepStartPoint, curve_domain, true);
+        /// <summary>
+        /// Gets a polyline approximation of a curve.
+        /// </summary>
+        /// <param name="mainSegmentCount">
+        /// If mainSegmentCount &lt;= 0, then both subSegmentCount and mainSegmentCount are ignored. 
+        /// If mainSegmentCount &gt; 0, then subSegmentCount must be &gt;= 1. In this 
+        /// case the NURBS will be broken into mainSegmentCount equally spaced 
+        /// chords. If needed, each of these chords can be split into as many 
+        /// subSegmentCount sub-parts if the subdivision is necessary for the 
+        /// mesh to meet the other meshing constraints. In particular, if 
+        /// subSegmentCount = 0, then the curve is broken into mainSegmentCount 
+        /// pieces and no further testing is performed.</param>
+        /// <param name="subSegmentCount">An amount of subsegments.</param>
+        /// <param name="maxAngleRadians">
+        /// ( 0 to pi ) Maximum angle (in radians) between unit tangents at 
+        /// adjacent vertices.</param>
+        /// <param name="maxChordLengthRatio">Maximum permitted value of 
+        /// (distance chord midpoint to curve) / (length of chord).</param>
+        /// <param name="maxAspectRatio">If maxAspectRatio &lt; 1.0, the parameter is ignored. 
+        /// If 1 &lt;= maxAspectRatio &lt; sqrt(2), it is treated as if maxAspectRatio = sqrt(2). 
+        /// This parameter controls the maximum permitted value of 
+        /// (length of longest chord) / (length of shortest chord).</param>
+        /// <param name="tolerance">If tolerance = 0, the parameter is ignored. 
+        /// This parameter controls the maximum permitted value of the 
+        /// distance from the curve to the polyline.</param>
+        /// <param name="minEdgeLength">The minimum permitted edge length.</param>
+        /// <param name="maxEdgeLength">If maxEdgeLength = 0, the parameter 
+        /// is ignored. This parameter controls the maximum permitted edge length.
+        /// </param>
+        /// <param name="keepStartPoint">If true the starting point of the curve 
+        /// is added to the polyline. If false the starting point of the curve is 
+        /// not added to the polyline.</param>
+        /// <returns>PolylineCurve on success, null on error.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public PolylineCurve ToPolyline(int mainSegmentCount, int subSegmentCount,
+                                        double maxAngleRadians, double maxChordLengthRatio, double maxAspectRatio,
+                                        double tolerance, double minEdgeLength, double maxEdgeLength, bool keepStartPoint)
+        {
+            IntPtr ptr = ConstPointer();
+            PolylineCurve poly = new PolylineCurve();
+            IntPtr polyOut = poly.NonConstPointer();
+            Interval curve_domain = Interval.Unset;
 
-      if (!rc)
-      {
-        poly.Dispose();
-        poly = null;
-      }
+            bool rc = UnsafeNativeMethods.RHC_RhinoConvertCurveToPolyline(ptr,
+              mainSegmentCount, subSegmentCount, maxAngleRadians,
+              maxChordLengthRatio, maxAspectRatio, tolerance, minEdgeLength, maxEdgeLength, polyOut,
+              keepStartPoint, curve_domain, true);
 
-      return poly;
-    }
-    /// <summary>
-    /// Gets a polyline approximation of a curve.
-    /// </summary>
-    /// <param name="mainSegmentCount">
-    /// If mainSegmentCount &lt;= 0, then both subSegmentCount and mainSegmentCount are ignored. 
-    /// If mainSegmentCount &gt; 0, then subSegmentCount must be &gt;= 1. In this 
-    /// case the NURBS will be broken into mainSegmentCount equally spaced 
-    /// chords. If needed, each of these chords can be split into as many 
-    /// subSegmentCount sub-parts if the subdivision is necessary for the 
-    /// mesh to meet the other meshing constraints. In particular, if 
-    /// subSegmentCount = 0, then the curve is broken into mainSegmentCount 
-    /// pieces and no further testing is performed.</param>
-    /// <param name="subSegmentCount">An amount of subsegments.</param>
-    /// <param name="maxAngleRadians">
-    /// ( 0 to pi ) Maximum angle (in radians) between unit tangents at 
-    /// adjacent vertices.</param>
-    /// <param name="maxChordLengthRatio">Maximum permitted value of 
-    /// (distance chord midpoint to curve) / (length of chord).</param>
-    /// <param name="maxAspectRatio">If maxAspectRatio &lt; 1.0, the parameter is ignored. 
-    /// If 1 &lt;= maxAspectRatio &lt; sqrt(2), it is treated as if maxAspectRatio = sqrt(2). 
-    /// This parameter controls the maximum permitted value of 
-    /// (length of longest chord) / (length of shortest chord).</param>
-    /// <param name="tolerance">If tolerance = 0, the parameter is ignored. 
-    /// This parameter controls the maximum permitted value of the 
-    /// distance from the curve to the polyline.</param>
-    /// <param name="minEdgeLength">The minimum permitted edge length.</param>
-    /// <param name="maxEdgeLength">If maxEdgeLength = 0, the parameter 
-    /// is ignored. This parameter controls the maximum permitted edge length.
-    /// </param>
-    /// <param name="keepStartPoint">If true the starting point of the curve 
-    /// is added to the polyline. If false the starting point of the curve is 
-    /// not added to the polyline.</param>
-    /// <param name="curveDomain">This sub-domain of the NURBS curve is approximated.</param>
-    /// <returns>PolylineCurve on success, null on error.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public PolylineCurve ToPolyline(int mainSegmentCount, int subSegmentCount,
-                                    double maxAngleRadians, double maxChordLengthRatio, double maxAspectRatio,
-                                    double tolerance, double minEdgeLength, double maxEdgeLength, bool keepStartPoint,
-                                    Interval curveDomain)
-    {
-      IntPtr ptr = ConstPointer();
-      PolylineCurve poly = new PolylineCurve();
-      IntPtr polyOut = poly.NonConstPointer();
+            if (!rc)
+            {
+                poly.Dispose();
+                poly = null;
+            }
 
-      bool rc = UnsafeNativeMethods.RHC_RhinoConvertCurveToPolyline(ptr,
-        mainSegmentCount, subSegmentCount, maxAngleRadians,
-        maxChordLengthRatio, maxAspectRatio, tolerance, minEdgeLength, maxEdgeLength, polyOut,
-        keepStartPoint, curveDomain, false);
+            return poly;
+        }
+        /// <summary>
+        /// Gets a polyline approximation of a curve.
+        /// </summary>
+        /// <param name="mainSegmentCount">
+        /// If mainSegmentCount &lt;= 0, then both subSegmentCount and mainSegmentCount are ignored. 
+        /// If mainSegmentCount &gt; 0, then subSegmentCount must be &gt;= 1. In this 
+        /// case the NURBS will be broken into mainSegmentCount equally spaced 
+        /// chords. If needed, each of these chords can be split into as many 
+        /// subSegmentCount sub-parts if the subdivision is necessary for the 
+        /// mesh to meet the other meshing constraints. In particular, if 
+        /// subSegmentCount = 0, then the curve is broken into mainSegmentCount 
+        /// pieces and no further testing is performed.</param>
+        /// <param name="subSegmentCount">An amount of subsegments.</param>
+        /// <param name="maxAngleRadians">
+        /// ( 0 to pi ) Maximum angle (in radians) between unit tangents at 
+        /// adjacent vertices.</param>
+        /// <param name="maxChordLengthRatio">Maximum permitted value of 
+        /// (distance chord midpoint to curve) / (length of chord).</param>
+        /// <param name="maxAspectRatio">If maxAspectRatio &lt; 1.0, the parameter is ignored. 
+        /// If 1 &lt;= maxAspectRatio &lt; sqrt(2), it is treated as if maxAspectRatio = sqrt(2). 
+        /// This parameter controls the maximum permitted value of 
+        /// (length of longest chord) / (length of shortest chord).</param>
+        /// <param name="tolerance">If tolerance = 0, the parameter is ignored. 
+        /// This parameter controls the maximum permitted value of the 
+        /// distance from the curve to the polyline.</param>
+        /// <param name="minEdgeLength">The minimum permitted edge length.</param>
+        /// <param name="maxEdgeLength">If maxEdgeLength = 0, the parameter 
+        /// is ignored. This parameter controls the maximum permitted edge length.
+        /// </param>
+        /// <param name="keepStartPoint">If true the starting point of the curve 
+        /// is added to the polyline. If false the starting point of the curve is 
+        /// not added to the polyline.</param>
+        /// <param name="curveDomain">This sub-domain of the NURBS curve is approximated.</param>
+        /// <returns>PolylineCurve on success, null on error.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public PolylineCurve ToPolyline(int mainSegmentCount, int subSegmentCount,
+                                        double maxAngleRadians, double maxChordLengthRatio, double maxAspectRatio,
+                                        double tolerance, double minEdgeLength, double maxEdgeLength, bool keepStartPoint,
+                                        Interval curveDomain)
+        {
+            IntPtr ptr = ConstPointer();
+            PolylineCurve poly = new PolylineCurve();
+            IntPtr polyOut = poly.NonConstPointer();
 
-      if (!rc)
-      {
-        poly.Dispose();
-        poly = null;
-      }
+            bool rc = UnsafeNativeMethods.RHC_RhinoConvertCurveToPolyline(ptr,
+              mainSegmentCount, subSegmentCount, maxAngleRadians,
+              maxChordLengthRatio, maxAspectRatio, tolerance, minEdgeLength, maxEdgeLength, polyOut,
+              keepStartPoint, curveDomain, false);
 
-      return poly;
-    }
+            if (!rc)
+            {
+                poly.Dispose();
+                poly = null;
+            }
 
-    /// <summary>
-    /// Gets a polyline approximation of a curve.
-    /// </summary>
-    /// <param name="tolerance">The tolerance. This is the maximum deviation from line midpoints to the curve. When in doubt, use the document's model space absolute tolerance.</param>
-    /// <param name="angleTolerance">The angle tolerance in radians. This is the maximum deviation of the line directions. When in doubt, use the document's model space angle tolerance.</param>
-    /// <param name="minimumLength">The minimum segment length.</param>
-    /// <param name="maximumLength">The maximum segment length.</param>
-    /// <returns>PolyCurve on success, null on error.</returns>
-    /// <since>6.0</since>
-    [ConstOperation]
-    public PolylineCurve ToPolyline(double tolerance, double angleTolerance, double minimumLength, double maximumLength)
-    {
-      IntPtr ptr_const_this = ConstPointer();
-      IntPtr ptr = UnsafeNativeMethods.RHC_RhinoConvertCurveToLines(ptr_const_this, tolerance, angleTolerance, minimumLength, maximumLength);
-      return GeometryBase.CreateGeometryHelper(ptr, null) as PolylineCurve;
-    }
+            return poly;
+        }
+
+        /// <summary>
+        /// Gets a polyline approximation of a curve.
+        /// </summary>
+        /// <param name="tolerance">The tolerance. This is the maximum deviation from line midpoints to the curve. When in doubt, use the document's model space absolute tolerance.</param>
+        /// <param name="angleTolerance">The angle tolerance in radians. This is the maximum deviation of the line directions. When in doubt, use the document's model space angle tolerance.</param>
+        /// <param name="minimumLength">The minimum segment length.</param>
+        /// <param name="maximumLength">The maximum segment length.</param>
+        /// <returns>PolyCurve on success, null on error.</returns>
+        /// <since>6.0</since>
+        [ConstOperation]
+        public PolylineCurve ToPolyline(double tolerance, double angleTolerance, double minimumLength, double maximumLength)
+        {
+            IntPtr ptr_const_this = ConstPointer();
+            IntPtr ptr = UnsafeNativeMethods.RHC_RhinoConvertCurveToLines(ptr_const_this, tolerance, angleTolerance, minimumLength, maximumLength);
+            return GeometryBase.CreateGeometryHelper(ptr, null) as PolylineCurve;
+        }
+
 
     /// <summary>
     /// Converts a curve into polycurve consisting of arc segments. Sections of the input curves that are nearly straight are converted to straight-line segments.
@@ -5039,129 +5252,222 @@ namespace Rhino.Geometry
       GC.KeepAlive(mesh);
       return GeometryBase.CreateGeometryHelper(pPolylineCurve, null) as PolylineCurve;
     }
+#endif
 
-    /// <summary>
-    /// Offsets this curve. If you have a nice offset, then there will be one entry in 
-    /// the array. If the original curve had kinks or the offset curve had self 
-    /// intersections, you will get multiple segments in the output array.
-    /// </summary>
-    /// <param name="plane">Offset solution plane.</param>
-    /// <param name="distance">The positive or negative distance to offset.</param>
-    /// <param name="tolerance">The offset or fitting tolerance.</param>
-    /// <param name="cornerStyle">Corner style for offset kinks.</param>
-    /// <returns>Offset curves on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve[] Offset(Plane plane, double distance, double tolerance, CurveOffsetCornerStyle cornerStyle)
-    {
-      // Create a bogus dir point
-      Point3d direction_point = plane.Origin + plane.XAxis;
-
-      Random rnd = new Random(1);
-
-      // Try a hundred times to find a smooth place on the curve where the tangent 
-      // is not (anti)parallel to the offset plane z-axis.
-      // This is unbelievably foul, but the most consistent offset result I 
-      // can come up with on short notice.
-      for (int i = 0; i < 100; i++)
-      {
-        double t = Domain.ParameterAt(rnd.NextDouble());
-        if (IsContinuous(Continuity.G1_continuous, t))
+#if SB_IMP
+        /// <summary>
+        /// Offsets this curve. Any curve will be converted to PolylineCuve. So this method is proper only for Degree 1 curves.
+        /// Corner style is fixed to SHarp.
+        /// </summary>
+        /// <param name="plane">Offset solution plane.</param>
+        /// <param name="distance">The positive or negative distance to offset.</param>
+        /// <returns>Offset curves on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve Offset(Plane plane, double distance)
         {
-          Point3d p = PointAt(t);
-          Vector3d v = TangentAt(t);
 
-          if (v.IsParallelTo(plane.ZAxis, RhinoMath.ToRadians(0.1)) == 0)
-          {
-            Vector3d perp = Vector3d.CrossProduct(v, plane.ZAxis);
-            perp.Unitize();
-            direction_point = p + 1e-3 * perp;
-            break;
-          }
+            NurbsCurve ncrv = this.ToNurbsCurve();
+            Polyline pline = ncrv.Points.ControlPolygon();
+            Line[] segments = pline.GetSegments();
+            List<Line> newLines = new List<Line>();
+            foreach (Line ln in segments)
+            {
+                Vector3d dir = Vector3d.CrossProduct(ln.Direction, plane.ZAxis);
+                dir.Unitize();
+                dir = dir * distance;
+                Line ln1 = new Line(ln.From, ln.To);
+                ln1.Transform(Geometry.Transform.Translation(dir));
+                newLines.Add(ln1);
+
+            }
+            List<Point3d> offsetPts = new List<Point3d>(pline.Count);
+            offsetPts.Add(newLines[0].From);
+            for (int i = 0; i < newLines.Count - 1; i++)
+            {
+                if (Intersection.LineLine(newLines[i + 1], newLines[i], out _, out double b))
+                {
+                    offsetPts.Add(newLines[i].PointAt(b));
+                }
+            }
+            offsetPts.Add(newLines[newLines.Count - 1].To);
+
+            if (offsetPts.Count > 2)
+            {
+                Polyline ply = new Polyline(offsetPts);
+                return ply.ToPolylineCurve();
+            }
+            else return null;
         }
-      }
 
-      return Offset(direction_point, plane.Normal, distance, tolerance, cornerStyle);
-    }
+#endif
+        /* CLipper Implementation. Abandoned... To revise
+     /// <summary>
+     /// Offsets this curve. If you have a nice offset, then there will be one entry in 
+     /// the array. If the original curve had kinks or the offset curve had self 
+     /// intersections, you will get multiple segments in the output array.
+     /// </summary>
+     /// <param name="plane">Offset solution plane.</param>
+     /// <param name="distance">The positive or negative distance to offset.</param>
+     /// <param name="tolerance">The offset or fitting tolerance.</param>
+     /// <param name="cornerStyle">Corner style for offset kinks.</param>
+     /// <returns>Offset curves on success, null on failure.</returns>
+     /// <since>5.0</since>
+     [ConstOperation]
+     public Curve[] Offset2d(Plane plane, double distance, double tolerance, CurveOffsetCornerStyle cornerStyle)
+     {
+         int factor = 1000000;
+         NurbsCurve ncrv = this.ToNurbsCurve();
 
-    /// <summary>
-    /// Offsets this curve. If you have a nice offset, then there will be one entry in 
-    /// the array. If the original curve had kinks or the offset curve had self 
-    /// intersections, you will get multiple segments in the output array.
-    /// </summary>
-    /// <param name="directionPoint">A point that indicates the direction of the offset.</param>
-    /// <param name="normal">The normal to the offset plane.</param>
-    /// <param name="distance">The positive or negative distance to offset.</param>
-    /// <param name="tolerance">The offset or fitting tolerance.</param>
-    /// <param name="cornerStyle">Corner style for offset kinks.</param>
-    /// <returns>Offset curves on success, null on failure.</returns>
-    /// <since>5.0</since>
-    [ConstOperation]
-    public Curve[] Offset(Point3d directionPoint, Vector3d normal, double distance, double tolerance, CurveOffsetCornerStyle cornerStyle)
-    {
-      IntPtr ptr = ConstPointer();
-      SimpleArrayCurvePointer offsetCurves = new SimpleArrayCurvePointer();
-      IntPtr pCurveArray = offsetCurves.NonConstPointer();
-      bool rc = UnsafeNativeMethods.RHC_RhinoOffsetCurve(
-        ptr, 
-        distance, 
-        directionPoint, 
-        normal, 
-        (int)cornerStyle, 
-        tolerance, 
-        RhinoMath.DefaultAngleTolerance,
-        false,
-        0,
-        pCurveArray
-        );
 
-      Curve[] curves = offsetCurves.ToNonConstArray();
-      offsetCurves.Dispose();
-      if (!rc)
-        return null;
-      return curves;
-    }
 
-    /// <summary>
-    /// Offsets this curve. If you have a nice offset, then there will be one entry in 
-    /// the array. If the original curve had kinks or the offset curve had self 
-    /// intersections, you will get multiple segments in the output array.
-    /// </summary>
-    /// <param name="directionPoint">A point that indicates the direction of the offset.</param>
-    /// <param name="normal">The normal to the offset plane.</param>
-    /// <param name="distance">The positive or negative distance to offset.</param>
-    /// <param name="tolerance">The offset or fitting tolerance.</param>
-    /// <param name="angleTolerance">The angle tolerance, in radians, used to decide whether to split at kinks.</param>
-    /// <param name="loose">If false, offset within tolerance. If true, offset by moving edit points.</param>
-    /// <param name="cornerStyle">Corner style for offset kinks.</param>
-    /// <param name="endStyle">End style for non-loose, non-closed curve offsets.</param>
-    /// <returns>Offset curves on success, null on failure.</returns>
-    /// <since>7.0</since>
-    [ConstOperation]
-    public Curve[] Offset(Point3d directionPoint, Vector3d normal, double distance, double tolerance, double angleTolerance, bool loose, CurveOffsetCornerStyle cornerStyle, CurveOffsetEndStyle endStyle)
-    {
-      IntPtr ptr = ConstPointer();
-      SimpleArrayCurvePointer offsetCurves = new SimpleArrayCurvePointer();
-      IntPtr pCurveArray = offsetCurves.NonConstPointer();
-      bool rc = UnsafeNativeMethods.RHC_RhinoOffsetCurve(
-        ptr,
-        distance,
-        directionPoint,
-        normal,
-        (int)cornerStyle,
-        tolerance,
-        angleTolerance,
-        loose,
-        (int)endStyle,
-        pCurveArray
-        );
+         List<IntPoint> IntPath = new List<IntPoint>(ncrv.Points.Count);
+         foreach(ControlPoint cpt in ncrv.Points)
+         {
+             Point3d tempPt = cpt.Location * factor;
+             IntPoint pt = new IntPoint((long)tempPt.X, (long)tempPt.Y);
+             IntPath.Add(pt);
+         }
 
-      Curve[] curves = offsetCurves.ToNonConstArray();
-      offsetCurves.Dispose();
-      if (!rc)
-        return null;
-      return curves;
-    }
+         ClipperOffset o = new ClipperOffset();
+         o.AddPaths(new List<List<IntPoint>> { IntPath }, JoinType.jtMiter, JoinType.jtMiter);
+        // List<List<IntPoint>> afterOffset = Clipper.OffsetPolygons(, 0, true);
+            o.Execute(ref async, )
+         List<Point3d> offsetPt = new List<Point3d>(afterOffset[0].Count);
+         foreach (IntPoint pt in afterOffset[0])
+         {
+             offsetPt.Add(new Point3d(pt.X, pt.Y, 0));
+         }
+         Polyline pline = new Polyline(offsetPt);
+         return new Curve[] { (Curve)pline.ToPolylineCurve() };
+     }
+     */
+
+#if RHINO_SDK
+        /// <summary>
+        /// Offsets this curve. If you have a nice offset, then there will be one entry in 
+        /// the array. If the original curve had kinks or the offset curve had self 
+        /// intersections, you will get multiple segments in the output array.
+        /// </summary>
+        /// <param name="plane">Offset solution plane.</param>
+        /// <param name="distance">The positive or negative distance to offset.</param>
+        /// <param name="tolerance">The offset or fitting tolerance.</param>
+        /// <param name="cornerStyle">Corner style for offset kinks.</param>
+        /// <returns>Offset curves on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve[] Offset(Plane plane, double distance, double tolerance, CurveOffsetCornerStyle cornerStyle)
+        {
+            // Create a bogus dir point
+            Point3d direction_point = plane.Origin + plane.XAxis;
+
+            Random rnd = new Random(1);
+
+            // Try a hundred times to find a smooth place on the curve where the tangent 
+            // is not (anti)parallel to the offset plane z-axis.
+            // This is unbelievably foul, but the most consistent offset result I 
+            // can come up with on short notice.
+            for (int i = 0; i < 100; i++)
+            {
+                double t = Domain.ParameterAt(rnd.NextDouble());
+                if (IsContinuous(Continuity.G1_continuous, t))
+                {
+                    Point3d p = PointAt(t);
+                    Vector3d v = TangentAt(t);
+
+                    if (v.IsParallelTo(plane.ZAxis, RhinoMath.ToRadians(0.1)) == 0)
+                    {
+                        Vector3d perp = Vector3d.CrossProduct(v, plane.ZAxis);
+                        perp.Unitize();
+                        direction_point = p + 1e-3 * perp;
+                        break;
+                    }
+                }
+            }
+
+            return Offset(direction_point, plane.Normal, distance, tolerance, cornerStyle);
+        }
+
+
+
+        /// <summary>
+        /// Offsets this curve. If you have a nice offset, then there will be one entry in 
+        /// the array. If the original curve had kinks or the offset curve had self 
+        /// intersections, you will get multiple segments in the output array.
+        /// </summary>
+        /// <param name="directionPoint">A point that indicates the direction of the offset.</param>
+        /// <param name="normal">The normal to the offset plane.</param>
+        /// <param name="distance">The positive or negative distance to offset.</param>
+        /// <param name="tolerance">The offset or fitting tolerance.</param>
+        /// <param name="cornerStyle">Corner style for offset kinks.</param>
+        /// <returns>Offset curves on success, null on failure.</returns>
+        /// <since>5.0</since>
+        [ConstOperation]
+        public Curve[] Offset(Point3d directionPoint, Vector3d normal, double distance, double tolerance, CurveOffsetCornerStyle cornerStyle)
+        {
+            IntPtr ptr = ConstPointer();
+            SimpleArrayCurvePointer offsetCurves = new SimpleArrayCurvePointer();
+            IntPtr pCurveArray = offsetCurves.NonConstPointer();
+            bool rc = UnsafeNativeMethods.RHC_RhinoOffsetCurve2(
+              ptr,
+              distance,
+              directionPoint,
+              normal,
+              (int)cornerStyle,
+              tolerance,
+              RhinoMath.DefaultAngleTolerance,
+              false,
+              0,
+              pCurveArray
+              );
+
+            Curve[] curves = offsetCurves.ToNonConstArray();
+            offsetCurves.Dispose();
+            if (!rc)
+                return null;
+            return curves;
+        }
+
+        /// <summary>
+        /// Offsets this curve. If you have a nice offset, then there will be one entry in 
+        /// the array. If the original curve had kinks or the offset curve had self 
+        /// intersections, you will get multiple segments in the output array.
+        /// </summary>
+        /// <param name="directionPoint">A point that indicates the direction of the offset.</param>
+        /// <param name="normal">The normal to the offset plane.</param>
+        /// <param name="distance">The positive or negative distance to offset.</param>
+        /// <param name="tolerance">The offset or fitting tolerance.</param>
+        /// <param name="angleTolerance">The angle tolerance, in radians, used to decide whether to split at kinks.</param>
+        /// <param name="loose">If false, offset within tolerance. If true, offset by moving edit points.</param>
+        /// <param name="cornerStyle">Corner style for offset kinks.</param>
+        /// <param name="endStyle">End style for non-loose, non-closed curve offsets.</param>
+        /// <returns>Offset curves on success, null on failure.</returns>
+        /// <since>7.0</since>
+        [ConstOperation]
+        public Curve[] Offset(Point3d directionPoint, Vector3d normal, double distance, double tolerance, double angleTolerance, bool loose, CurveOffsetCornerStyle cornerStyle, CurveOffsetEndStyle endStyle)
+        {
+            IntPtr ptr = ConstPointer();
+            SimpleArrayCurvePointer offsetCurves = new SimpleArrayCurvePointer();
+            IntPtr pCurveArray = offsetCurves.NonConstPointer();
+            bool rc = UnsafeNativeMethods.RHC_RhinoOffsetCurve(
+              ptr,
+              distance,
+              directionPoint,
+              normal,
+              (int)cornerStyle,
+              tolerance,
+              angleTolerance,
+              loose,
+              (int)endStyle,
+              pCurveArray
+              );
+
+            Curve[] curves = offsetCurves.ToNonConstArray();
+            offsetCurves.Dispose();
+            if (!rc)
+                return null;
+            return curves;
+        }
 
     /// <summary>
     /// Offsets a closed curve in the following way: pProject the curve to a plane with given normal.
@@ -5487,8 +5793,10 @@ namespace Rhino.Geometry
       return GeometryBase.CreateGeometryHelper(pOffsetCurve, null) as Curve;
     }
 #endif
-    #endregion methods
-  }
+        #endregion methods
+
+
+    }
 }
 
 

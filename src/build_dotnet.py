@@ -45,7 +45,7 @@ def methodgen(dotnetcore):
         system('dotnet run --project ' + build_dir + '/methodgen.csproj ' + args)
     else:
         # compile methodgen
-        system('msbuild ./methodgen')
+        # system('msbuild ./methodgen')
         # execute methodgen for Rhino3dm
         app = os.getcwd() + '/methodgen/bin/Debug/methodgen.exe'
         if os.name == 'nt':  # windows build
@@ -66,8 +66,11 @@ def create_cpp_project(bitness, compile):
     if os.name == 'nt':  # windows build
         arch = ""
         if bitness == 64:
-            arch = " Win64"
-        args = '-G "Visual Studio 15 2017{0}"'.format(arch)
+            arch = "-A x64"
+        else:
+            arch = "-A Win32"
+        # args = '-G "Visual Studio 16 2019" -A -A Win64'.format(arch)
+        args = '-G "Visual Studio 16 2019" {0}'.format(arch)
         system('cmake ' + args + ' ../../librhino3dm_native')
         if bitness == 64:
             for line in fileinput.input("librhino3dm_native.vcxproj", inplace=1):
@@ -107,8 +110,8 @@ if __name__ == '__main__':
     methodgen(dotnetcore)
 
     # only create 32 bit compile on windows
-    if os.name == 'nt':
-        create_cpp_project(32, True)
+    # if os.name == 'nt':
+        # create_cpp_project(32, True)
     create_cpp_project(64, True)
 
     # compile Rhino3dm .NET project
