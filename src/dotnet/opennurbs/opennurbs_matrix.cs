@@ -1,7 +1,7 @@
 using System;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents an arbitrarily sized matrix of <see cref="double">double</see>-precision

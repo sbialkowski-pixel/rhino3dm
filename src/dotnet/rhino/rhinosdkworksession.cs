@@ -1,8 +1,8 @@
 #if RHINO_SDK
 using System;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Manages a list of models that are being used as reference geometry.

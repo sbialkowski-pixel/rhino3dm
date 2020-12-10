@@ -1,9 +1,9 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 #if RHINO_SDK
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   public class FileWriteOptions : IDisposable
   {

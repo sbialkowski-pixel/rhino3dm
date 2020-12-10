@@ -1,7 +1,7 @@
 #pragma warning disable 1591
 
 #if RHINO_SDK
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   public abstract class OptionsDialogPage : StackedDialogPage
   {

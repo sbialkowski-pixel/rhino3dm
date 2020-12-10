@@ -1,8 +1,8 @@
 using System;
-using Rhino.Input;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Input;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   /// <summary>
   /// Represents a length with an associated unit system and a string

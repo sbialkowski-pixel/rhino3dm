@@ -3,8 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Rhino.Runtime.InteropWrappers;
-namespace Rhino
+using Pixel.Rhino.Runtime.InteropWrappers;
+namespace Pixel.Rhino
 {
   static class RhinoFileEventWatcherHooks
   {
@@ -184,9 +184,9 @@ namespace Rhino
       RhinoApp.InvokeOnUiThread(ChangedHook, Pointer, (RhinoFileWatcherChangeReason)e.ChangeType, e.FullPath);
     }
 
-    private delegate void ChangedDelegate(IntPtr pointer, Rhino.RhinoFileWatcherChangeReason reason, string path);
+    private delegate void ChangedDelegate(IntPtr pointer, Pixel.Rhino.RhinoFileWatcherChangeReason reason, string path);
     private static ChangedDelegate ChangedHook = ChangedFunc;
-    private static void ChangedFunc(IntPtr pointer, Rhino.RhinoFileWatcherChangeReason reason, string path)
+    private static void ChangedFunc(IntPtr pointer, Pixel.Rhino.RhinoFileWatcherChangeReason reason, string path)
     {
       // Specify what is done when a file is changed, created, or deleted.
       UnsafeNativeMethods.CRhCmnFileEventWatcherInterop_Changed(pointer, reason, path);

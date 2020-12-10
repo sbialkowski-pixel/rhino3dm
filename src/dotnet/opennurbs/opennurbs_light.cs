@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.Serialization;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
 
 // ReSharper disable once CheckNamespace
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a light that shines in the modeling space.
@@ -20,13 +20,13 @@ namespace Rhino.Geometry
     /// <param name="azimuthDegrees">The Azimuth angle value in degrees. Azimuth is the compass angle from North.</param>
     /// <param name="altitudeDegrees">The Altitude angle in degrees. Altitude is the angle above the ground plane.</param>
     /// <returns>A new sun light.</returns>
-    /// <exception cref="Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
+    /// <exception cref="Pixel.Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
     /// <since>5.0</since>
     public static Light CreateSunLight(double northAngleDegrees, double azimuthDegrees, double altitudeDegrees)
     {
       Runtime.HostUtils.CheckForRdk(true, true);
 
-      var sun = new Rhino.Render.Sun();
+      var sun = new Pixel.Rhino.Render.Sun();
 
       sun.North = northAngleDegrees;
       sun.SetPosition(azimuthDegrees, altitudeDegrees);
@@ -43,13 +43,13 @@ namespace Rhino.Geometry
     /// <param name="latitudeDegrees">The latitude, in degrees, of the location on Earth.</param>
     /// <param name="longitudeDegrees">The longitude, in degrees, of the location on Earth.</param>
     /// <returns>A newly constructed light object.</returns>
-    /// <exception cref="Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
+    /// <exception cref="Pixel.Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
     /// <since>5.0</since>
     public static Light CreateSunLight(double northAngleDegrees, DateTime when, double latitudeDegrees, double longitudeDegrees)
     {
       Runtime.HostUtils.CheckForRdk(true, true);
 
-      var sun = new Rhino.Render.Sun();
+      var sun = new Pixel.Rhino.Render.Sun();
 
       sun.North = northAngleDegrees;
       sun.SetPosition(when, latitudeDegrees, longitudeDegrees);
@@ -58,9 +58,9 @@ namespace Rhino.Geometry
     }
 
     /// <summary>
-    /// Constructs a light which simulates a <see cref="Rhino.Render.Sun"/>.
+    /// Constructs a light which simulates a <see cref="Pixel.Rhino.Render.Sun"/>.
     /// </summary>
-    /// <param name="sun">A Sun object from the Rhino.Render namespace.</param>
+    /// <param name="sun">A Sun object from the Pixel.Rhino.Render namespace.</param>
     /// <returns>A light.</returns>
     /// <since>5.0</since>
     public static Light CreateSunLight(Render.Sun sun)
@@ -103,7 +103,7 @@ namespace Rhino.Geometry
 #if RHINO_SDK
     internal override IntPtr _InternalGetConstPointer()
     {
-      Rhino.DocObjects.Tables.LightTableEventArgs lte = m__parent as Rhino.DocObjects.Tables.LightTableEventArgs;
+      Pixel.Rhino.DocObjects.Tables.LightTableEventArgs lte = m__parent as Pixel.Rhino.DocObjects.Tables.LightTableEventArgs;
       if (lte != null)
         return lte.ConstLightPointer();
 

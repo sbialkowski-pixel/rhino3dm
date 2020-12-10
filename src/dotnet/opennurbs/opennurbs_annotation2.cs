@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.Serialization;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Specifies enumerated constants used to indicate the internal alignment and justification of text.

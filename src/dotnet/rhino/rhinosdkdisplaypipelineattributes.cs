@@ -6,7 +6,7 @@ using System.Security.Permissions;
 using System.Drawing;
 
 #if RHINO_SDK
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Represents display pipeline settings, such as "show transparency" and "show grips".

@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
-using Rhino.Runtime;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System.Linq;
 using Diagrams;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Represents an ordered set of points connected by linear segments.
     /// <para>Polylines are closed if start and end points coincide.</para>
     /// </summary>
     [Serializable]
-    public class Polyline : Rhino.Collections.Point3dList, ICloneable
+    public class Polyline : Pixel.Rhino.Collections.Point3dList, ICloneable
     {
         #region constructors
         /// <summary>
@@ -998,7 +998,7 @@ namespace Rhino.Geometry
         /// <summary>
         /// Compute the center point of the polyline as the weighted average of all segments.
         /// </summary>
-        /// <returns>The weighted average of all segments.</returns>
+        /// <returns>The weighted averToPolage of all segments.</returns>
         /// <since>5.0</since>
         [ConstOperation]
         public Point3d CenterPoint()

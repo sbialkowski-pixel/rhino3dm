@@ -1,9 +1,9 @@
 using System;
-using Rhino.Display;
+using Pixel.Rhino.Display;
 using System.Runtime.Serialization;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a curve that is the result of joining several (possibly different)

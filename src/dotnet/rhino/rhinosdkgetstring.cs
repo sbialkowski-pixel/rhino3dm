@@ -2,7 +2,7 @@
 using System;
 
 #if RHINO_SDK
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
 
   /// <summary>Used to get strings.</summary>

@@ -1,10 +1,10 @@
 // This file is used for documenting all of the namespaces in RhinoCommon
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   /// <summary>
   /// The Rhino namespace contains fundamental types that
-  /// define commonly-used value types and classes used in Rhino.
+  /// define commonly-used value types and classes used in Pixel.Rhino.
   /// </summary>
   [System.Runtime.CompilerServices.CompilerGeneratedAttribute]
   class NamespaceDoc
@@ -12,10 +12,10 @@ namespace Rhino
   }
 }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
-  /// The Geometry namespace contains geometric types used in Rhino.
+  /// The Geometry namespace contains geometric types used in Pixel.Rhino.
   /// <para>Examples are lines, curves, meshes and boundary representations.</para>
   /// </summary>
   [System.Runtime.CompilerServices.CompilerGeneratedAttribute]
@@ -24,7 +24,7 @@ namespace Rhino.Geometry
   }
 }
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// The DocObjects namespace contains types that correspond to geometry

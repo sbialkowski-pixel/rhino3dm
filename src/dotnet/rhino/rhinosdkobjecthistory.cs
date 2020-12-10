@@ -1,6 +1,6 @@
 #pragma warning disable 1591
 #if RHINO_SDK
-namespace Rhino.ApplicationSettings
+namespace Pixel.Rhino.ApplicationSettings
 {
   /// <summary>
   /// Provides static (Shared in Vb.Net) properties to modify Rhino History settings.

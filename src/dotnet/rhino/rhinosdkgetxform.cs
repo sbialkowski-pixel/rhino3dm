@@ -1,11 +1,11 @@
 #pragma warning disable 1591
 #if RHINO_SDK
 using System;
-using Rhino.DocObjects;
-using Rhino.Geometry;
-using Rhino.Input.Custom;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Input.Custom;
 
-namespace Rhino.Collections
+namespace Pixel.Rhino.Collections
 {
   /// <summary>
   /// A collection of Rhino object, grip objects, and the Rhino objects that owns the grips.
@@ -256,7 +256,7 @@ namespace Rhino.Collections
   }
 }
 
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
 
   /// <summary>

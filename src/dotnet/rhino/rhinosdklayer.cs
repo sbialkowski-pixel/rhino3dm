@@ -2,12 +2,12 @@
 using System;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
-using Rhino.Render;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Geometry;
-using Rhino.FileIO;
+using Pixel.Rhino.Render;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.FileIO;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   [Serializable]
   public sealed class Layer : ModelComponent, IEquatable<Layer>
@@ -77,8 +77,8 @@ namespace Rhino.DocObjects
     /// <summary>
     /// Constructs a layer with the current default properties.
     /// The default layer properties are:
-    /// <para>color = Rhino.ApplicationSettings.AppearanceSettings.DefaultLayerColor</para>
-    /// <para>line style = Rhino.ApplicationSettings.AppearanceSettings.DefaultLayerLineStyle</para>
+    /// <para>color = Pixel.Rhino.ApplicationSettings.AppearanceSettings.DefaultLayerColor</para>
+    /// <para>line style = Pixel.Rhino.ApplicationSettings.AppearanceSettings.DefaultLayerLineStyle</para>
     /// <para>material index = -1</para>
     /// <para>IGES level = -1</para>
     /// <para>mode = NormalLayer</para>
@@ -1251,7 +1251,7 @@ namespace Rhino.DocObjects
 
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public enum LayerTableEventType
   {

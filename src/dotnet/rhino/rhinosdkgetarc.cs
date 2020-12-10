@@ -2,7 +2,7 @@
 #if RHINO_SDK
 using System;
 
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
   public class GetArc : IDisposable
   { 

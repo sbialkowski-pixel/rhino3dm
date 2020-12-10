@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Represents an interval in one-dimensional space,
@@ -24,7 +24,7 @@ namespace Rhino.Geometry
 
         #region Constructors
         /// <summary>
-        /// Initializes a new instance of the Rhino.Geometry.Interval class.
+        /// Initializes a new instance of the Pixel.Rhino.Geometry.Interval class.
         /// </summary>
         /// <param name="t0">The first value.</param>
         /// <param name="t1">The second value.</param>
@@ -38,7 +38,7 @@ namespace Rhino.Geometry
         /// <summary>
         /// Initializes a new instance copying the other instance values.
         /// </summary>
-        /// <param name="other">The Rhino.Geometry.Interval to use as a base.</param>
+        /// <param name="other">The Pixel.Rhino.Geometry.Interval to use as a base.</param>
         /// <since>5.0</since>
         public Interval(Interval other)
         {
@@ -2221,13 +2221,13 @@ namespace Rhino.Geometry
                 return null;
 
             // This code duplicates the static function CullDuplicatePoints in tl_brep_intersect.cpp
-            Rhino.Collections.Point3dList point_list = new Rhino.Collections.Point3dList(points);
+            Pixel.Rhino.Collections.Point3dList point_list = new Pixel.Rhino.Collections.Point3dList(points);
             int count = point_list.Count;
             if (0 == count)
                 return null;
 
             bool[] dup_list = new bool[count];
-            Rhino.Collections.Point3dList non_dups = new Rhino.Collections.Point3dList(count);
+            Pixel.Rhino.Collections.Point3dList non_dups = new Pixel.Rhino.Collections.Point3dList(count);
 
             for (int i = 0; i < count; i++)
             {
@@ -2266,7 +2266,7 @@ namespace Rhino.Geometry
     public static bool ArePointsCoplanar(System.Collections.Generic.IEnumerable<Point3d> points, double tolerance)
     {
       int count;
-      Point3d[] arrPoints = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] arrPoints = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (count < 1 || null == arrPoints)
         throw new ArgumentException("points must contain at least 1 point");
       return UnsafeNativeMethods.RHC_RhinoArePointsCoplanar(count, arrPoints, tolerance);
@@ -2296,7 +2296,7 @@ namespace Rhino.Geometry
     public static Point3d[] SortAndCullPointList(System.Collections.Generic.IEnumerable<Point3d> points, double minimumDistance)
     {
       int count;
-      Point3d[] arrPoints = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] arrPoints = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (count < 1 || null == arrPoints)
         return null;
       bool rc = UnsafeNativeMethods.TLC_SortPointList(arrPoints, ref count, minimumDistance);

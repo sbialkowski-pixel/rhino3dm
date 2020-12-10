@@ -1,15 +1,15 @@
 using System;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.DocObjects;
-using Rhino.FileIO;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.FileIO;
+using Pixel.Rhino.Runtime;
 //don't make serializable yet.
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a block definition in a File3dm. This is the same as
-  /// Rhino.DocObjects.InstanceDefinition, but not associated with a RhinoDoc.
+  /// Pixel.Rhino.DocObjects.InstanceDefinition, but not associated with a RhinoDoc.
   /// </summary>
   public class InstanceDefinitionGeometry : ModelComponent //was derived from GeometryBase but this can no longer be.
   {
@@ -33,7 +33,7 @@ namespace Rhino.Geometry
       m__parent = parent;
     }
 
-    internal InstanceDefinitionGeometry(Rhino.DocObjects.Tables.InstanceDefinitionTableEventArgs parent)
+    internal InstanceDefinitionGeometry(Pixel.Rhino.DocObjects.Tables.InstanceDefinitionTableEventArgs parent)
       : base()
     {
       m__parent = parent;

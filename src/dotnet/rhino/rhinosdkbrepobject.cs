@@ -1,12 +1,12 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
 #if RHINO_SDK
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
-  /// Represents a <see cref="Rhino.Geometry.Brep">Brep</see> in a document.
+  /// Represents a <see cref="Pixel.Rhino.Geometry.Brep">Brep</see> in a document.
   /// </summary>
   public class BrepObject : RhinoObject
   {
@@ -46,7 +46,7 @@ namespace Rhino.DocObjects
   }
 
   /// <summary>
-  /// Represents a <see cref="Rhino.Geometry.Surface">surface</see> in a document.
+  /// Represents a <see cref="Pixel.Rhino.Geometry.Surface">surface</see> in a document.
   /// </summary>
   public class SurfaceObject : RhinoObject
   {
@@ -84,7 +84,7 @@ namespace Rhino.DocObjects
   }
 }
 
-namespace Rhino.DocObjects.Custom
+namespace Pixel.Rhino.DocObjects.Custom
 {
   public abstract class CustomBrepObject : BrepObject, IDisposable
   {

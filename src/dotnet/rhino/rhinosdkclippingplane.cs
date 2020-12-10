@@ -1,9 +1,9 @@
 
 #if RHINO_SDK
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
-  /// Represents the object of a <see cref="Rhino.Geometry.ClippingPlaneSurface">clipping plane</see>,
+  /// Represents the object of a <see cref="Pixel.Rhino.Geometry.ClippingPlaneSurface">clipping plane</see>,
   /// stored in the Rhino document and with attributes.
   /// </summary>
   public class ClippingPlaneObject : RhinoObject
@@ -21,11 +21,11 @@ namespace Rhino.DocObjects
     /// Gets the clipping plane surface.
     /// </summary>
     /// <since>5.0</since>
-    public Rhino.Geometry.ClippingPlaneSurface ClippingPlaneGeometry
+    public Pixel.Rhino.Geometry.ClippingPlaneSurface ClippingPlaneGeometry
     {
       get
       {
-        Rhino.Geometry.ClippingPlaneSurface rc = Geometry as Rhino.Geometry.ClippingPlaneSurface;
+        Pixel.Rhino.Geometry.ClippingPlaneSurface rc = Geometry as Pixel.Rhino.Geometry.ClippingPlaneSurface;
         return rc;
       }
     }
@@ -37,13 +37,13 @@ namespace Rhino.DocObjects
     /// <param name="commit">Commit the change. When in doubt, set this parameter to true.</param>
     /// <returns>true if the viewport was added, false if the viewport is already in the list.</returns>
     /// <since>6.1</since>
-    public bool AddClipViewport(Rhino.Display.RhinoViewport viewport, bool commit)
+    public bool AddClipViewport(Pixel.Rhino.Display.RhinoViewport viewport, bool commit)
     {
       if (null == viewport)
         throw new System.ArgumentNullException(nameof(viewport));
 
       bool rc = false;
-      Rhino.Geometry.ClippingPlaneSurface geometry = ClippingPlaneGeometry;
+      Pixel.Rhino.Geometry.ClippingPlaneSurface geometry = ClippingPlaneGeometry;
       if (null != geometry)
       {
         rc = geometry.AddClipViewportId(viewport.Id);
@@ -60,13 +60,13 @@ namespace Rhino.DocObjects
     /// <param name="commit">Commit the change. When in doubt, set this parameter to true.</param>
     /// <returns>true if the viewport was removed, false if the viewport was not in the list.</returns>
     /// <since>6.1</since>
-    public bool RemoveClipViewport(Rhino.Display.RhinoViewport viewport, bool commit)
+    public bool RemoveClipViewport(Pixel.Rhino.Display.RhinoViewport viewport, bool commit)
     {
       if (null == viewport)
         throw new System.ArgumentNullException(nameof(viewport));
 
       bool rc = false;
-      Rhino.Geometry.ClippingPlaneSurface geometry = ClippingPlaneGeometry;
+      Pixel.Rhino.Geometry.ClippingPlaneSurface geometry = ClippingPlaneGeometry;
       if (null != geometry)
       {
         rc = geometry.RemoveClipViewportId(viewport.Id);

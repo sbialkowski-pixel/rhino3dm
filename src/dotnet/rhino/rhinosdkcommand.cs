@@ -3,10 +3,10 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 #if RHINO_SDK
-namespace Rhino.Commands
+namespace Pixel.Rhino.Commands
 {
   /// <summary>
   /// Defines bitwise mask flags for different styles of commands, such as
@@ -206,7 +206,7 @@ namespace Rhino.Commands
     public static void RunProxyCommand(RunCommandDelegate commandCallback, RhinoDoc doc, object data)
     {
       const string commandName = "RhinoCommonProxyCommand";
-      Rhino.Runtime.HostUtils.RegisterNamedCallback(commandName, ProxyCommandCallback);
+      Pixel.Rhino.Runtime.HostUtils.RegisterNamedCallback(commandName, ProxyCommandCallback);
       _proxyCommandCallback = commandCallback;
       _proxyCommandDoc = doc;
       _proxyObject = data;
@@ -220,7 +220,7 @@ namespace Rhino.Commands
     static RunCommandDelegate _proxyCommandCallback;
     static RhinoDoc _proxyCommandDoc;
     static object _proxyObject;
-    static void ProxyCommandCallback(object sender, Rhino.Runtime.NamedParametersEventArgs args)
+    static void ProxyCommandCallback(object sender, Pixel.Rhino.Runtime.NamedParametersEventArgs args)
     {
       if (null == _proxyCommandCallback)
         return;
@@ -232,11 +232,11 @@ namespace Rhino.Commands
     }
 
 
-    static readonly Collections.RhinoList<Command> m_all_commands = new Rhino.Collections.RhinoList<Command>();
+    static readonly Collections.RhinoList<Command> m_all_commands = new Pixel.Rhino.Collections.RhinoList<Command>();
 
     internal int m_runtime_serial_number;
     internal Style m_style_flags;
-    Rhino.PlugIns.PlugIn m_plugin; 
+    Pixel.Rhino.PlugIns.PlugIn m_plugin; 
     Guid m_id = Guid.Empty;
 
     internal static Command LookUpBySerialNumber(int sn)
@@ -266,7 +266,7 @@ namespace Rhino.Commands
         m_ReplayHistory = OnReplayHistory;
         m_SelFilter = SelCommand.OnSelFilter;
         UnsafeNativeMethods.CRhinoCommand_SetCallbacks(0, m_RunCommand, m_DoHelp, m_ContextHelp, m_ReplayHistory, m_SelFilter);
-        EndCommand += Rhino.Runtime.HostUtils.DeleteObjectsOnMainThread;
+        EndCommand += Pixel.Rhino.Runtime.HostUtils.DeleteObjectsOnMainThread;
       }
     }
 
@@ -280,7 +280,7 @@ namespace Rhino.Commands
       get
       {
         if (null == m_plugin)
-          return Rhino.PlugIns.PlugIn.m_active_plugin_at_command_creation;
+          return Pixel.Rhino.PlugIns.PlugIn.m_active_plugin_at_command_creation;
         return m_plugin;
       }
       internal set
@@ -323,7 +323,7 @@ namespace Rhino.Commands
     /// <since>5.0</since>
     public virtual string LocalName
     {
-      get { return Rhino.UI.Localization.LocalizeCommandName(EnglishName, this); }
+      get { return Pixel.Rhino.UI.Localization.LocalizeCommandName(EnglishName, this); }
     }
 
     /// <summary>
@@ -374,9 +374,9 @@ namespace Rhino.Commands
     {
       // 22 Feb 2019 S. Baer (RH-51106)
       // Help should open a web page for all built-in commands
-      var info = Rhino.PlugIns.PlugIn.GetPlugInInfo(this.PlugIn.Id);
+      var info = Pixel.Rhino.PlugIns.PlugIn.GetPlugInInfo(this.PlugIn.Id);
       if (info != null && info.ShipsWithRhino)
-        Rhino.UI.RhinoHelp.Show(null);
+        Pixel.Rhino.UI.RhinoHelp.Show(null);
     }
 
     /// <summary>
@@ -394,7 +394,7 @@ namespace Rhino.Commands
       }
       catch (Exception ex)
       {
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
       }
     }
     static int OnCommandContextHelpUrl(int command_serial_number, IntPtr pON_wString)
@@ -415,7 +415,7 @@ namespace Rhino.Commands
       }
       catch (Exception ex)
       {
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         rc = 0;
       }
       return rc;
@@ -512,7 +512,7 @@ namespace Rhino.Commands
     }
 
     /// <summary>
-    /// Gets list of command names in Rhino. This list does not include Test, Alpha, or System commands.
+    /// Gets list of command names in Pixel.Rhino. This list does not include Test, Alpha, or System commands.
     /// </summary>
     /// <param name="english">
     ///  if true, retrieve the English name for every command.
@@ -604,7 +604,7 @@ namespace Rhino.Commands
         if (m_begin_command == null)
         {
           m_OnBeginCommand = OnBeginCommand;
-          UnsafeNativeMethods.CRhinoEventWatcher_SetBeginCommandCallback(m_OnBeginCommand, Rhino.Runtime.HostUtils.m_ew_report);
+          UnsafeNativeMethods.CRhinoEventWatcher_SetBeginCommandCallback(m_OnBeginCommand, Pixel.Rhino.Runtime.HostUtils.m_ew_report);
         }
         m_begin_command -= value;
         m_begin_command += value;
@@ -614,7 +614,7 @@ namespace Rhino.Commands
         m_begin_command -= value;
         if (m_begin_command == null)
         {
-          UnsafeNativeMethods.CRhinoEventWatcher_SetBeginCommandCallback(null, Rhino.Runtime.HostUtils.m_ew_report);
+          UnsafeNativeMethods.CRhinoEventWatcher_SetBeginCommandCallback(null, Pixel.Rhino.Runtime.HostUtils.m_ew_report);
           m_OnBeginCommand = null;
         }
       }
@@ -633,7 +633,7 @@ namespace Rhino.Commands
         if (m_end_command == null)
         {
           m_OnEndCommand = OnEndCommand;
-          UnsafeNativeMethods.CRhinoEventWatcher_SetEndCommandCallback(m_OnEndCommand, Rhino.Runtime.HostUtils.m_ew_report);
+          UnsafeNativeMethods.CRhinoEventWatcher_SetEndCommandCallback(m_OnEndCommand, Pixel.Rhino.Runtime.HostUtils.m_ew_report);
         }
         m_end_command -= value;
         m_end_command += value;
@@ -643,7 +643,7 @@ namespace Rhino.Commands
         m_end_command -= value;
         if (m_end_command == null)
         {
-          UnsafeNativeMethods.CRhinoEventWatcher_SetEndCommandCallback(null, Rhino.Runtime.HostUtils.m_ew_report);
+          UnsafeNativeMethods.CRhinoEventWatcher_SetEndCommandCallback(null, Pixel.Rhino.Runtime.HostUtils.m_ew_report);
           m_OnEndCommand = null;
         }
       }
@@ -678,7 +678,7 @@ namespace Rhino.Commands
         if (m_undo_event == null)
         {
           m_OnUndoEvent = OnUndoEvent;
-          UnsafeNativeMethods.CRhinoEventWatcher_SetUndoEventCallback(m_OnUndoEvent, Rhino.Runtime.HostUtils.m_ew_report);
+          UnsafeNativeMethods.CRhinoEventWatcher_SetUndoEventCallback(m_OnUndoEvent, Pixel.Rhino.Runtime.HostUtils.m_ew_report);
         }
         m_undo_event -= value;
         m_undo_event += value;
@@ -688,7 +688,7 @@ namespace Rhino.Commands
         m_undo_event -= value;
         if (m_undo_event == null)
         {
-          UnsafeNativeMethods.CRhinoEventWatcher_SetUndoEventCallback(null, Rhino.Runtime.HostUtils.m_ew_report);
+          UnsafeNativeMethods.CRhinoEventWatcher_SetUndoEventCallback(null, Pixel.Rhino.Runtime.HostUtils.m_ew_report);
           m_OnUndoEvent = null;
         }
       }
@@ -706,7 +706,7 @@ namespace Rhino.Commands
     /// <param name="replayData">The replay history information.</param>
     /// <returns>true if the operation succeeded.
     /// <para>The default implementation always returns false.</para></returns>
-    protected virtual bool ReplayHistory(Rhino.DocObjects.ReplayHistoryData replayData)
+    protected virtual bool ReplayHistory(Pixel.Rhino.DocObjects.ReplayHistoryData replayData)
     {
       return false;
     }
@@ -723,7 +723,7 @@ namespace Rhino.Commands
       }
       catch (Exception ex)
       {
-        Rhino.Runtime.HostUtils.ExceptionReport("Command.ReplayHistory", ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport("Command.ReplayHistory", ex);
       }
       return rc;
     }
@@ -889,7 +889,7 @@ namespace Rhino.Commands
     /// </summary>
     /// <param name="rhObj">The object to check regarding selection status.</param>
     /// <returns>true if the object should be selected; false otherwise.</returns>
-    protected abstract bool SelFilter(Rhino.DocObjects.RhinoObject rhObj);
+    protected abstract bool SelFilter(Pixel.Rhino.DocObjects.RhinoObject rhObj);
     internal static int OnSelFilter(int commandSerialNumber, IntPtr pRhinoObject)
     {
       int rc = 0;
@@ -897,12 +897,12 @@ namespace Rhino.Commands
       {
         SelCommand cmd = Command.LookUpBySerialNumber(commandSerialNumber) as SelCommand;
         if( cmd!=null )
-          rc = cmd.SelFilter(Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject)) ? 1:0;
+          rc = cmd.SelFilter(Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject)) ? 1:0;
       }
       catch (Exception ex)
       {
         Runtime.HostUtils.DebugString("Exception caught during SelFilter");
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
       }
       return rc;
     }
@@ -942,7 +942,7 @@ namespace Rhino.Commands
     /// <param name="prompt">The selection prompt.</param>
     /// <param name="list">A list of objects to transform. This is a special list type.</param>
     /// <returns>The operation result.</returns>
-    protected Result SelectObjects(string prompt, Rhino.Collections.TransformObjectList list)
+    protected Result SelectObjects(string prompt, Pixel.Rhino.Collections.TransformObjectList list)
     {
       IntPtr pList = list.NonConstPointer();
       int rc = UnsafeNativeMethods.CRhinoTransformCommand_SelectObjects(Id, prompt, pList);
@@ -957,20 +957,20 @@ namespace Rhino.Commands
     /// <param name="list">A list of objects to transform. This is a special list type.</param>
     /// <returns>The operation result.</returns>
     [CLSCompliant(false)]
-    protected Result SelectObjects(string prompt, DocObjects.ObjectType filter, Rhino.Collections.TransformObjectList list)
+    protected Result SelectObjects(string prompt, DocObjects.ObjectType filter, Pixel.Rhino.Collections.TransformObjectList list)
     {
       IntPtr pList = list.NonConstPointer();
       int rc = UnsafeNativeMethods.CRhinoTransformCommand_SelectFilteredObjects(Id, prompt, (uint)filter, pList);
       return (Result)rc;
     }
 
-    protected void TransformObjects(Rhino.Collections.TransformObjectList list, Rhino.Geometry.Transform xform, bool copy, bool autoHistory)
+    protected void TransformObjects(Pixel.Rhino.Collections.TransformObjectList list, Pixel.Rhino.Geometry.Transform xform, bool copy, bool autoHistory)
     {
       IntPtr pList = list.NonConstPointer();
       UnsafeNativeMethods.CRhinoTransformCommand_TransformObjects(Id, pList, ref xform, copy, autoHistory);
     }
 
-    protected void DuplicateObjects(Rhino.Collections.TransformObjectList list)
+    protected void DuplicateObjects(Pixel.Rhino.Collections.TransformObjectList list)
     {
       IntPtr pList = list.NonConstPointer();
       UnsafeNativeMethods.CRhinoTransformCommand_DuplicateObjects(Id, pList);
@@ -981,7 +981,7 @@ namespace Rhino.Commands
     /// like the Copy command work when grips are "copied".
     /// </summary>
     /// <param name="list">A list of object to transform. This is a special list type.</param>
-    protected void ResetGrips(Rhino.Collections.TransformObjectList list)
+    protected void ResetGrips(Pixel.Rhino.Collections.TransformObjectList list)
     {
       IntPtr pList = list.NonConstPointer();
       UnsafeNativeMethods.CRhinoTransformCommand_ResetGrips(Id, pList);
@@ -1043,7 +1043,7 @@ namespace Rhino.Commands
 }
 
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Provides a single bundling of information to be passed to Rhino when setting up history for an object.
@@ -1123,19 +1123,19 @@ namespace Rhino.DocObjects
       return UnsafeNativeMethods.CRhinoHistory_SetDouble(pThis, id, value);
     }
     /// <since>5.0</since>
-    public bool SetPoint3d(int id, Rhino.Geometry.Point3d value)
+    public bool SetPoint3d(int id, Pixel.Rhino.Geometry.Point3d value)
     {
       IntPtr pThis = NonConstPointer();
       return UnsafeNativeMethods.CRhinoHistory_SetPoint3d(pThis, id, value);
     }
     /// <since>5.0</since>
-    public bool SetVector3d(int id, Rhino.Geometry.Vector3d value)
+    public bool SetVector3d(int id, Pixel.Rhino.Geometry.Vector3d value)
     {
       IntPtr pThis = NonConstPointer();
       return UnsafeNativeMethods.CRhinoHistory_SetVector3d(pThis, id, value);
     }
     /// <since>5.0</since>
-    public bool SetTransorm(int id, Rhino.Geometry.Transform value)
+    public bool SetTransorm(int id, Pixel.Rhino.Geometry.Transform value)
     {
       IntPtr pThis = NonConstPointer();
       return UnsafeNativeMethods.CRhinoHistory_SetXform(pThis, id, ref value);
@@ -1154,7 +1154,7 @@ namespace Rhino.DocObjects
       return UnsafeNativeMethods.CRhinoHistory_SetObjRef(pThis, id, pConstObjRef);
     }
     /// <since>5.0</since>
-    public bool SetPoint3dOnObject(int id, ObjRef objref, Rhino.Geometry.Point3d value)
+    public bool SetPoint3dOnObject(int id, ObjRef objref, Pixel.Rhino.Geometry.Point3d value)
     {
       IntPtr pThis = NonConstPointer();
       IntPtr pConstObjRef = objref.ConstPointer();
@@ -1233,7 +1233,7 @@ namespace Rhino.DocObjects
       return UnsafeNativeMethods.CRhinoHistory_SetDoubles(pThis, id, _v.Length, _v);
     }
     /// <since>5.0</since>
-    public bool SetPoint3ds(int id, IEnumerable<Rhino.Geometry.Point3d> values)
+    public bool SetPoint3ds(int id, IEnumerable<Pixel.Rhino.Geometry.Point3d> values)
     {
       List<Geometry.Point3d> v = new List<Geometry.Point3d>(values);
       var _v = v.ToArray();
@@ -1241,14 +1241,14 @@ namespace Rhino.DocObjects
       return UnsafeNativeMethods.CRhinoHistory_SetPoints(pThis, id, _v.Length, _v);
     }
     /// <since>5.0</since>
-    public bool SetVector3ds(int id, IEnumerable<Rhino.Geometry.Vector3d> values)
+    public bool SetVector3ds(int id, IEnumerable<Pixel.Rhino.Geometry.Vector3d> values)
     {
       List<Geometry.Vector3d> v = new List<Geometry.Vector3d>(values);
       var _v = v.ToArray();
       IntPtr pThis = NonConstPointer();
       return UnsafeNativeMethods.CRhinoHistory_SetVectors(pThis, id, _v.Length, _v);
     }
-    //public bool SetTransorms(int id, IEnumerable<Rhino.Geometry.Transform> values)
+    //public bool SetTransorms(int id, IEnumerable<Pixel.Rhino.Geometry.Transform> values)
     //{
     //  List<Geometry.Transform> v = new List<Geometry.Transform>(values);
     //  var _v = v.ToArray();
@@ -1370,7 +1370,7 @@ namespace Rhino.DocObjects
     /// <param name="id">HistoryRecord value id</param>
     /// <returns>ObjRef on success, null if not successful</returns>
     /// <since>5.0</since>
-    public Rhino.DocObjects.ObjRef GetRhinoObjRef(int id)
+    public Pixel.Rhino.DocObjects.ObjRef GetRhinoObjRef(int id)
     {
       ObjRef objref = new ObjRef();
       IntPtr pObjRef = objref.NonConstPointer();
@@ -1505,7 +1505,7 @@ namespace Rhino.DocObjects
       IntPtr pConstObjRef = value.ConstPointer();
       return UnsafeNativeMethods.CRhinoHistory_SetObjRef(pThis, id, pConstObjRef);
     }
-    public bool SetPoint3dOnObject(int id, ObjRef objref, Rhino.Geometry.Point3d value)
+    public bool SetPoint3dOnObject(int id, ObjRef objref, Pixel.Rhino.Geometry.Point3d value)
     {
       IntPtr pThis = NonConstPointer();
       IntPtr pConstObjRef = objref.ConstPointer();
@@ -1596,21 +1596,21 @@ namespace Rhino.DocObjects
       }
     }
     /*
-    public bool SetPoint3ds(int id, IEnumerable<Rhino.Geometry.Point3d> values)
+    public bool SetPoint3ds(int id, IEnumerable<Pixel.Rhino.Geometry.Point3d> values)
     {
       List<Geometry.Point3d> v = new List<Geometry.Point3d>(values);
       var _v = v.ToArray();
       IntPtr pThis = NonConstPointer();
       return UnsafeNativeMethods.CRhinoHistory_SetPoints(pThis, id, _v.Length, _v);
     }
-    public bool SetVector3ds(int id, IEnumerable<Rhino.Geometry.Vector3d> values)
+    public bool SetVector3ds(int id, IEnumerable<Pixel.Rhino.Geometry.Vector3d> values)
     {
       List<Geometry.Vector3d> v = new List<Geometry.Vector3d>(values);
       var _v = v.ToArray();
       IntPtr pThis = NonConstPointer();
       return UnsafeNativeMethods.CRhinoHistory_SetVectors(pThis, id, _v.Length, _v);
     }
-    //public bool SetTransorms(int id, IEnumerable<Rhino.Geometry.Transform> values)
+    //public bool SetTransorms(int id, IEnumerable<Pixel.Rhino.Geometry.Transform> values)
     //{
     //  List<Geometry.Transform> v = new List<Geometry.Transform>(values);
     //  var _v = v.ToArray();
@@ -1685,14 +1685,14 @@ namespace Rhino.DocObjects
 
 
     /// <since>5.0</since>
-    public bool UpdateToPoint(Rhino.Geometry.Point3d point, ObjectAttributes attributes)
+    public bool UpdateToPoint(Pixel.Rhino.Geometry.Point3d point, ObjectAttributes attributes)
     {
       IntPtr pConstAttributes = (attributes == null) ? IntPtr.Zero : attributes.ConstPointer();
       return UnsafeNativeMethods.CRhinoObjectPairArray_UpdateResult1(m_parent.m_pObjectPairArray, m_index, point, pConstAttributes);
     }
 
     /// <since>5.0</since>
-    public bool UpdateToPointCloud(Rhino.Geometry.PointCloud cloud, ObjectAttributes attributes)
+    public bool UpdateToPointCloud(Pixel.Rhino.Geometry.PointCloud cloud, ObjectAttributes attributes)
     {
       IntPtr pCloud = cloud.ConstPointer();
       IntPtr pConstAttributes = (attributes == null) ? IntPtr.Zero : attributes.ConstPointer();
@@ -1700,10 +1700,10 @@ namespace Rhino.DocObjects
     }
 
     /// <since>5.0</since>
-    public bool UpdateToPointCloud(IEnumerable<Rhino.Geometry.Point3d> points, DocObjects.ObjectAttributes attributes)
+    public bool UpdateToPointCloud(IEnumerable<Pixel.Rhino.Geometry.Point3d> points, DocObjects.ObjectAttributes attributes)
     {
       int count;
-      Rhino.Geometry.Point3d[] ptArray = Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Pixel.Rhino.Geometry.Point3d[] ptArray = Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (null == ptArray || count < 1)
         return false;
 

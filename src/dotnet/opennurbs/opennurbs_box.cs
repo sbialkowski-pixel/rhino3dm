@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the value of a plane and three intervals in
@@ -698,7 +698,7 @@ namespace Rhino.Geometry
     //internal static Box CreateFromNonOrthogonalPoints(IEnumerable<Point3d> corners)
     //{
     //  int N = 0;
-    //  Point3d[] C = Rhino.Collections.Point3dList.GetConstPointArray(corners, out N);
+    //  Point3d[] C = Pixel.Rhino.Collections.Point3dList.GetConstPointArray(corners, out N);
     //  if (N != 8) { return Box.Unset; }
 
     //  // Compute midpoints for all 6 sides.

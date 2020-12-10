@@ -4,7 +4,7 @@ using System;
 // none of the UI namespace needs to be in the stand-alone opennurbs library
 #if RHINO_SDK
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   namespace UI
   {
@@ -134,8 +134,8 @@ namespace Rhino
     public static class Panels
     {
       /// <summary>
-      /// Style applied to Eto controls hosted by the Rhino.UI.Panels and
-      /// Rhino.UI.ObjectProperties systems.
+      /// Style applied to Eto controls hosted by the Pixel.Rhino.UI.Panels and
+      /// Pixel.Rhino.UI.ObjectProperties systems.
       /// </summary>
       /// <value>The name of the Eto panel style.</value>
       /// <since>6.15</since>
@@ -219,7 +219,7 @@ namespace Rhino
       /// <param name="panelType">
       /// Class type to construct when a panel is shown.  If your class is
       /// derived from Eto.Forms.Control it will work on both the Mac and
-      /// Windows version of Rhino.  In addition Windows Rhino will support any
+      /// Windows version of Pixel.Rhino.  In addition Windows Rhino will support any
       /// class types that implement the IWin32Window interface or that are
       /// derived from System.Windows.FrameworkElement.  Mac Rhino will also
       /// support classes that are derived from NsView.  In addition to the
@@ -836,7 +836,7 @@ namespace Rhino
         return UnsafeNativeMethods.RHC_FloatPanel(0u, panelTypeId, UnsafeNativeMethods.RhCmnPanelFloatPanelMode.Toggle);
       }
       /// <summary>
-      /// Will always return a empty array in Mac Rhino.  In Windows Rhino it will
+      /// Will always return a empty array in Mac Pixel.Rhino.  In Windows Rhino it will
       /// look for any panel dock bars that contain the specified panel class Id and
       /// return the dock bar Id's.
       /// </summary>
@@ -844,7 +844,7 @@ namespace Rhino
       /// Panel class Id for of the panel to look for.
       /// </param>
       /// <returns>
-      /// Always returns Guid.Empty on Mac Rhino.  On Windows Rhino it will
+      /// Always returns Guid.Empty on Mac Pixel.Rhino.  On Windows Rhino it will
       /// return the Id for the dock bar which host the specified panel or 
       /// Guid.Empty if the panel is not currently visible.
       /// </returns>
@@ -861,7 +861,7 @@ namespace Rhino
         }
       }
       /// <summary>
-      /// Will always return Guid.Emty in Mac Rhino.  In Windows Rhino it will
+      /// Will always return Guid.Emty in Mac Pixel.Rhino.  In Windows Rhino it will
       /// look for the dock bar which contains the specified panel class Id and
       /// return the dock bar Id.
       /// </summary>
@@ -869,7 +869,7 @@ namespace Rhino
       /// Panel class Id for of the panel to look for.
       /// </param>
       /// <returns>
-      /// Always returns Guid.Empty on Mac Rhino.  On Windows Rhino it will
+      /// Always returns Guid.Empty on Mac Pixel.Rhino.  On Windows Rhino it will
       /// return the Id for the dock bar which host the specified panel or 
       /// Guid.Empty if the panel is not currently visible.
       /// </returns>
@@ -880,7 +880,7 @@ namespace Rhino
         return ids != null && ids.Length > 0 ? ids[0] : Guid.Empty;
       }
       /// <summary>
-      /// Will always return Guid.Emty in Mac Rhino.  In Windows Rhino it will
+      /// Will always return Guid.Emty in Mac Pixel.Rhino.  In Windows Rhino it will
       /// look for the dock bar which contains the specified panel class Id and
       /// return the dock bar Id.
       /// </summary>
@@ -888,7 +888,7 @@ namespace Rhino
       /// Panel class for of the panel to look for.
       /// </param>
       /// <returns>
-      /// Always returns Guid.Empty on Mac Rhino.  On Windows Rhino it will
+      /// Always returns Guid.Empty on Mac Pixel.Rhino.  On Windows Rhino it will
       /// return the Id for the dock bar which host the specified panel or 
       /// Guid.Empty if the panel is not currently visible.
       /// </returns>
@@ -964,7 +964,7 @@ namespace Rhino
       }
       /// <summary>
       /// This event is called when a panel is shown or hidden.  This event will get raised 
-      /// multipThis times when the active document changes in Mac Rhino.  It will called
+      /// multipThis times when the active document changes in Mac Pixel.Rhino.  It will called
       /// with show equal to false for the previous active document and with show equal to 
       /// true for the current document.  When the event is raised with show equal to false
       /// it only means the document instance of the panel is not visible it does not mean 

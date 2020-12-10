@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   /// <summary>
   /// Represents two indices: I and J.
@@ -254,7 +254,7 @@ namespace Rhino
     public const double DefaultDistanceToleranceMillimeters = 0.01;
 
     /// <summary>
-    /// Gets the single precision floating point number that is considered 'unset' in Rhino.
+    /// Gets the single precision floating point number that is considered 'unset' in Pixel.Rhino.
     /// </summary>
     /// <remarks>
     /// This is equivalent to openNURBS ON_UNSET_FLOAT.
@@ -558,15 +558,15 @@ namespace Rhino
     /// <since>7.0</since>
     public static bool EvaluateNormal(
       int limitDirection,
-      Rhino.Geometry.Vector3d ds,
-      Rhino.Geometry.Vector3d dt,
-      Rhino.Geometry.Vector3d dss,
-      Rhino.Geometry.Vector3d dst,
-      Rhino.Geometry.Vector3d dtt,
-      out Rhino.Geometry.Vector3d n
+      Pixel.Rhino.Geometry.Vector3d ds,
+      Pixel.Rhino.Geometry.Vector3d dt,
+      Pixel.Rhino.Geometry.Vector3d dss,
+      Pixel.Rhino.Geometry.Vector3d dst,
+      Pixel.Rhino.Geometry.Vector3d dtt,
+      out Pixel.Rhino.Geometry.Vector3d n
       )
     {
-      n = Rhino.Geometry.Vector3d.Unset;
+      n = Pixel.Rhino.Geometry.Vector3d.Unset;
       return UnsafeNativeMethods.ONC_EvNormal(limitDirection, ds, dt, dss, dst, dtt, ref n);
     }
 
@@ -583,17 +583,17 @@ namespace Rhino
     /// <returns>true if Jacobian is non-degenerate, false if Jacobian is degenerate.</returns>
     /// <since>7.0</since>
     public static bool EvaluateNormalPartials(
-      Rhino.Geometry.Vector3d ds,
-      Rhino.Geometry.Vector3d dt,
-      Rhino.Geometry.Vector3d dss,
-      Rhino.Geometry.Vector3d dst,
-      Rhino.Geometry.Vector3d dtt,
-      out Rhino.Geometry.Vector3d ns,
-      out Rhino.Geometry.Vector3d nt
+      Pixel.Rhino.Geometry.Vector3d ds,
+      Pixel.Rhino.Geometry.Vector3d dt,
+      Pixel.Rhino.Geometry.Vector3d dss,
+      Pixel.Rhino.Geometry.Vector3d dst,
+      Pixel.Rhino.Geometry.Vector3d dtt,
+      out Pixel.Rhino.Geometry.Vector3d ns,
+      out Pixel.Rhino.Geometry.Vector3d nt
       )
     {
-      ns = Rhino.Geometry.Vector3d.Unset;
-      nt = Rhino.Geometry.Vector3d.Unset;
+      ns = Pixel.Rhino.Geometry.Vector3d.Unset;
+      nt = Pixel.Rhino.Geometry.Vector3d.Unset;
       return UnsafeNativeMethods.ONC_EvNormalPartials(ds, dt, dss, dst, dtt, ref ns, ref nt);
     }
   }
@@ -1230,7 +1230,7 @@ namespace Rhino
   }
 }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Defines enumerated values to represent light styles or types, such as directional or spotlight.
@@ -1526,7 +1526,7 @@ namespace Rhino.Geometry
   }
 }
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   ///<summary>
   ///Style of color gradient

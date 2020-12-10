@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Represents a viewing frustum.
@@ -894,7 +894,7 @@ namespace Rhino.DocObjects
     /// Gets the frustum bottom plane that separates visible from off-screen.
     /// </summary>
     /// <since>5.0</since>
-    public Rhino.Geometry.Plane FrustumBottomPlane
+    public Pixel.Rhino.Geometry.Plane FrustumBottomPlane
     {
       get { return GetPlane(idxBottomPlane); }
     }
@@ -1445,11 +1445,11 @@ namespace Rhino.DocObjects
     /// <summary>
     /// Gets the m_clip_mod transformation.
     /// </summary>
-    public Rhino.Geometry.Transform ClipModTransform
+    public Pixel.Rhino.Geometry.Transform ClipModTransform
     {
       get
       {
-        Rhino.Geometry.Transform matrix = new Rhino.Geometry.Transform();
+        Pixel.Rhino.Geometry.Transform matrix = new Pixel.Rhino.Geometry.Transform();
         UnsafeNativeMethods.ON_Viewport_ClipModXform(ConstPointer(), ref matrix);
         return matrix;
       }
@@ -1458,11 +1458,11 @@ namespace Rhino.DocObjects
     /// <summary>
     /// Gets the m_clip_mod inverse transformation.
     /// </summary>
-    public Rhino.Geometry.Transform ClipModInverseTransform
+    public Pixel.Rhino.Geometry.Transform ClipModInverseTransform
     {
       get
       {
-        Rhino.Geometry.Transform matrix = new Rhino.Geometry.Transform();
+        Pixel.Rhino.Geometry.Transform matrix = new Pixel.Rhino.Geometry.Transform();
         UnsafeNativeMethods.ON_Viewport_ClipModInverseXform(ConstPointer(), ref matrix);
         return matrix;
       }
@@ -1556,7 +1556,7 @@ namespace Rhino.DocObjects
     /// <param name="depthBufferBitDepth">Typically 32, 34, 16 or 8, but any value can be passed in.</param>
     /// <param name="minNearDist">Suggest value for passing to SetPerspectiveMinNearDist().  </param>
     /// <param name="minNearOverFar">Suggest value for passing to SetPerspectiveMinNearOverFar().    </param>
-    public static void GetPerspectiveClippingPlaneConstraints( Rhino.Geometry.Point3d cameraLocation, 
+    public static void GetPerspectiveClippingPlaneConstraints( Pixel.Rhino.Geometry.Point3d cameraLocation, 
                                                                int depthBufferBitDepth, 
                                                                ref double minNearDist, 
                                                                ref double minNearOverFar)

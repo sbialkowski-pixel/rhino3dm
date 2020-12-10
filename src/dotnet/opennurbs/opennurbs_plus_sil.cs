@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Rhino.DocObjects;
+using Pixel.Rhino.DocObjects;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
 #if RHINO_SDK
   /// <summary>

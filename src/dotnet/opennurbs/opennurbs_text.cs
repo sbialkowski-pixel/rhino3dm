@@ -1,11 +1,11 @@
 #pragma warning disable 1591
 using System;
 using System.Runtime.Serialization;
-using Rhino.DocObjects;
-using Rhino.Runtime;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   public enum TextRunType
   {

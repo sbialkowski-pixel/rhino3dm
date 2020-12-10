@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Rhino.Display;
-using Rhino.DocObjects;
+using Pixel.Rhino.Display;
+using Pixel.Rhino.DocObjects;
 
 #if RHINO_SDK
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   /// <summary>
   /// 
@@ -292,7 +292,7 @@ namespace Rhino.UI
   }
 
   /// <summary>
-  /// Passed to Rhino.PlugIns.PlugIn.ObjectPropertiesPages to allow a plug-in
+  /// Passed to Pixel.Rhino.PlugIns.PlugIn.ObjectPropertiesPages to allow a plug-in
   /// to add custom ObjectPropertiesPage pages to the Rhino properties panel.
   /// </summary>
   public class ObjectPropertiesPageCollection

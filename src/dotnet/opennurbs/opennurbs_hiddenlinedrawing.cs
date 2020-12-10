@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Rhino.DocObjects;
-using Rhino.Geometry.Collections;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Geometry.Collections;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 #if RHINO_SDK
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Input used for computing a hidden line drawing
@@ -376,7 +376,7 @@ namespace Rhino.Geometry
     {
       var ptr_this = NonConstPointer();
 
-      Rhino.Runtime.Interop.MarshalProgressAndCancelToken(cancelToken, progress,
+      Pixel.Rhino.Runtime.Interop.MarshalProgressAndCancelToken(cancelToken, progress,
         out IntPtr ptrTerminator, out int progressInt, out var reporter, out var terminator);
 
       var rc = UnsafeNativeMethods.ON_HiddenLineDrawing_Draw2(ptr_this, allowUseThreads, progressInt, ptrTerminator);
@@ -1055,12 +1055,12 @@ namespace Rhino.Geometry
 }
 
 
-namespace Rhino.Geometry.Collections
+namespace Pixel.Rhino.Geometry.Collections
 {
   /// <summary>
   /// Provides access to all the HiddenLineDrawingObject objects in a HiddenLineDrawing object.
   /// </summary>
-  class HiddenLineDrawingObjectList : IEnumerable<HiddenLineDrawingObject>, Rhino.Collections.IRhinoTable<HiddenLineDrawingObject>
+  class HiddenLineDrawingObjectList : IEnumerable<HiddenLineDrawingObject>, Pixel.Rhino.Collections.IRhinoTable<HiddenLineDrawingObject>
   {
     #region fields
     readonly HiddenLineDrawing m_owner;
@@ -1120,7 +1120,7 @@ namespace Rhino.Geometry.Collections
     /// <returns>The enumerator.</returns>
     public IEnumerator<HiddenLineDrawingObject> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<HiddenLineDrawingObjectList, HiddenLineDrawingObject>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<HiddenLineDrawingObjectList, HiddenLineDrawingObject>(this);
     }
 
     /// <summary>
@@ -1137,7 +1137,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the HiddenLineDrawingFullCurve objects in a HiddenLineDrawing object.
   /// </summary>
-  class HiddenLineDrawingFullCurveList : IEnumerable<HiddenLineDrawingObjectCurve>, Rhino.Collections.IRhinoTable<HiddenLineDrawingObjectCurve>
+  class HiddenLineDrawingFullCurveList : IEnumerable<HiddenLineDrawingObjectCurve>, Pixel.Rhino.Collections.IRhinoTable<HiddenLineDrawingObjectCurve>
   {
     #region fields
     readonly HiddenLineDrawing m_owner;
@@ -1197,7 +1197,7 @@ namespace Rhino.Geometry.Collections
     /// <returns>The enumerator.</returns>
     public IEnumerator<HiddenLineDrawingObjectCurve> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<HiddenLineDrawingFullCurveList, HiddenLineDrawingObjectCurve>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<HiddenLineDrawingFullCurveList, HiddenLineDrawingObjectCurve>(this);
     }
 
     /// <summary>
@@ -1214,7 +1214,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the HiddenLineDrawingPoint objects in a HiddenLineDrawing object.
   /// </summary>
-  class HiddenLineDrawingPointList : IEnumerable<HiddenLineDrawingPoint>, Rhino.Collections.IRhinoTable<HiddenLineDrawingPoint>
+  class HiddenLineDrawingPointList : IEnumerable<HiddenLineDrawingPoint>, Pixel.Rhino.Collections.IRhinoTable<HiddenLineDrawingPoint>
   {
     #region fields
     readonly HiddenLineDrawing m_owner;
@@ -1274,7 +1274,7 @@ namespace Rhino.Geometry.Collections
     /// <returns>The enumerator.</returns>
     public IEnumerator<HiddenLineDrawingPoint> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<HiddenLineDrawingPointList, HiddenLineDrawingPoint>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<HiddenLineDrawingPointList, HiddenLineDrawingPoint>(this);
     }
 
     /// <summary>
@@ -1293,7 +1293,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the HiddenLineDrawingCurve objects in a HiddenLineDrawing object.
   /// </summary>
-  class HiddenLineDrawingSegmentList : IEnumerable<HiddenLineDrawingSegment>, Rhino.Collections.IRhinoTable<HiddenLineDrawingSegment>
+  class HiddenLineDrawingSegmentList : IEnumerable<HiddenLineDrawingSegment>, Pixel.Rhino.Collections.IRhinoTable<HiddenLineDrawingSegment>
   {
     #region fields
     readonly HiddenLineDrawing m_owner;
@@ -1353,7 +1353,7 @@ namespace Rhino.Geometry.Collections
     /// <returns>The enumerator.</returns>
     public IEnumerator<HiddenLineDrawingSegment> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<HiddenLineDrawingSegmentList, HiddenLineDrawingSegment>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<HiddenLineDrawingSegmentList, HiddenLineDrawingSegment>(this);
     }
 
     /// <summary>
@@ -1368,7 +1368,7 @@ namespace Rhino.Geometry.Collections
   }
 }
 /*
-namespace Rhino.Geometry.HiddenLineDrawingProposal
+namespace Pixel.Rhino.Geometry.HiddenLineDrawingProposal
 {
   /// <summary>
   /// Enumerates the different types of HiddenLineDrawingCurve visiblity

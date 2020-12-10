@@ -1,14 +1,14 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
 using System.Collections;
 using System.Linq;
-using Rhino.Collections;
+using Pixel.Rhino.Collections;
 
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   /// <summary>
   /// Represents a 3dm file, which is stored using the OpenNURBS file standard.
@@ -339,7 +339,7 @@ namespace Rhino.FileIO
       if (!File.Exists(path))
         throw new FileNotFoundException("The provided path is null, does not exist or cannot be accessed.", path);
       System.Drawing.Bitmap rc = null;
-      if(Rhino.Runtime.HostUtils.RunningOnWindows)
+      if(Pixel.Rhino.Runtime.HostUtils.RunningOnWindows)
       {
         using(var dib = new RhinoDib())
         {
@@ -347,7 +347,7 @@ namespace Rhino.FileIO
             rc = dib.ToBitmap();
         }
       }
-      else if(Rhino.Runtime.HostUtils.RunningOnOSX)
+      else if(Pixel.Rhino.Runtime.HostUtils.RunningOnOSX)
       {
         var nsimage = UnsafeNativeMethods.ONX_Model_MacReadPreviewImage(path);
         if(nsimage != IntPtr.Zero)
@@ -1211,7 +1211,7 @@ namespace Rhino.FileIO
       Version = RhinoApp.ExeVersion;
       // It's OK not to specify a version. If it is 0,
       // then ON_BinaryArchive::CurrentArchiveVersion() is used.
-      // This is here just so that previous behavior is kept unchanged in Rhino.
+      // This is here just so that previous behavior is kept unchanged in Pixel.Rhino.
 #endif
       SaveUserData = true;
     }
@@ -1363,7 +1363,7 @@ namespace Rhino.FileIO
       {
         IntPtr pGeometry = GetGeometryConstPointer();
         if( m_geometry==null || m_geometry.ConstPointer()!=pGeometry )
-          m_geometry = Rhino.Geometry.GeometryBase.CreateGeometryHelper(pGeometry, this);
+          m_geometry = Pixel.Rhino.Geometry.GeometryBase.CreateGeometryHelper(pGeometry, this);
         return m_geometry;
       }
     }
@@ -2269,7 +2269,7 @@ namespace Rhino.FileIO
 
   /// <summary>
   /// Represents a simple object table for a file that is open externally.
-  /// <para>This class mimics Rhino.DocObjects.Tables.ObjectTable while providing external access to the file.</para>
+  /// <para>This class mimics Pixel.Rhino.DocObjects.Tables.ObjectTable while providing external access to the file.</para>
   /// </summary>
   public class File3dmObjectTable :
     File3dmCommonComponentTable<File3dmObject>,
@@ -2362,9 +2362,9 @@ namespace Rhino.FileIO
     /// <summary>Gets the bounding box containing every object in this table.</summary>
     /// <returns>The computed bounding box.</returns>
     /// <since>5.0</since>
-    public Rhino.Geometry.BoundingBox GetBoundingBox()
+    public Pixel.Rhino.Geometry.BoundingBox GetBoundingBox()
     {
-      Rhino.Geometry.BoundingBox bbox = new Geometry.BoundingBox();
+      Pixel.Rhino.Geometry.BoundingBox bbox = new Geometry.BoundingBox();
       IntPtr pConstModel = m_parent.ConstPointer();
       UnsafeNativeMethods.ONX_Model_BoundingBox(pConstModel, ref bbox);
       return bbox;
@@ -2571,7 +2571,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Adds a clipping plane object to Rhino.
+    /// Adds a clipping plane object to Pixel.Rhino.
     /// </summary>
     /// <param name="plane">A plane.</param>
     /// <param name="uMagnitude">The size in U direction.</param>
@@ -2589,7 +2589,7 @@ namespace Rhino.FileIO
       return AddClippingPlane(plane, uMagnitude, vMagnitude, new Guid[] { clippedViewportId });
     }
     /// <summary>
-    /// Adds a clipping plane object to Rhino.
+    /// Adds a clipping plane object to Pixel.Rhino.
     /// </summary>
     /// <param name="plane">A plane.</param>
     /// <param name="uMagnitude">The size in U direction.</param>
@@ -2602,7 +2602,7 @@ namespace Rhino.FileIO
       return AddClippingPlane(plane, uMagnitude, vMagnitude, clippedViewportIds, null);
     }
     /// <summary>
-    /// Adds a clipping plane object to Rhino.
+    /// Adds a clipping plane object to Pixel.Rhino.
     /// </summary>
     /// <param name="plane">A plane.</param>
     /// <param name="uMagnitude">The size in U direction.</param>
@@ -2678,7 +2678,7 @@ namespace Rhino.FileIO
       return UnsafeNativeMethods.ONX_Model_ObjectTable_AddAngularDimension(ptr_this, ptr_const_dim, ptr_const_atts);
     }
 
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <param name="from">A line start point.</param>
     /// <param name="to">A line end point.</param>
     /// <returns>A unique identifier of new rhino object.</returns>
@@ -2687,7 +2687,7 @@ namespace Rhino.FileIO
     {
       return AddLine(from, to, null);
     }
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <param name="from">The start point of the line.</param>
     /// <param name="to">The end point of the line.</param>
     /// <param name="attributes">Attributes to apply to line.</param>
@@ -2699,14 +2699,14 @@ namespace Rhino.FileIO
       IntPtr pThis = m_parent.NonConstPointer();
       return UnsafeNativeMethods.ONX_Model_ObjectTable_AddLine(pThis, from, to, pAttr);
     }
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
     public Guid AddLine(Line line)
     {
       return AddLine(line.From, line.To);
     }
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <param name="line">A line.</param>
     /// <param name="attributes">Attributes to apply to line.</param>
     /// <returns>A unique identifier for the object.</returns>
@@ -2716,7 +2716,7 @@ namespace Rhino.FileIO
       return AddLine(line.From, line.To, attributes);
     }
 
-    /// <summary>Adds a polyline object to Rhino.</summary>
+    /// <summary>Adds a polyline object to Pixel.Rhino.</summary>
     /// <param name="points">A list, an array or any enumerable set of <see cref="Point3d"/>.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -2724,7 +2724,7 @@ namespace Rhino.FileIO
     {
       return AddPolyline(points, null);
     }
-    /// <summary>Adds a polyline object to Rhino.</summary>
+    /// <summary>Adds a polyline object to Pixel.Rhino.</summary>
     /// <param name="points">A list, an array or any enumerable set of <see cref="Point3d"/>.</param>
     /// <param name="attributes">Attributes to apply to line.</param>
     /// <returns>A unique identifier for the object.</returns>
@@ -2833,7 +2833,7 @@ namespace Rhino.FileIO
       return AddCurve(curve, null);
     }
     /// <summary>Adds a curve object to the table.</summary>
-    /// <param name="curve">A duplicate of this curve is added to Rhino.</param>
+    /// <param name="curve">A duplicate of this curve is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes to apply to curve.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -2852,7 +2852,7 @@ namespace Rhino.FileIO
     /// <since>5.0</since>
     public Guid AddTextDot(string text, Point3d location)
     {
-      Geometry.TextDot dot = new Rhino.Geometry.TextDot(text, location);
+      Geometry.TextDot dot = new Pixel.Rhino.Geometry.TextDot(text, location);
       Guid rc = AddTextDot(dot);
       dot.Dispose();
       return rc;
@@ -2865,7 +2865,7 @@ namespace Rhino.FileIO
     /// <since>5.0</since>
     public Guid AddTextDot(string text, Point3d location, DocObjects.ObjectAttributes attributes)
     {
-      Geometry.TextDot dot = new Rhino.Geometry.TextDot(text, location);
+      Geometry.TextDot dot = new Pixel.Rhino.Geometry.TextDot(text, location);
       Guid rc = AddTextDot(dot, attributes);
       dot.Dispose();
       return rc;
@@ -2952,7 +2952,7 @@ namespace Rhino.FileIO
     /// <param name="text3d">The text object to add.</param>
     /// <returns>The Guid of the newly added object or Guid.Empty on failure.</returns>
     /// <since>5.0</since>
-    public Guid AddText(Rhino.Display.Text3d text3d)
+    public Guid AddText(Pixel.Rhino.Display.Text3d text3d)
     {
       return AddText(text3d, null);
     }
@@ -2963,7 +2963,7 @@ namespace Rhino.FileIO
     /// <param name="attributes">Attributes to link to the object.</param>
     /// <returns>The Guid of the newly added object or Guid.Empty on failure.</returns>
     /// <since>5.0</since>
-    public Guid AddText(Rhino.Display.Text3d text3d, DocObjects.ObjectAttributes attributes)
+    public Guid AddText(Pixel.Rhino.Display.Text3d text3d, DocObjects.ObjectAttributes attributes)
     {
       TextJustification justification = TextJustification.None;
       switch (text3d.HorizontalAlignment)
@@ -3074,16 +3074,16 @@ namespace Rhino.FileIO
       return AddText(text, plane, height, fontName, bold, italic, TextJustification.None, attributes);
     }
 
-    /// <summary>Adds a surface object to Rhino.</summary>
-    /// <param name="surface">A duplicate of this surface is added to Rhino.</param>
+    /// <summary>Adds a surface object to Pixel.Rhino.</summary>
+    /// <param name="surface">A duplicate of this surface is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
     public Guid AddSurface(Geometry.Surface surface)
     {
       return AddSurface(surface, null);
     }
-    /// <summary>Adds a surface object to Rhino.</summary>
-    /// <param name="surface">A duplicate of this surface is added to Rhino.</param>
+    /// <summary>Adds a surface object to Pixel.Rhino.</summary>
+    /// <param name="surface">A duplicate of this surface is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes to link to the object.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -3095,16 +3095,16 @@ namespace Rhino.FileIO
       return UnsafeNativeMethods.ONX_Model_ObjectTable_AddSurface(pThis, pSurface, pAttr);
     }
 
-    /// <summary>Adds an extrusion object to Rhino.</summary>
-    /// <param name="extrusion">A duplicate of this extrusion is added to Rhino.</param>
+    /// <summary>Adds an extrusion object to Pixel.Rhino.</summary>
+    /// <param name="extrusion">A duplicate of this extrusion is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
     public Guid AddExtrusion(Geometry.Extrusion extrusion)
     {
       return AddExtrusion(extrusion, null);
     }
-    /// <summary>Adds an extrusion object to Rhino.</summary>
-    /// <param name="extrusion">A duplicate of this extrusion is added to Rhino.</param>
+    /// <summary>Adds an extrusion object to Pixel.Rhino.</summary>
+    /// <param name="extrusion">A duplicate of this extrusion is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes to link to the object.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -3116,16 +3116,16 @@ namespace Rhino.FileIO
       return UnsafeNativeMethods.ONX_Model_ObjectTable_AddExtrusion(pThis, pConstExtrusion, pAttr);
     }
 
-    /// <summary>Adds a mesh object to Rhino.</summary>
-    /// <param name="mesh">A duplicate of this mesh is added to Rhino.</param>
+    /// <summary>Adds a mesh object to Pixel.Rhino.</summary>
+    /// <param name="mesh">A duplicate of this mesh is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
     public Guid AddMesh(Geometry.Mesh mesh)
     {
       return AddMesh(mesh, null);
     }
-    /// <summary>Adds a mesh object to Rhino.</summary>
-    /// <param name="mesh">A duplicate of this mesh is added to Rhino.</param>
+    /// <summary>Adds a mesh object to Pixel.Rhino.</summary>
+    /// <param name="mesh">A duplicate of this mesh is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes to link to the object.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -3137,16 +3137,16 @@ namespace Rhino.FileIO
       return UnsafeNativeMethods.ONX_Model_ObjectTable_AddMesh(pThis, pConstMesh, pAttr);
     }
 
-    /// <summary>Adds a brep object to Rhino.</summary>
-    /// <param name="brep">A duplicate of this brep is added to Rhino.</param>
+    /// <summary>Adds a brep object to Pixel.Rhino.</summary>
+    /// <param name="brep">A duplicate of this brep is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
     public Guid AddBrep(Geometry.Brep brep)
     {
       return AddBrep(brep, null);
     }
-    /// <summary>Adds a brep object to Rhino.</summary>
-    /// <param name="brep">A duplicate of this brep is added to Rhino.</param>
+    /// <summary>Adds a brep object to Pixel.Rhino.</summary>
+    /// <param name="brep">A duplicate of this brep is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes to apply to brep.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -3197,7 +3197,7 @@ namespace Rhino.FileIO
       string s = null;
       if (!string.IsNullOrEmpty(text))
         s = text;
-      Rhino.Collections.RhinoList<Point2d> pts = new Rhino.Collections.RhinoList<Point2d>();
+      Pixel.Rhino.Collections.RhinoList<Point2d> pts = new Pixel.Rhino.Collections.RhinoList<Point2d>();
       foreach (Point2d pt in points)
         pts.Add(pt);
       int count = pts.Count;
@@ -3240,14 +3240,14 @@ namespace Rhino.FileIO
       if (rc != PlaneFitResult.Success)
         return Guid.Empty;
 
-      Rhino.Collections.RhinoList<Point2d> points2d = new Rhino.Collections.RhinoList<Point2d>();
+      Pixel.Rhino.Collections.RhinoList<Point2d> points2d = new Pixel.Rhino.Collections.RhinoList<Point2d>();
       foreach (Point3d point3d in points)
       {
         double s, t;
         if (plane.ClosestParameter(point3d, out s, out t))
         {
           Point2d newpoint = new Point2d(s, t);
-          if (points2d.Count > 0 && points2d.Last.DistanceTo(newpoint) < Rhino.RhinoMath.SqrtEpsilon)
+          if (points2d.Count > 0 && points2d.Last.DistanceTo(newpoint) < Pixel.Rhino.RhinoMath.SqrtEpsilon)
             continue;
           points2d.Add(new Point2d(s, t));
         }
@@ -3454,12 +3454,12 @@ namespace Rhino.FileIO
     /// <since>5.0</since>
     public IEnumerator<File3dmPlugInData> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<File3dmPlugInDataTable, File3dmPlugInData>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<File3dmPlugInDataTable, File3dmPlugInData>(this);
     }
     /// <since>5.0</since>
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<File3dmPlugInDataTable, File3dmPlugInData>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<File3dmPlugInDataTable, File3dmPlugInData>(this);
     }
 #endregion
 
@@ -4129,7 +4129,7 @@ namespace Rhino.FileIO
     /// <since>6.0</since>
     public IEnumerator<DocObjects.ViewInfo> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<File3dmViewTable, Rhino.DocObjects.ViewInfo>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<File3dmViewTable, Pixel.Rhino.DocObjects.ViewInfo>(this);
     }
 
     /// <since>6.0</since>

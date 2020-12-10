@@ -2,10 +2,10 @@
 #if RHINO_SDK
 using System;
 using System.Collections.Generic;
-using Rhino.Geometry;
-using Rhino.FileIO;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.FileIO;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   public class LightObject : RhinoObject
   {
@@ -44,7 +44,7 @@ namespace Rhino.DocObjects
   }
 }
 
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public enum LightTableEventType : int
   {
@@ -136,7 +136,7 @@ namespace Rhino.DocObjects.Tables
     /// Gets the Sun instance that is applied to the document.
     /// <para>If the RDK is loaded, an instance is always returned.</para>
     /// </summary>
-    /// <exception cref="Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
+    /// <exception cref="Pixel.Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
     /// <since>5.0</since>
     public Render.Sun Sun
     {
@@ -176,7 +176,7 @@ namespace Rhino.DocObjects.Tables
       }
     }
 
-    public Rhino.DocObjects.LightObject this[int index]
+    public Pixel.Rhino.DocObjects.LightObject this[int index]
     {
       get
       {

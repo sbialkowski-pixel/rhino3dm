@@ -1,8 +1,8 @@
 using System;
-using Rhino.Display;
+using Pixel.Rhino.Display;
 using System.Runtime.Serialization;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represent arcs and circles.

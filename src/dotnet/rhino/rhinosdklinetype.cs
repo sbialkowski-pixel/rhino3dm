@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.FileIO;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.FileIO;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   [Serializable]
   public sealed class Linetype : ModelComponent
@@ -16,7 +16,7 @@ namespace Rhino.DocObjects
     // null, the object uses m_doc and m_id to look up the const
     // CRhinoLinetype in the linetype table.
 #if RHINO_SDK
-    readonly Rhino.RhinoDoc m_doc;
+    readonly Pixel.Rhino.RhinoDoc m_doc;
 #endif
     readonly Guid m_id=Guid.Empty;
     #endregion
@@ -31,7 +31,7 @@ namespace Rhino.DocObjects
     }
 
 #if RHINO_SDK
-    internal Linetype(int index, Rhino.RhinoDoc doc) : base()
+    internal Linetype(int index, Pixel.Rhino.RhinoDoc doc) : base()
     {
       m_id = UnsafeNativeMethods.CRhinoLinetypeTable_GetLinetypeId(doc.RuntimeSerialNumber, index);
       m_doc = doc;
@@ -51,7 +51,7 @@ namespace Rhino.DocObjects
     {
     }
 
-    internal Linetype(Guid id, Rhino.FileIO.File3dm onxModel)
+    internal Linetype(Guid id, Pixel.Rhino.FileIO.File3dm onxModel)
     {
       m_id = id;
       m__parent = onxModel;
@@ -82,7 +82,7 @@ namespace Rhino.DocObjects
         return rc;
       }
 #endif
-      Rhino.FileIO.File3dm file_parent = m__parent as Rhino.FileIO.File3dm;
+      Pixel.Rhino.FileIO.File3dm file_parent = m__parent as Pixel.Rhino.FileIO.File3dm;
       if (file_parent != null)
       {
         IntPtr pModel = file_parent.NonConstPointer();
@@ -94,7 +94,7 @@ namespace Rhino.DocObjects
 
     internal override IntPtr NonConstPointer()
     {
-      if (m__parent is Rhino.FileIO.File3dm)
+      if (m__parent is Pixel.Rhino.FileIO.File3dm)
       {
         return _InternalGetConstPointer();
       }
@@ -371,7 +371,7 @@ namespace Rhino.DocObjects
 }
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public sealed class LinetypeTable :
     RhinoDocCommonTable<Linetype>, ICollection<Linetype>
@@ -469,11 +469,11 @@ namespace Rhino.DocObjects.Tables
     /// Source used by an object to determine its current linetype to be used by new objects.
     /// </summary>
     /// <since>5.0</since>
-    public Rhino.DocObjects.ObjectLinetypeSource CurrentLinetypeSource
+    public Pixel.Rhino.DocObjects.ObjectLinetypeSource CurrentLinetypeSource
     {
       get
       {
-        return (Rhino.DocObjects.ObjectLinetypeSource)UnsafeNativeMethods.CRhinoLinetypeTable_GetCurrentLinetypeSource(m_doc.RuntimeSerialNumber);
+        return (Pixel.Rhino.DocObjects.ObjectLinetypeSource)UnsafeNativeMethods.CRhinoLinetypeTable_GetCurrentLinetypeSource(m_doc.RuntimeSerialNumber);
       }
       set
       {
@@ -508,7 +508,7 @@ namespace Rhino.DocObjects.Tables
     /// <param name="rhinoObject">The Rhino object to use in the query.</param>
     /// <returns>The effective linetype index.</returns>
     /// <since>5.0</since>
-    public int LinetypeIndexForObject(Rhino.DocObjects.RhinoObject rhinoObject)
+    public int LinetypeIndexForObject(Pixel.Rhino.DocObjects.RhinoObject rhinoObject)
     {
       IntPtr pConstRhinoObject = rhinoObject.ConstPointer();
       return UnsafeNativeMethods.CRhinoLinetypeTable_EffectiveLinetypeIndex(m_doc.RuntimeSerialNumber, pConstRhinoObject);
@@ -528,7 +528,7 @@ namespace Rhino.DocObjects.Tables
     {
       get
       {
-        return new Rhino.DocObjects.Linetype(CurrentLinetypeIndex, m_doc);
+        return new Pixel.Rhino.DocObjects.Linetype(CurrentLinetypeIndex, m_doc);
       }
     }
 
@@ -651,7 +651,7 @@ namespace Rhino.DocObjects.Tables
     /// <since>5.0</since>
     public int Add(string name, IEnumerable<double> segmentLengths)
     {
-      using (Runtime.InteropWrappers.SimpleArrayDouble segs = new Rhino.Runtime.InteropWrappers.SimpleArrayDouble(segmentLengths))
+      using (Runtime.InteropWrappers.SimpleArrayDouble segs = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayDouble(segmentLengths))
       {
         IntPtr pSegs = segs.NonConstPointer();
         return UnsafeNativeMethods.CRhinoLinetypeTable_AddLinetype2(m_doc.RuntimeSerialNumber, name, pSegs);

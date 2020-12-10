@@ -1,18 +1,18 @@
 using System;
-using Rhino.Collections;
+using Pixel.Rhino.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System.Runtime.Serialization;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 using ClipperLib;
-using Rhino.Geometry.Intersect;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry.Intersect;
+using Pixel.Rhino.Geometry;
 using System.Linq;
 
 // don't wrap ON_MeshCurveParameters. It is only needed for the ON_Curve::MeshCurveFunction
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Used in curve and surface blending functions
@@ -1078,7 +1078,7 @@ namespace Rhino.Geometry
         /// <since>5.0</since>
         public static Curve[] JoinCurves(IEnumerable<Curve> inputCurves)
         {
-            return JoinCurves(inputCurves, 0.0, false);
+            return JoinCurves(inputCurves, 1e-3, false);
         }
         /// <summary>
         /// Joins a collection of curve segments together.
@@ -1212,19 +1212,30 @@ namespace Rhino.Geometry
             {
                 pCurve.Append(B);
                 pCurve.Append(A);
-                return new List<Curve> { pCurve };
+                return new List<Curve> { processCurve(pCurve, joinTolerance) };
             }
             else if (B.PointAtStart.DistanceTo(A.PointAtEnd) < joinTolerance)
             {
                 pCurve.Append(A);
                 pCurve.Append(B);
-                return new List<Curve> { pCurve };
+                return new List<Curve> { processCurve(pCurve, joinTolerance) };
             }
             else
             {
                 return new List<Curve> { A, B };
             }
         }
+        
+        private static Curve processCurve(Curve crv, double joinTolerance)
+        {
+            crv.MakeClosed(joinTolerance);
+            if (crv.TryGetPolyline(out Polyline pline))
+            {
+                return new PolylineCurve(pline);
+            }
+            return crv;
+        }
+
 
 
 #endif
@@ -2034,7 +2045,7 @@ namespace Rhino.Geometry
     }
 #endif
 #if SB_IMP
-        public static RegionContainment PlanarClosedCurveRelationship(Curve curveA, Curve curveB)
+        public static RegionContainment PlanarClosedCurveRelationship_old(Curve curveA, Curve curveB)
         {
             if (curveA.IsClosed && curveB.IsClosed)
             {
@@ -2056,6 +2067,63 @@ namespace Rhino.Geometry
             }
             return RegionContainment.Disjoint;
         }
+        public static RegionContainment PlanarClosedCurveRelationship(Curve curveA, Curve curveB)
+        {
+            if (curveA.IsClosed && curveB.IsClosed)
+            {
+                IntPoint WorldXY = new IntPoint(0, 0);
+                List<IntPoint> pathA = ClipperInterop.ToClipper(curveA);
+                List<IntPoint> pathB = ClipperInterop.ToClipper(curveB);
+
+                List<int> inclusionAinB = new List<int>(pathA.Count);
+                List<int> inclusionBinA = new List<int>(pathB.Count);
+
+                bool AinB = true;
+                bool BinA = true;
+
+                for (int i = 0; i < pathA.Count; i++)
+                {
+                    int rc = Clipper.PointInPolygon(pathA[i], pathB);
+                    inclusionAinB.Add(rc);
+                    if (rc == 0)
+                    {
+
+                        AinB = false;
+                        break;
+                    }
+                    if (rc == -1)
+                    {
+                        return RegionContainment.MutualIntersection;
+                    }
+                }
+
+                for (int i = 0; i < pathB.Count; i++)
+                {
+                    int rc = Clipper.PointInPolygon(pathB[i], pathA);
+                    inclusionBinA.Add(rc);
+                    if (rc == 0)
+                    {
+                        BinA = false;
+                        break;
+                    }
+                    if (rc == -1)
+                    {
+                        return RegionContainment.MutualIntersection;
+                    }
+                }
+
+                if (AinB && !BinA) return RegionContainment.AInsideB;
+                if (!AinB && BinA) return RegionContainment.BInsideA;
+
+            }
+            return RegionContainment.Disjoint;
+
+        }
+
+
+
+
+
 #endif
 #if RHINO_SDK
         /// <summary>
@@ -2121,7 +2189,7 @@ namespace Rhino.Geometry
 
         internal override IntPtr _InternalGetConstPointer()
         {
-            Rhino.Geometry.CurveHolder holder2 = m__parent as Rhino.Geometry.CurveHolder;
+            Pixel.Rhino.Geometry.CurveHolder holder2 = m__parent as Pixel.Rhino.Geometry.CurveHolder;
             if (null != holder2)
             {
                 return holder2.ConstCurvePointer();
@@ -2130,7 +2198,7 @@ namespace Rhino.Geometry
 
             if (m_subobject_index >= 0)
             {
-                Rhino.Geometry.PolyCurve polycurve_parent = m__parent as Rhino.Geometry.PolyCurve;
+                Pixel.Rhino.Geometry.PolyCurve polycurve_parent = m__parent as Pixel.Rhino.Geometry.PolyCurve;
                 if (polycurve_parent != null)
                 {
                     IntPtr pConstPolycurve = polycurve_parent.ConstPointer();
@@ -2564,7 +2632,7 @@ namespace Rhino.Geometry
             int pointCount = 0;
             IntPtr pCurve = ConstPointer();
             IntPtr outputPointsPointer = outputPts.NonConstPointer();
-            Rhino.Runtime.InteropWrappers.SimpleArrayDouble tparams = new SimpleArrayDouble();
+            Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayDouble tparams = new SimpleArrayDouble();
             IntPtr ptparams = tparams.NonConstPointer();
             UnsafeNativeMethods.ON_Curve_IsPolyline2(pCurve, outputPointsPointer, ref pointCount, ptparams);
             if (pointCount > 0)
@@ -2592,7 +2660,7 @@ namespace Rhino.Geometry
 
         /// <summary>
         /// Gets a polyline approximation of a curve.
-        /// If curve is Nurbs type, approximate curve by dividing curve by 10 * ControlPoints.Counts verticies based on curvature.
+        /// If curve is Nurbs type, approximate curve by dividing curve by 11 * ControlPoints.Counts verticies based on curvature.
         /// </summary>
         /// <returns>PolyCurve on success, null on error.</returns>
         /// <since>6.0</since>
@@ -2611,8 +2679,9 @@ namespace Rhino.Geometry
             }
             else
             {
+
                 Polyline pline = null;
-                if (this.IsLinear())
+                if (this is LineCurve)
                 {
                     Line ln = ((LineCurve)this).Line;
                     pline = new Polyline(new Point3d[] { ln.From, ln.To });
@@ -2621,8 +2690,9 @@ namespace Rhino.Geometry
                 {
                     pline = ((PolylineCurve)this).ToPolyline();
                 }
-             
-               parameters = Enumerable.Range(0, pline.Count).Select(x => Interval.Map((double)x, new Interval(0, pline.Count - 1), Domain)).ToArray();
+
+                //Polyline pline = ((PolylineCurve)this).ToPolyline();
+                parameters = Enumerable.Range(0, pline.Count).Select(x => Interval.Map((double)x, new Interval(0, pline.Count - 1), Domain)).ToArray();
                 if (pline.Count > 0) return pline;
                 else return null;
             }
@@ -3211,6 +3281,26 @@ namespace Rhino.Geometry
         }
 #endif
 #if SB_IMP
+
+        /// <summary>
+        /// If IsClosed, just return true. Otherwise, decide if curve can be closed as 
+        /// follows: Linear curves polylinear curves with 2 segments, NURBS with 3 or less 
+        /// control points cannot be made closed. Also, if tolerance > 0 and the gap between 
+        /// start and end is larger than tolerance, curve cannot be made closed. 
+        /// Adjust the curve's endpoint to match its start point.
+        /// </summary>
+        /// <param name="tolerance">
+        /// If nonzero, and the gap is more than tolerance, curve cannot be made closed.
+        /// </param>
+        /// <returns>true on success, false on failure.</returns>
+        /// <since>5.0</since>
+        public bool MakeClosed(double tolerance)
+        {
+            if (IsClosed)
+                return true;
+            if (!IsClosable(tolerance)) return false;
+            return SetEndPoint(PointAtStart);
+        }
         /// <summary>
         /// Finds parameter of the point on a curve that is closest to testPoint.
         /// If the maximumDistance parameter is > 0, then only points whose distance
@@ -4557,7 +4647,7 @@ namespace Rhino.Geometry
 
       IntPtr pConstThis = ConstPointer();
       IntPtr pConstBrep = cutter.ConstPointer();
-      using (Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer pieces = new SimpleArrayCurvePointer())
+      using (Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer pieces = new SimpleArrayCurvePointer())
       {
         IntPtr pPieces = pieces.NonConstPointer();
         UnsafeNativeMethods.RHC_RhinoCurveSplit(pConstThis, pConstBrep, tolerance, angleToleranceRadians, pPieces);
@@ -4595,7 +4685,7 @@ namespace Rhino.Geometry
     {
       IntPtr pConstThis = ConstPointer();
       IntPtr pConstSurface = cutter.ConstPointer();
-      using (Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer pieces = new SimpleArrayCurvePointer())
+      using (Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer pieces = new SimpleArrayCurvePointer())
       {
         IntPtr pPieces = pieces.NonConstPointer();
         UnsafeNativeMethods.RHC_RhinoCurveSplit(pConstThis, pConstSurface, tolerance, angleToleranceRadians, pPieces);
@@ -5282,7 +5372,16 @@ namespace Rhino.Geometry
 
             }
             List<Point3d> offsetPts = new List<Point3d>(pline.Count);
-            offsetPts.Add(newLines[0].From);
+            if (this.IsClosed)
+            {
+                newLines.Add(newLines[0]);
+                newLines.Add(newLines[1]);
+            }
+            else
+            {
+                offsetPts.Add(newLines[0].From);
+            }
+
             for (int i = 0; i < newLines.Count - 1; i++)
             {
                 if (Intersection.LineLine(newLines[i + 1], newLines[i], out _, out double b))
@@ -5290,7 +5389,7 @@ namespace Rhino.Geometry
                     offsetPts.Add(newLines[i].PointAt(b));
                 }
             }
-            offsetPts.Add(newLines[newLines.Count - 1].To);
+            if (!this.IsClosed) offsetPts.Add(newLines[newLines.Count - 1].To);
 
             if (offsetPts.Count > 2)
             {
@@ -5794,7 +5893,6 @@ namespace Rhino.Geometry
     }
 #endif
         #endregion methods
-
 
     }
 }

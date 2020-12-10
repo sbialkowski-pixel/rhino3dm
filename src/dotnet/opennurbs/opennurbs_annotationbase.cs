@@ -2,11 +2,11 @@ using System;
 using System.Drawing;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
-using Rhino.DocObjects;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Runtime;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Provides a common base class to all annotation geometry.
@@ -451,7 +451,7 @@ namespace Rhino.Geometry
     /// <param name="vport"></param>
     /// <returns></returns>
     /// <since>6.0</since>
-    public static double GetDimensionScale(RhinoDoc doc, DimensionStyle dimstyle, Rhino.Display.RhinoViewport vport)
+    public static double GetDimensionScale(RhinoDoc doc, DimensionStyle dimstyle, Pixel.Rhino.Display.RhinoViewport vport)
     {
       uint docsn = doc.RuntimeSerialNumber;
       IntPtr pvport = vport.ConstPointer();
@@ -496,7 +496,7 @@ namespace Rhino.Geometry
       {
         IntPtr thisptr = ConstPointer();
         IntPtr styleptr = ConstParentDimStylePointer();
-        var font = new Rhino.DocObjects.Font(UnsafeNativeMethods.ON_V6_Annotation_Font(thisptr, styleptr));
+        var font = new Pixel.Rhino.DocObjects.Font(UnsafeNativeMethods.ON_V6_Annotation_Font(thisptr, styleptr));
         //RhinoApp.WriteLine($"GET AnnotationBase Font family: {font.FamilyName}, face: {font.FaceName}"); //debug
         GC.KeepAlive(m_parent_dimstyle);   // GC_KeepAlive: Nov. 1, 2018
         return font;
@@ -881,13 +881,13 @@ namespace Rhino.Geometry
     /// </summary>
     /// <returns></returns>
     /// <since>6.5</since>
-    public Rhino.DocObjects.Font FirstCharFont
+    public Pixel.Rhino.DocObjects.Font FirstCharFont
     {
       get
       {
         IntPtr const_ptr= ConstPointer();
         IntPtr font_ptr = UnsafeNativeMethods.ON_Annotation_FirstCharFont(const_ptr);
-        return new Rhino.DocObjects.Font(font_ptr);
+        return new Pixel.Rhino.DocObjects.Font(font_ptr);
       }
     }
 

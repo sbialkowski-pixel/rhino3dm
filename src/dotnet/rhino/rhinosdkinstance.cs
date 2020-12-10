@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System.ComponentModel;
-using Rhino.FileIO;
+using Pixel.Rhino.FileIO;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// The possible relationships between the instance definition geometry
@@ -691,7 +691,7 @@ namespace Rhino.DocObjects
 }
 
 
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public enum InstanceDefinitionTableEventType : int
   {

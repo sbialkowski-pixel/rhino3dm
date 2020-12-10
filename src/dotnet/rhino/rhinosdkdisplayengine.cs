@@ -2,7 +2,7 @@
 using System;
 #if RHINO_SDK
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   #region NEW IN V6, OK TO BREAK
   public abstract class DisplayEngine : IDisposable

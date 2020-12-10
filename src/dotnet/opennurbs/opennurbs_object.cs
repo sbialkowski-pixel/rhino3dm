@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   /// <summary>
   /// Represents the error that happen when a class user attempts to execute a modifying operation
@@ -70,7 +70,7 @@ namespace Rhino.Runtime
   {
 
     /// <summary>
-    /// Used to test ON_Object* pointers to see if they are a brep or mesh that is corrupt enough to crash Rhino.
+    /// Used to test ON_Object* pointers to see if they are a brep or mesh that is corrupt enough to crash Pixel.Rhino.
     /// </summary>
     /// <since>6.10</since>
     public static bool PerformCorruptionTesting
@@ -84,8 +84,8 @@ namespace Rhino.Runtime
                               // object that has been created in .NET and is not part of the document
                               // m_ptr must have been created outside of the document and must be deleted in Dispose
 
-    internal object m__parent;  // May be a Rhino.DocObject.RhinoObject, Rhino.DocObjects.ObjRef,
-                                // Rhino.Render.RenderMesh, PolyCurve 
+    internal object m__parent;  // May be a Pixel.Rhino.DocObject.RhinoObject, Pixel.Rhino.DocObjects.ObjRef,
+                                // Pixel.Rhino.Render.RenderMesh, PolyCurve 
     internal int m_subobject_index = -1;
 
 #if RHINO_SDK
@@ -179,7 +179,7 @@ namespace Rhino.Runtime
       }
       else if (m_subobject_index >= 0 && m__parent != null)
       {
-        Rhino.Geometry.PolyCurve pc = m__parent as Rhino.Geometry.PolyCurve;
+        Pixel.Rhino.Geometry.PolyCurve pc = m__parent as Pixel.Rhino.Geometry.PolyCurve;
         if (pc != null)
         {
           IntPtr ptr_polycurve = pc.NonConstPointer();
@@ -187,7 +187,7 @@ namespace Rhino.Runtime
           return ptr_this;
         }
 
-        Rhino.Geometry.BrepLoop loop = this as Rhino.Geometry.BrepLoop;
+        Pixel.Rhino.Geometry.BrepLoop loop = this as Pixel.Rhino.Geometry.BrepLoop;
         if (loop != null)
         {
           IntPtr ptr_brep = loop.Brep.NonConstPointer();
@@ -258,7 +258,7 @@ namespace Rhino.Runtime
               ApplyMemoryPressure();
 
 #if RHINO_SDK
-            Rhino.DocObjects.RhinoObject parent_object = m__parent as Rhino.DocObjects.RhinoObject;
+            Pixel.Rhino.DocObjects.RhinoObject parent_object = m__parent as Pixel.Rhino.DocObjects.RhinoObject;
             if (null != parent_object)
             {
               if ((object)parent_object.m_original_geometry == this)
@@ -673,7 +673,7 @@ namespace Rhino.Runtime
 
     internal static void SerializeWriteON_Object(IntPtr pConstOnObject, SerializationInfo info, StreamingContext context)
     {
-      Rhino.FileIO.SerializationOptions options = context.Context as Rhino.FileIO.SerializationOptions;
+      Pixel.Rhino.FileIO.SerializationOptions options = context.Context as Pixel.Rhino.FileIO.SerializationOptions;
 
       uint length = 0;
       bool writeuserdata = true;
@@ -782,7 +782,7 @@ namespace Rhino.Runtime
     /// <param name="options"></param>
     /// <returns></returns>
     /// <since>7.0</since>
-    public string ToJSON(Rhino.FileIO.SerializationOptions options)
+    public string ToJSON(Pixel.Rhino.FileIO.SerializationOptions options)
     {
       string json = null;
       uint length = 0;

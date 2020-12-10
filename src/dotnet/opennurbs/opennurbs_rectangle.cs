@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the values of a plane and two intervals

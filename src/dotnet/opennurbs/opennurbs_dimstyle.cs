@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Rhino.DocObjects;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 #pragma warning disable 1591
 
 // TODO: Add #if def for quick removal if we don't want this class in SDK
 // TODO: Remove V6 suffix once we have this class 'done'
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
 
   //public class DimstyleTableV6

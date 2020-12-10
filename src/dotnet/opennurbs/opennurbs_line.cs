@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
-using Rhino.Geometry.Intersect;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Geometry.Intersect;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Represents the value of start and end points in a single line segment.
@@ -267,7 +267,7 @@ namespace Rhino.Geometry
         return false;
 
       int count;
-      Point3d[] ptArray = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] ptArray = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (count < 2)
         return false;
       bool rc = UnsafeNativeMethods.RHC_FitLineToPoints(count, ptArray, ref fitLine);

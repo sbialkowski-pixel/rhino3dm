@@ -1,10 +1,10 @@
 #pragma warning disable 1591
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 using System;
 using System.Collections.Generic;
 
 #if RHINO_SDK
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   public class MeshObject : RhinoObject 
   {
@@ -75,7 +75,7 @@ namespace Rhino.DocObjects
     /// <param name="parameters">The mesh checking parameter and results.</param>
     /// <returns>true if successful, false otherwise.</returns>
     /// <since>7.0</since>
-    public static bool CheckMeshes(IEnumerable<MeshObject> meshObjects, Rhino.FileIO.TextLog textLog, ref MeshCheckParameters parameters)
+    public static bool CheckMeshes(IEnumerable<MeshObject> meshObjects, Pixel.Rhino.FileIO.TextLog textLog, ref MeshCheckParameters parameters)
     {
       if (null == textLog)
         throw new ArgumentNullException(nameof(textLog));
@@ -94,7 +94,7 @@ namespace Rhino.DocObjects
   // skipping CRhinoMeshDensity, CRhinoObjectMesh, CRhinoMeshObjectsUI, CRhinoMeshStlUI
 }
 
-namespace Rhino.DocObjects.Custom
+namespace Pixel.Rhino.DocObjects.Custom
 {
   public abstract class CustomMeshObject : MeshObject, IDisposable
   {

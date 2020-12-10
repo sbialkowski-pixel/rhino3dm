@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry.Intersect
+namespace Pixel.Rhino.Geometry.Intersect
 {
 
     public class IntersectionEvent
@@ -174,7 +174,7 @@ namespace Rhino.Geometry.Intersect
         /// <param name="log">If not null and false is returned, then a description of the error is appended to log.</param>
         /// <returns></returns>
         /// <since>7.0</since>
-        public static bool CompareEquivalent(IntersectionEvent eventA, IntersectionEvent eventB, double relativePointTolerance, Rhino.FileIO.TextLog log)
+        public static bool CompareEquivalent(IntersectionEvent eventA, IntersectionEvent eventB, double relativePointTolerance, Pixel.Rhino.FileIO.TextLog log)
         {
             // compare to match
             if (relativePointTolerance == RhinoMath.UnsetValue)
@@ -418,7 +418,7 @@ namespace Rhino.Geometry.Intersect
     /// <param name="log">If not null and false is returned, then a description of the error is appended to log.</param>
     /// <returns></returns>
     /// <since>7.0</since>
-    public static bool CompareEquivalent(IntersectionEvent eventA, IntersectionEvent eventB, double relativePointTolerance, Rhino.FileIO.TextLog log)
+    public static bool CompareEquivalent(IntersectionEvent eventA, IntersectionEvent eventB, double relativePointTolerance, Pixel.Rhino.FileIO.TextLog log)
     {
       // compare to match
       if (relativePointTolerance == RhinoMath.UnsetValue)

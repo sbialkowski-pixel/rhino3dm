@@ -1,5 +1,5 @@
-using Rhino.Runtime;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   /// <summary>
   /// Manages a reference to an existing or non-existing file,
@@ -130,7 +130,7 @@ namespace Rhino.FileIO
       {
         IntPtr hash_ptr = UnsafeNativeMethods.ON_FileReference_GetContentHash(m_const_ptr);
 
-        ContentHash hash = Rhino.FileIO.ContentHash.ReadPtr(hash_ptr);
+        ContentHash hash = Pixel.Rhino.FileIO.ContentHash.ReadPtr(hash_ptr);
 
         if (hash == null) throw new ApplicationException("Error occurred while marshaling ContentHash.");
 

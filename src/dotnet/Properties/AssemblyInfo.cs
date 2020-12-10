@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Rhino3dm")]
-[assembly: AssemblyDescription("Cross Platform Rhino.NET SDK")]
+[assembly: AssemblyDescription("Cross Platform Pixel.Rhino.NET SDK")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Robert McNeel & Associates")]
 [assembly: AssemblyProduct("Rhino")]

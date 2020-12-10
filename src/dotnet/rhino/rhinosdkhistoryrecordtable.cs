@@ -1,6 +1,6 @@
 //  public class HistoryRecord { }
 /*
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public sealed class HistoryRecordTable
   {

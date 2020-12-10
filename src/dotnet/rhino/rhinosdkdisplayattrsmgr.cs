@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 
 #if RHINO_SDK
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Description of a how Rhino will display in a viewport. These are the modes
@@ -34,8 +34,8 @@ namespace Rhino.Display
       WireframePipelineRequired = info.GetBoolean("WireframePipelineRequired");
       PipelineLocked = info.GetBoolean("PipelineLocked");
 
-      Rhino.Display.DisplayPipelineAttributes attrs = info.GetValue("DisplayAttributes", typeof(Rhino.Display.DisplayPipelineAttributes)) as Rhino.Display.DisplayPipelineAttributes;
-      Rhino.Display.DisplayPipelineAttributes current = DisplayAttributes;
+      Pixel.Rhino.Display.DisplayPipelineAttributes attrs = info.GetValue("DisplayAttributes", typeof(Pixel.Rhino.Display.DisplayPipelineAttributes)) as Pixel.Rhino.Display.DisplayPipelineAttributes;
+      Pixel.Rhino.Display.DisplayPipelineAttributes current = DisplayAttributes;
       current.CopyContents(attrs);
     }
 

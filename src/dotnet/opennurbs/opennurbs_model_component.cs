@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.Serialization;
-using Rhino.Runtime;
-using Rhino.Geometry;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Geometry;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Base class for all components in a model (document) and manages the

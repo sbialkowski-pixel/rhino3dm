@@ -2,12 +2,12 @@ using System.Drawing;
 #pragma warning disable 1591
 using System;
 using System.Collections.Generic;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 // none of the UI namespace needs to be in the stand-alone opennurbs library
 #if RHINO_SDK
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   namespace UI
   {

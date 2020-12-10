@@ -8,16 +8,16 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Rhino.Collections;
+using Pixel.Rhino.Collections;
 using System.Runtime.Serialization;
-using Rhino.DocObjects;
-using Rhino.FileIO;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Render;
-using Rhino.Runtime;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.FileIO;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Render;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Render
+namespace Pixel.Rhino.Render
 {
   /// <summary>
   /// Used for cached texture coordinates
@@ -379,7 +379,7 @@ namespace Rhino.Render
   }
 }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Type of Mesh Parameters used by the RhinoDoc for meshing objects
@@ -908,7 +908,7 @@ namespace Rhino.Geometry
 
     /// <summary>
     /// Gets mesh creation parameters for coarse meshing. 
-    /// <para>This corresponds with the "Jagged and Faster" default in Rhino.</para>
+    /// <para>This corresponds with the "Jagged and Faster" default in Pixel.Rhino.</para>
     /// </summary>
     /// <example>
     /// <code source='examples\vbnet\ex_createmeshfrombrep.vb' lang='vbnet'/>
@@ -953,7 +953,7 @@ namespace Rhino.Geometry
 
     /// <summary>
     /// Gets mesh creation parameters for smooth meshing. 
-    /// <para>This corresponds with the "Smooth and Slower" default in Rhino.</para>
+    /// <para>This corresponds with the "Smooth and Slower" default in Pixel.Rhino.</para>
     /// </summary>
     /// <example>
     /// <code source='examples\vbnet\ex_createmeshfrombrep.vb' lang='vbnet'/>
@@ -2425,7 +2425,7 @@ namespace Rhino.Geometry
     /// <param name="meshes">A list, and array or any enumerable of meshes.</param>
     /// <param name="tolerance">A 3d distance. This is usually a value of about 10e-7 magnitude.</param>
     /// <returns>True if meshes would be changed, otherwise false.</returns>
-    /// <remarks><seealso cref="Rhino.Geometry.Mesh.CreateFromIterativeCleanup"/></remarks>
+    /// <remarks><seealso cref="Pixel.Rhino.Geometry.Mesh.CreateFromIterativeCleanup"/></remarks>
     /// <since>7.0</since>
     public static bool RequireIterativeCleanup(IEnumerable<Mesh> meshes, double tolerance)
     {
@@ -2672,7 +2672,7 @@ namespace Rhino.Geometry
     private Collections.MeshTopologyVertexList m_topology_vertices;
 
     /// <summary>
-    /// Gets the <see cref="Rhino.Geometry.Collections.MeshTopologyVertexList"/> object associated with this mesh.
+    /// Gets the <see cref="Pixel.Rhino.Geometry.Collections.MeshTopologyVertexList"/> object associated with this mesh.
     /// <para>This object stores vertex connectivity and the indices of vertices
     /// that were unified while computing the edge topology.</para>
     /// </summary>
@@ -2688,7 +2688,7 @@ namespace Rhino.Geometry
     private Collections.MeshTopologyEdgeList m_topology_edges;
 
     /// <summary>
-    /// Gets the <see cref="Rhino.Geometry.Collections.MeshTopologyEdgeList"/> object associated with this mesh.
+    /// Gets the <see cref="Pixel.Rhino.Geometry.Collections.MeshTopologyEdgeList"/> object associated with this mesh.
     /// <para>This object stores edge connectivity.</para>
     /// </summary>
     /// <since>5.0</since>
@@ -4672,7 +4672,7 @@ namespace Rhino.Geometry
     {
       IntPtr ptr_this = NonConstPointer();
 
-      Rhino.Runtime.Interop.MarshalProgressAndCancelToken(cancelToken, progress,
+      Pixel.Rhino.Runtime.Interop.MarshalProgressAndCancelToken(cancelToken, progress,
         out IntPtr ptr_terminator, out int progress_report_serial_number, out var reporter, out var terminator);
 
       bool rc;
@@ -5051,7 +5051,7 @@ namespace Rhino.Geometry
 #endif
 }
 
-namespace Rhino.Geometry.Collections
+namespace Pixel.Rhino.Geometry.Collections
 {
   /// <summary>
   /// Provides access to the vertices and vertex-related functionality of a mesh.
@@ -7746,7 +7746,7 @@ namespace Rhino.Geometry.Collections
     /// <param name="planarTolerance">
     /// If planarTolerance >= 0, then a quad is split if its vertices
     /// are not coplanar.  
-    /// If both planarTolerance = Rhino.RhinoMath.UnsetValue and 
+    /// If both planarTolerance = Pixel.Rhino.RhinoMath.UnsetValue and 
     /// angleToleranceRadians >= 0.0, then the planarity test is skipped.
     /// </param>
     /// <param name="angleToleranceRadians">
@@ -7755,7 +7755,7 @@ namespace Rhino.Geometry.Collections
     /// The corner normal is the normal to the triangle formed by two
     /// adjacent edges and the diagonal connecting their endpoints.
     /// A quad has four corner normals.
-    /// If both angleToleranceRadians = Rhino.RhinoMath.UnsetValue and planarTolerance >= 0.0,
+    /// If both angleToleranceRadians = Pixel.Rhino.RhinoMath.UnsetValue and planarTolerance >= 0.0,
     /// then the corner normal angle test is skipped.
     /// </param>
     /// <param name="splitMethod">
@@ -7773,7 +7773,7 @@ namespace Rhino.Geometry.Collections
     /// </param>
     /// <returns>Number of quads that were converted to triangles.</returns>
     /// <remarks>
-    /// If both planarTolerance = Rhino.RhinoMath.UnsetValue and angleToleranceRadians = Rhino.RhinoMath.UnsetValue,
+    /// If both planarTolerance = Pixel.Rhino.RhinoMath.UnsetValue and angleToleranceRadians = Pixel.Rhino.RhinoMath.UnsetValue,
     /// then all quads are split.
     /// </remarks>
     /// <since>6.0</since>
@@ -8162,7 +8162,7 @@ namespace Rhino.Geometry.Collections
 
   /// <summary>
   /// Provides access to the ngons and ngon-related functionality of a Mesh.
-  /// See also the <see cref="Rhino.Geometry.Mesh.Ngons"/> property for Ngon functionality details.
+  /// See also the <see cref="Pixel.Rhino.Geometry.Mesh.Ngons"/> property for Ngon functionality details.
   /// </summary>
   public class MeshNgonList : IResizableList<MeshNgon>, IList, IReadOnlyList<MeshNgon>
   {
@@ -10821,7 +10821,7 @@ namespace Rhino.Geometry.Collections
 //          );
 
 //#endif
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the values of the four indices of a mesh face quad.

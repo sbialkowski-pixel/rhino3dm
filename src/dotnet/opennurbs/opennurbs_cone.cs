@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the center plane, radius and height values in a right circular cone.

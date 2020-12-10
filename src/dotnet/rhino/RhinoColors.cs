@@ -1,6 +1,6 @@
 using System;
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Represents an HSL (Hue, Saturation, Luminance) color with double precision floating point channels. 

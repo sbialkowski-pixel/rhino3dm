@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Enumerates all possible outcomes of a Least-Squares plane fitting operation.
@@ -271,7 +271,7 @@ namespace Rhino.Geometry
       maximumDeviation = 0.0;
 
       int count;
-      Point3d[] ptArray = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] ptArray = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
 
       if (null == ptArray || count < 1) { return PlaneFitResult.Failure; }
 
@@ -755,13 +755,13 @@ namespace Rhino.Geometry
     {
       if (centerOfRotation == Origin)
       {
-        Transform rot = Rhino.Geometry.Transform.Rotation(sinAngle, cosAngle, axis, Point3d.Origin);
+        Transform rot = Pixel.Rhino.Geometry.Transform.Rotation(sinAngle, cosAngle, axis, Point3d.Origin);
         XAxis = rot * XAxis;
         YAxis = rot * YAxis;
         ZAxis = rot * ZAxis;
         return true;
       }
-      Transform rot2 = Rhino.Geometry.Transform.Rotation(sinAngle, cosAngle, axis, centerOfRotation);
+      Transform rot2 = Pixel.Rhino.Geometry.Transform.Rotation(sinAngle, cosAngle, axis, centerOfRotation);
       return Transform(rot2);
     }
     #endregion

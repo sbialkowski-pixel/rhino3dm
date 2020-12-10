@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 #if RHINO_SDK
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the operation of unrolling a single surface.

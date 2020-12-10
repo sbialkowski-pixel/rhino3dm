@@ -3,12 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Rhino.ApplicationSettings;
-using Rhino.DocObjects;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.ApplicationSettings;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.ApplicationSettings
+namespace Pixel.Rhino.ApplicationSettings
 {
   /// <summary>License node types.</summary>
   public enum LicenseNode
@@ -49,7 +49,7 @@ namespace Rhino.ApplicationSettings
   }
 }
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   internal class InvokeHelper
   {
@@ -189,8 +189,8 @@ namespace Rhino
     ///load plug-ins that require a service release of &lt;= this release number.
     ///For example, SR1 will load all plug-ins made with any SDK released up through and including
     ///the SR1 SDK. But, SR1 will not load a plug-in built using the SR2 SDK. If an &quot;old&quot; Rhino
-    ///tries to load a &quot;new&quot; plug-in, the user is told that they have to get a free Rhino.exe
-    ///update in order for the plug-in to load. Rhino.exe updates are available from http://www.rhino3d.com.
+    ///tries to load a &quot;new&quot; plug-in, the user is told that they have to get a free Pixel.Rhino.exe
+    ///update in order for the plug-in to load. Pixel.Rhino.exe updates are available from http://www.rhino3d.com.
     ///</summary>
     /// <since>5.0</since>
     public static int SdkServiceRelease
@@ -209,7 +209,7 @@ namespace Rhino
 
     ///<summary>
     ///Service release version of Rhino executable (0, 1, 2, ...)  
-    ///The integer is the service release number of Rhino.  For example,
+    ///The integer is the service release number of Pixel.Rhino.  For example,
     ///this function returns &quot;0&quot; if Rhino V4SR0 is running and returns
     ///&quot;1&quot; if Rhino V4SR1 is running.
     ///</summary>
@@ -479,7 +479,7 @@ namespace Rhino
       get { return UnsafeNativeMethods.CRhinoApp_GetGUID(UnsafeNativeMethods.RhinoAppGuid.Rhino6Id); }
     }
 
-    ///<summary>Gets the current ID of Rhino.</summary>
+    ///<summary>Gets the current ID of Pixel.Rhino.</summary>
     /// <since>5.0</since>
     public static Guid CurrentRhinoId
     {
@@ -715,7 +715,7 @@ namespace Rhino
       UnsafeNativeMethods.CRhinoApp_SetCommandPromptMessage(prompt);
     }
 
-    ///<summary>Sets the command prompt in Rhino.</summary>
+    ///<summary>Sets the command prompt in Pixel.Rhino.</summary>
     ///<param name="prompt">The new prompt text.</param>
     ///<param name="promptDefault">
     /// Text that appears in angle brackets and indicates what will happen if the user pressed ENTER.
@@ -837,7 +837,7 @@ namespace Rhino
     //  }
     //}
 
-    ///<summary>Exits, or closes, Rhino.</summary>
+    ///<summary>Exits, or closes, Pixel.Rhino.</summary>
     /// <since>5.0</since>
     public static void Exit()
     {
@@ -979,7 +979,7 @@ namespace Rhino
         }
         catch(Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
     }
@@ -1037,7 +1037,7 @@ namespace Rhino
     public static IntPtr MainWindowHandle()
     {
       IntPtr hMainWnd = UnsafeNativeMethods.CRhinoApp_GetMainFrameHWND();
-      if (IntPtr.Zero == hMainWnd && Rhino.Runtime.HostUtils.RunningOnWindows)
+      if (IntPtr.Zero == hMainWnd && Pixel.Rhino.Runtime.HostUtils.RunningOnWindows)
         hMainWnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
       return hMainWnd;
     }
@@ -1047,7 +1047,7 @@ namespace Rhino
     /// <summary> Main Rhino Window </summary>
     /// <since>5.0</since>
     [System.ComponentModel.Browsable(false), System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    [Obsolete("Use MainWindowHandle or RhinoEtoApp.MainWindow in Rhino.UI")]
+    [Obsolete("Use MainWindowHandle or RhinoEtoApp.MainWindow in Pixel.Rhino.UI")]
     public static System.Windows.Forms.IWin32Window MainWindow()
     {
       if (null == g_main_window)
@@ -1064,7 +1064,7 @@ namespace Rhino
     /// </summary>
     /// <since>5.0</since>
     [System.ComponentModel.Browsable(false), System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    [Obsolete("Use MainWindowHandle or RhinoEtoApp.MainWindow in Rhino.UI")]
+    [Obsolete("Use MainWindowHandle or RhinoEtoApp.MainWindow in Pixel.Rhino.UI")]
     public static RhinoWindow MainApplicationWindow
     {
       get { return MainWindow() as RhinoWindow; }
@@ -1322,7 +1322,7 @@ namespace Rhino
     }
 
     /// <summary>
-    /// Refresh the license used by Rhino. This allows any part of Rhino to ensure that the most current version of the license file on disk is in use.
+    /// Refresh the license used by Pixel.Rhino. This allows any part of Rhino to ensure that the most current version of the license file on disk is in use.
     /// </summary>
     /// <returns></returns>
     /// <since>6.0</since>
@@ -1337,7 +1337,7 @@ namespace Rhino
     /// <since>6.0</since>
     public static bool LoginToCloudZoo()
     {
-      return Rhino.PlugIns.LicenseUtils.ZooClient.LoginToCloudZoo();
+      return Pixel.Rhino.PlugIns.LicenseUtils.ZooClient.LoginToCloudZoo();
     }
 
     /// <summary>
@@ -1348,7 +1348,7 @@ namespace Rhino
     {
       get
       {
-        return Rhino.PlugIns.LicenseUtils.ZooClient.LoggedInUserName;
+        return Pixel.Rhino.PlugIns.LicenseUtils.ZooClient.LoggedInUserName;
       }
     }
 
@@ -1361,7 +1361,7 @@ namespace Rhino
     {
       get
       {
-        return Rhino.PlugIns.LicenseUtils.ZooClient.LoggedInUserAvatar;
+        return Pixel.Rhino.PlugIns.LicenseUtils.ZooClient.LoggedInUserAvatar;
       }
     }
 
@@ -1374,7 +1374,7 @@ namespace Rhino
     {
       get
       {
-        return Rhino.PlugIns.LicenseUtils.ZooClient.UserIsLoggedIn;
+        return Pixel.Rhino.PlugIns.LicenseUtils.ZooClient.UserIsLoggedIn;
       }
     }
 
@@ -1758,9 +1758,9 @@ namespace Rhino
     /// Fires when the license state has changed
     /// </summary>
     /// <since>7.0</since>
-    public static event EventHandler<Rhino.Runtime.LicenseStateChangedEventArgs> LicenseStateChanged;
+    public static event EventHandler<Pixel.Rhino.Runtime.LicenseStateChangedEventArgs> LicenseStateChanged;
 
-    internal static void FireLicenseStateChangedEvent(object sender, Rhino.Runtime.NamedParametersEventArgs args)
+    internal static void FireLicenseStateChangedEvent(object sender, Pixel.Rhino.Runtime.NamedParametersEventArgs args)
     {
       bool canSave = false;
       args.TryGetBool("CanSave", out canSave);
@@ -1821,7 +1821,7 @@ namespace Rhino
         if (m_new_rdk_document == null)
         {
           m_OnNewRdkDocument = OnNewRdkDocument;
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetNewRdkDocumentEventCallback(m_OnNewRdkDocument, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetNewRdkDocumentEventCallback(m_OnNewRdkDocument, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
         }
         m_new_rdk_document += value;
       }
@@ -1830,7 +1830,7 @@ namespace Rhino
         m_new_rdk_document -= value;
         if (m_new_rdk_document == null)
         {
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetNewRdkDocumentEventCallback(null, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetNewRdkDocumentEventCallback(null, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
           m_OnNewRdkDocument = null;
         }
       }
@@ -1860,7 +1860,7 @@ namespace Rhino
         if (m_rdk_global_settings_changed == null)
         {
           m_OnRdkGlobalSettingsChanged = OnRdkGlobalSettingsChanged;
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetGlobalSettingsChangedEventCallback(m_OnRdkGlobalSettingsChanged, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetGlobalSettingsChangedEventCallback(m_OnRdkGlobalSettingsChanged, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
         }
         m_rdk_global_settings_changed += value;
       }
@@ -1869,7 +1869,7 @@ namespace Rhino
         m_rdk_global_settings_changed -= value;
         if (m_rdk_global_settings_changed == null)
         {
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetGlobalSettingsChangedEventCallback(null, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetGlobalSettingsChangedEventCallback(null, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
           m_OnRdkGlobalSettingsChanged = null;
         }
       }
@@ -1899,7 +1899,7 @@ namespace Rhino
         if (m_rdk_update_all_previews == null)
         {
           m_OnRdkUpdateAllPreviews = OnRdkUpdateAllPreviews;
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetUpdateAllPreviewsEventCallback(m_OnRdkUpdateAllPreviews, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetUpdateAllPreviewsEventCallback(m_OnRdkUpdateAllPreviews, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
         }
         m_rdk_update_all_previews += value;
       }
@@ -1908,7 +1908,7 @@ namespace Rhino
         m_rdk_update_all_previews -= value;
         if (m_rdk_update_all_previews == null)
         {
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetUpdateAllPreviewsEventCallback(null, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetUpdateAllPreviewsEventCallback(null, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
           m_OnRdkUpdateAllPreviews = null;
         }
       }
@@ -1937,7 +1937,7 @@ namespace Rhino
         if (m_rdk_cache_image_changed == null)
         {
           m_OnCacheImageChanged = OnRdkCacheImageChanged;
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetCacheImageChangedEventCallback(m_OnCacheImageChanged, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetCacheImageChangedEventCallback(m_OnCacheImageChanged, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
         }
         m_rdk_cache_image_changed += value;
       }
@@ -1946,7 +1946,7 @@ namespace Rhino
         m_rdk_cache_image_changed -= value;
         if (m_rdk_cache_image_changed == null)
         {
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetCacheImageChangedEventCallback(null, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetCacheImageChangedEventCallback(null, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
           m_OnCacheImageChanged = null;
         }
       }
@@ -1974,7 +1974,7 @@ namespace Rhino
         if (m_renderer_changed == null)
         {
           m_OnRendererChanged = OnRendererChanged;
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetRendererChangedEventCallback(m_OnRendererChanged, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetRendererChangedEventCallback(m_OnRendererChanged, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
         }
         m_renderer_changed += value;
       }
@@ -1983,7 +1983,7 @@ namespace Rhino
         m_renderer_changed -= value;
         if (m_renderer_changed == null)
         {
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetRendererChangedEventCallback(null, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetRendererChangedEventCallback(null, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
           m_OnRendererChanged = null;
         }
       }
@@ -2014,7 +2014,7 @@ namespace Rhino
         if (m_client_plugin_unloading == null)
         {
           m_OnClientPlugInUnloading = OnClientPlugInUnloading;
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetClientPlugInUnloadingEventCallback(m_OnClientPlugInUnloading, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetClientPlugInUnloadingEventCallback(m_OnClientPlugInUnloading, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
         }
         m_renderer_changed += value;
       }
@@ -2023,7 +2023,7 @@ namespace Rhino
         m_client_plugin_unloading -= value;
         if (m_client_plugin_unloading == null)
         {
-          UnsafeNativeMethods.CRdkCmnEventWatcher_SetClientPlugInUnloadingEventCallback(null, Rhino.Runtime.HostUtils.m_rdk_ew_report);
+          UnsafeNativeMethods.CRdkCmnEventWatcher_SetClientPlugInUnloadingEventCallback(null, Pixel.Rhino.Runtime.HostUtils.m_rdk_ew_report);
           m_OnClientPlugInUnloading = null;
         }
       }
@@ -2038,7 +2038,7 @@ namespace Rhino
     /// <since>5.0</since>
     public static UI.ToolbarFileCollection ToolbarFiles
     {
-      get { return m_toolbar_files ?? (m_toolbar_files = new Rhino.UI.ToolbarFileCollection()); }
+      get { return m_toolbar_files ?? (m_toolbar_files = new Pixel.Rhino.UI.ToolbarFileCollection()); }
     }
 
     /// <summary>
@@ -2108,7 +2108,7 @@ namespace Rhino
   }
 }
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   /// <summary>
   /// Contains static methods to control the mouse icon.

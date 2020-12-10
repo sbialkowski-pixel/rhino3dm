@@ -6,7 +6,7 @@ using System.Linq;
 // none of the UI namespace needs to be in the stand-alone opennurbs library
 #if RHINO_SDK
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   /// <summary>
   /// Panel type
@@ -55,7 +55,7 @@ namespace Rhino.UI
     public static void Register(Guid plugInId, Type type, string caption, Icon icon, PanelType panelType)
     {
       // Plug-in that owns the panel, currently required.  Investigate changing to
-      // System.Reflection.Assembly to allow Rhino.UI to register panels directly
+      // System.Reflection.Assembly to allow Pixel.Rhino.UI to register panels directly
       if (plugInId == Guid.Empty)
         throw new ArgumentException($"{nameof(plugInId)} Can't be Guid.Empty", nameof(plugInId));
       // Type of the control object to be displayed in the panel
@@ -109,7 +109,7 @@ namespace Rhino.UI
     public static void Register(PlugIns.PlugIn plugIn, Type type, string caption, Icon icon, PanelType panelType)
     {
       // Plug-in that owns the panel, currently required.  Investigate changing to
-      // System.Reflection.Assembly to allow Rhino.UI to register panels directly
+      // System.Reflection.Assembly to allow Pixel.Rhino.UI to register panels directly
       if (plugIn == null)
         throw new ArgumentNullException(nameof(plugIn));
       Register(GetPlugInId(plugIn), type, caption, icon, panelType);
@@ -628,7 +628,7 @@ namespace Rhino.UI
   /////////////////////////////////////////////////////////////////////////////
   /// <summary>
   /// Represents a specific instance of a panel type.  Uses by Panels,
-  /// Rhino.Render.RenderTabs and Rhino.Render.RenderPanels.  Manages interface
+  /// Pixel.Rhino.Render.RenderTabs and Pixel.Rhino.Render.RenderPanels.  Manages interface
   /// instance, host instance and platform specific instance of a panel object.
   /// </summary>
   internal class PanelInstance : IDisposable
@@ -728,7 +728,7 @@ namespace Rhino.UI
 
     /// <summary>
     /// Passed to Panels.Service.SetF1Hook, used for providing F1 help to a
-    /// panel if the panel implements Rhino.UI.IHelp.
+    /// panel if the panel implements Pixel.Rhino.UI.IHelp.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 
 #if RHINO_SDK
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   [Flags]
   [CLSCompliant(false)]

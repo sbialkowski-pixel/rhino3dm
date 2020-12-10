@@ -1,6 +1,6 @@
 using System;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Provides strongly-typed access to Brep edges.

@@ -1,12 +1,12 @@
 using System;
-using Rhino.FileIO;
-using Rhino.Geometry;
-using Rhino.Render;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Display;
+using Pixel.Rhino.FileIO;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Render;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Display;
 using System.Collections.Generic;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
 #if RHINO_SDK
   /// <summary>
@@ -140,7 +140,7 @@ namespace Rhino.DocObjects
     void OnRhinoObjectDraw(IntPtr pConstRhinoObject, IntPtr pDisplayPipeline)
     {
       // 8 Aug 2014 S. Baer (RH-28405)
-      // Don't allow plug-in code to bring down Rhino.
+      // Don't allow plug-in code to bring down Pixel.Rhino.
       try
       {
         OnDraw(new Display.DrawEventArgs(pDisplayPipeline, IntPtr.Zero));
@@ -177,7 +177,7 @@ namespace Rhino.DocObjects
             try
             {
               // 7 March 2013 S. Baer (RH-16792)
-              // Don't allow plug-in code to bring down Rhino.
+              // Don't allow plug-in code to bring down Pixel.Rhino.
               newobj.OnDuplicate(rhobj);
             }
             catch (Exception ex)
@@ -293,7 +293,7 @@ namespace Rhino.DocObjects
     static void OnRhinoObjectSelection(uint docSerialNumber, uint serialNumber)
     {
       // 8 Aug 2014 S. Baer (RH-28405)
-      // Don't allow plug-in code to bring down Rhino.
+      // Don't allow plug-in code to bring down Pixel.Rhino.
       try
       {
         var doc = RhinoDoc.FromRuntimeSerialNumber(docSerialNumber);
@@ -1856,7 +1856,7 @@ namespace Rhino.DocObjects
       // The plug-in Id is optionally used by the custom mesh provider to determine if the plug-in
       // is allowed access to the custom meshes.  Currently none of our custom mesh providers
       // pay attention to the Id.
-      var da = new Rhino.Display.DisplayPipelineAttributes(IntPtr.Zero);
+      var da = new Pixel.Rhino.Display.DisplayPipelineAttributes(IntPtr.Zero);
 
       return UnsafeNativeMethods.Rdk_CRMManager_WillBuildCustomMesh(viewport.ConstPointer(), ConstPointer(), Document.RuntimeSerialNumber, Guid.Empty, preview ? da.ConstPointer() : IntPtr.Zero);
     }
@@ -1873,7 +1873,7 @@ namespace Rhino.DocObjects
     /// Returns true if custom render mesh(es) will get built for this object.
     /// </returns>
     /// <since>6.0</since>
-    public bool SupportsRenderPrimitiveList(ViewportInfo viewport, Rhino.Display.DisplayPipelineAttributes attrs)
+    public bool SupportsRenderPrimitiveList(ViewportInfo viewport, Pixel.Rhino.Display.DisplayPipelineAttributes attrs)
     {
       // Andy, we are just passing Guid.Empty for the plug-in Id for now until there is an actual
       // need for it, if it ever comes up we can add an overloaded version that includes the Guid.
@@ -1906,7 +1906,7 @@ namespace Rhino.DocObjects
       // is allowed access to the custom meshes.  Currently none of our custom mesh providers
       // pay attention to the Id.
       var primitives = new RenderPrimitiveList(this);
-      var da = new Rhino.Display.DisplayPipelineAttributes(IntPtr.Zero);
+      var da = new Pixel.Rhino.Display.DisplayPipelineAttributes(IntPtr.Zero);
 
       var success = UnsafeNativeMethods.Rdk_CRMManager_BuildCustomMeshes(viewport.ConstPointer(), Document.RuntimeSerialNumber, primitives.NonConstPointer(), Guid.Empty, preview ? da.ConstPointer() : IntPtr.Zero);
       if (success)
@@ -1927,7 +1927,7 @@ namespace Rhino.DocObjects
     /// Returns a RenderPrimitiveList if successful otherwise returns null.
     /// </returns>
     /// <since>6.0</since>
-    public RenderPrimitiveList GetRenderPrimitiveList(ViewportInfo viewport, Rhino.Display.DisplayPipelineAttributes attrs)
+    public RenderPrimitiveList GetRenderPrimitiveList(ViewportInfo viewport, Pixel.Rhino.Display.DisplayPipelineAttributes attrs)
     {
       // Andy, we are just passing Guid.Empty for the plug-in Id for now until there is an actual
       // need for it, if it ever comes up we can add an overloaded version that includes the Guid.
@@ -1976,7 +1976,7 @@ namespace Rhino.DocObjects
       // The plug-in Id is optionally used by the custom mesh provider to determine if the plug-in
       // is allowed access to the custom meshes.  Currently none of our custom mesh providers
       // pay attention to the Id.
-      var da = new Rhino.Display.DisplayPipelineAttributes(IntPtr.Zero);
+      var da = new Pixel.Rhino.Display.DisplayPipelineAttributes(IntPtr.Zero);
 
       if (UnsafeNativeMethods.Rdk_CRMManager_BoundingBox(viewport.ConstPointer(), ConstPointer(), Document.RuntimeSerialNumber, Guid.Empty, preview ? da.ConstPointer() : IntPtr.Zero, ref min, ref max))
       {
@@ -2006,7 +2006,7 @@ namespace Rhino.DocObjects
     /// returns false on error.
     /// </returns>
     /// <since>6.0</since>
-    public bool TryGetRenderPrimitiveBoundingBox(ViewportInfo viewport, Rhino.Display.DisplayPipelineAttributes attrs, out BoundingBox boundingBox)
+    public bool TryGetRenderPrimitiveBoundingBox(ViewportInfo viewport, Pixel.Rhino.Display.DisplayPipelineAttributes attrs, out BoundingBox boundingBox)
     {
       boundingBox = BoundingBox.Unset;
 
@@ -2266,7 +2266,7 @@ namespace Rhino.DocObjects
     /// <param name="componentIndex">
     /// Returns the RenderMaterial associated with the specified sub object or
     /// the objects top level material if it is set to
-    /// <seealso cref="Rhino.Geometry.ComponentIndex.Unset"/>
+    /// <seealso cref="Pixel.Rhino.Geometry.ComponentIndex.Unset"/>
     /// </param>
     /// <param name="plugInId">
     /// The plug-in specific material to look for.
@@ -2301,7 +2301,7 @@ namespace Rhino.DocObjects
     /// <param name="componentIndex">
     /// Returns the RenderMaterial associated with the specified sub object or
     /// the objects top level material if it is set to
-    /// <seealso cref="Rhino.Geometry.ComponentIndex.Unset"/>
+    /// <seealso cref="Pixel.Rhino.Geometry.ComponentIndex.Unset"/>
     /// </param>
     /// <param name="plugInId">
     /// The plug-in specific material to look for.
@@ -3083,10 +3083,10 @@ namespace Rhino.DocObjects
       // Attempt to work around crash in garbage collection thread.
       // Experimenting with placing this on a list of objects to be deleted on
       // the main thread after the next command completes
-      if( Rhino.RhinoApp.IsRunningHeadless )
+      if( Pixel.Rhino.RhinoApp.IsRunningHeadless )
         Dispose(false); // just dispose when headless since we aren't running commands
       else
-        Rhino.Runtime.HostUtils.AddObjectsToDeleteOnMainThread(this);
+        Pixel.Rhino.Runtime.HostUtils.AddObjectsToDeleteOnMainThread(this);
     }
 
     /// <summary>
@@ -3292,7 +3292,7 @@ namespace Rhino.DocObjects
 
 #if RHINO_SDK
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   // do not make this class available in the public SDK. It is pretty hairy
   class InternalRhinoObjectArray : IDisposable

@@ -1,10 +1,10 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Render;
+using Pixel.Rhino.Render;
 
 #if RHINO_SDK
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// A RhinoView represents a single "window" display of a document. A view could
@@ -530,7 +530,7 @@ namespace Rhino.Display
     }
 
     /// <summary>
-    /// Remove this View from Rhino. DO NOT attempt to use this instance of this
+    /// Remove this View from Pixel.Rhino. DO NOT attempt to use this instance of this
     /// class after calling Close.
     /// </summary>
     /// <returns>true on success</returns>

@@ -1,10 +1,10 @@
 #pragma warning disable 1591
 using System;
 using System.Collections.Generic;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System.Linq;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   public class FontQuartet
   {
@@ -329,7 +329,7 @@ namespace Rhino.DocObjects
   }
 }
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   /// <summary>Font tables store the list of fonts in a Rhino document.
   /// <remarks>The FontTable is now just a wrapper around the DimStyles table.</remarks>

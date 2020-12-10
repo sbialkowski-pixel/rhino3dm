@@ -4,15 +4,15 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System.Net.NetworkInformation;
 
 #if RHINO_SDK
-using Rhino.PlugIns;
+using Pixel.Rhino.PlugIns;
 using System.Management;
 #endif
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   /// <summary>
   /// Exception thrown when calling functions in RhinoCommon and the
@@ -52,7 +52,7 @@ namespace Rhino.Runtime
   public class LicenseStateChangedEventArgs : EventArgs
   {
     /// <summary>
-    /// true if RhinoCommon calls will never raise Rhino.Runtime.NotLicensedException.
+    /// true if RhinoCommon calls will never raise Pixel.Rhino.Runtime.NotLicensedException.
     /// false otherwise
     /// </summary>
     /// <since>7.0</since>
@@ -61,7 +61,7 @@ namespace Rhino.Runtime
     /// <summary>
     /// LicenseStateChangedEventArgs constructor
     /// </summary>
-    /// <param name="callingRhinoCommonAllowed">True when calling RhinoCommon will never raise Rhino.Runtime.NotLicesnedException; false otherwise.</param>
+    /// <param name="callingRhinoCommonAllowed">True when calling RhinoCommon will never raise Pixel.Rhino.Runtime.NotLicesnedException; false otherwise.</param>
     /// <since>7.0</since>
     public LicenseStateChangedEventArgs(bool callingRhinoCommonAllowed)
     {
@@ -304,7 +304,7 @@ namespace Rhino.Runtime
     /// <since>7.0</since>
     public bool TryGetPoint(string name, out Geometry.Point3d value)
     {
-      value = Rhino.Geometry.Point3d.Unset;
+      value = Pixel.Rhino.Geometry.Point3d.Unset;
       return UnsafeNativeMethods.CRhParameterDictionary_GetPoint3d(m_pNamedParams, name, ref value);
     }
 
@@ -501,7 +501,7 @@ namespace Rhino.Runtime
   }
 
   /// <summary>
-  /// Represents a customized environment that changes the appearance of Rhino.
+  /// Represents a customized environment that changes the appearance of Pixel.Rhino.
   /// <para>Skin DLLs must contain a single class that derives from the Skin class.</para>
   /// </summary>
   public abstract class Skin
@@ -587,7 +587,7 @@ namespace Rhino.Runtime
       catch (Exception ex)
       {
         Runtime.HostUtils.DebugString("Exception caught during Show/Hide Splash");
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
       }
     }
 
@@ -719,7 +719,7 @@ namespace Rhino.Runtime
     public static PythonScript Create()
     {
       Guid ip_id = new Guid("814d908a-e25c-493d-97e9-ee3861957f49");
-      object obj = Rhino.RhinoApp.GetPlugInObject(ip_id);
+      object obj = Pixel.Rhino.RhinoApp.GetPlugInObject(ip_id);
       if (null == obj)
         return null;
       PythonScript pyscript = obj as PythonScript;
@@ -859,7 +859,7 @@ namespace Rhino.Runtime
 
     /// <summary>
     /// Gets or sets the Python script "print()" target.
-    /// <para>By default string output goes to the Rhino.RhinoApp.Write function.
+    /// <para>By default string output goes to the Pixel.Rhino.RhinoApp.Write function.
     /// Set Output if you want to redirect the output from python to a different function
     /// while this script executes.</para>
     /// </summary>
@@ -1008,7 +1008,7 @@ namespace Rhino.Runtime
   {
 #if RHINO_SDK
     static System.Collections.Concurrent.ConcurrentBag<IDisposable> g_objectsToDisposeOnMainThread = new System.Collections.Concurrent.ConcurrentBag<IDisposable>();
-    internal static void DeleteObjectsOnMainThread(object sender, Rhino.Commands.CommandEventArgs e)
+    internal static void DeleteObjectsOnMainThread(object sender, Pixel.Rhino.Commands.CommandEventArgs e)
     {
       IDisposable item;
       while(g_objectsToDisposeOnMainThread.TryTake(out item))
@@ -1084,7 +1084,7 @@ namespace Rhino.Runtime
           return "Server";
 
         //RH-55179 Plain Cloud Zoo files: always report "Server"
-        var settings = Rhino.PlugIns.PlugIn.GetPluginSettings(Rhino.RhinoApp.CurrentRhinoId, false);
+        var settings = Pixel.Rhino.PlugIns.PlugIn.GetPluginSettings(Pixel.Rhino.RhinoApp.CurrentRhinoId, false);
         var licensingSettings = settings.AddChild("LicensingSettings");
 
         if (licensingSettings.GetBool("CloudZooPlainText", false))
@@ -1370,7 +1370,7 @@ namespace Rhino.Runtime
     /// <param name="geometry">Some geometry.</param>
     /// <param name="makeNonConst">A boolean value.</param>
     /// <since>5.0</since>
-    public static void InPlaceConstCast(Rhino.Geometry.GeometryBase geometry, bool makeNonConst)
+    public static void InPlaceConstCast(Pixel.Rhino.Geometry.GeometryBase geometry, bool makeNonConst)
     {
       if (makeNonConst)
       {
@@ -1415,7 +1415,7 @@ namespace Rhino.Runtime
 
     private static string m_device_name;
     /// <summary>
-    /// Name of the computer running Rhino. If the computer is part of a
+    /// Name of the computer running Pixel.Rhino. If the computer is part of a
     /// Windows Domain, the computer name has "@[DOMAIN]" appended.
     /// </summary>
     /// <since>6.0</since>
@@ -1442,14 +1442,14 @@ namespace Rhino.Runtime
     }
 
     /// <summary>
-    /// Gets the serial number of the computer running Rhino.
+    /// Gets the serial number of the computer running Pixel.Rhino.
     /// </summary>
     /// <since>6.0</since>
     public static string ComputerSerialNumber
     {
       get
       {
-        using (var string_holder = new Rhino.Runtime.InteropWrappers.StringWrapper())
+        using (var string_holder = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper())
         {
           IntPtr ptr_string = string_holder.NonConstPointer;
           UnsafeNativeMethods.RHC_GetComputerSerialNumber(ptr_string);
@@ -1634,7 +1634,7 @@ namespace Rhino.Runtime
 
     static int m_running_in_rhino_state; //0=unknown, 1=false, 2=true
     /// <summary>
-    /// Tests if RhinoCommon is currently executing inside of the Rhino.exe process.
+    /// Tests if RhinoCommon is currently executing inside of the Pixel.Rhino.exe process.
     /// There are other cases where RhinoCommon could be running; specifically inside
     /// of Visual Studio when something like a windows form is being worked on in the
     /// resource editor or running stand-alone when compiled to be used as a version
@@ -1651,7 +1651,7 @@ namespace Rhino.Runtime
           m_running_in_rhino_state = 1;
           try
           {
-            if (0 != Rhino.RhinoApp.SdkVersion )
+            if (0 != Pixel.Rhino.RhinoApp.SdkVersion )
               m_running_in_rhino_state = 2;
           }
           catch (Exception)
@@ -1993,7 +1993,7 @@ namespace Rhino.Runtime
     /// <param name="geometry">Some geometry.</param>
     /// <returns>A debug dump text.</returns>
     /// <since>5.0</since>
-    public static string DebugDumpToString(Rhino.Geometry.GeometryBase geometry)
+    public static string DebugDumpToString(Pixel.Rhino.Geometry.GeometryBase geometry)
     {
       IntPtr pConstThis = geometry.ConstPointer();
       using (var sh = new StringHolder())
@@ -2012,7 +2012,7 @@ namespace Rhino.Runtime
     /// <param name="bezierCurve">curve to evaluate</param>
     /// <returns>A debug dump text.</returns>
     /// <since>5.0</since>
-    public static string DebugDumpToString(Rhino.Geometry.BezierCurve bezierCurve)
+    public static string DebugDumpToString(Pixel.Rhino.Geometry.BezierCurve bezierCurve)
     {
       IntPtr pConstThis = bezierCurve.ConstPointer();
       using (var sh = new StringHolder())
@@ -2081,7 +2081,7 @@ namespace Rhino.Runtime
     }
 
     /// <summary>
-    /// Adds a new dynamic command to Rhino.
+    /// Adds a new dynamic command to Pixel.Rhino.
     /// </summary>
     /// <param name="plugin">Plugin that owns the command.</param>
     /// <param name="cmd">Command to add.</param>
@@ -2245,8 +2245,8 @@ namespace Rhino.Runtime
 
 #if RHINO_SDK
     internal static object ParseFieldExpression(string expression, RhinoDoc doc, 
-      Rhino.DocObjects.RhinoObject rhinoObject, Rhino.DocObjects.RhinoObject topLevelRhinoObject,
-      Rhino.DocObjects.InstanceObject immediateParentObject,
+      Pixel.Rhino.DocObjects.RhinoObject rhinoObject, Pixel.Rhino.DocObjects.RhinoObject topLevelRhinoObject,
+      Pixel.Rhino.DocObjects.InstanceObject immediateParentObject,
       bool returnFormattedString, out bool parseSucceeded)
     {
       parseSucceeded = false;
@@ -2366,7 +2366,7 @@ namespace Rhino.Runtime
         var current = System.Threading.Thread.CurrentThread.CurrentCulture;
         System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
         PythonScript py = PythonScript.Create();
-        string statements = "import clr\nfrom math import *\nfrom Rhino.Runtime.TextFields import *\n";
+        string statements = "import clr\nfrom math import *\nfrom Pixel.Rhino.Runtime.TextFields import *\n";
         object eval_result = py.EvaluateExpression(statements, formula);
         System.Threading.Thread.CurrentThread.CurrentCulture = current;
 
@@ -2393,18 +2393,18 @@ namespace Rhino.Runtime
                 displayPrecision = doc.ModelDistanceDisplayPrecision;
               }
 
-              var annotation = rhinoObject as Rhino.DocObjects.AnnotationObjectBase;
+              var annotation = rhinoObject as Pixel.Rhino.DocObjects.AnnotationObjectBase;
               // Basic CurveLength expression
               if (annotation != null && expression.StartsWith("CurveLength", StringComparison.Ordinal) && expression.IndexOf(')') == (expression.Length - 1))
               {
-                var stringResult = Rhino.UI.Localization.FormatDistanceAndTolerance(double_result, units, annotation.AnnotationGeometry.DimensionStyle, false);
+                var stringResult = Pixel.Rhino.UI.Localization.FormatDistanceAndTolerance(double_result, units, annotation.AnnotationGeometry.DimensionStyle, false);
                 if (!string.IsNullOrWhiteSpace(stringResult))
                   return stringResult;
               }
 
               if (annotation != null && expression.StartsWith("Area", StringComparison.Ordinal) && expression.IndexOf(')') == (expression.Length - 1))
               {
-                string stringResult = Rhino.UI.Localization.FormatArea(double_result, units, annotation.AnnotationGeometry.DimensionStyle, false);
+                string stringResult = Pixel.Rhino.UI.Localization.FormatArea(double_result, units, annotation.AnnotationGeometry.DimensionStyle, false);
 
                 if (!string.IsNullOrWhiteSpace(stringResult))
                   return stringResult;
@@ -2412,7 +2412,7 @@ namespace Rhino.Runtime
 
               if (annotation != null && expression.StartsWith("Volume", StringComparison.Ordinal) && expression.IndexOf(')') == (expression.Length - 1))
               {
-                string stringResult = Rhino.UI.Localization.FormatVolume(double_result, units, annotation.AnnotationGeometry.DimensionStyle, false);
+                string stringResult = Pixel.Rhino.UI.Localization.FormatVolume(double_result, units, annotation.AnnotationGeometry.DimensionStyle, false);
 
                 if (!string.IsNullOrWhiteSpace(stringResult))
                   return stringResult;
@@ -2423,7 +2423,7 @@ namespace Rhino.Runtime
                 displayPrecision = annotation.AnnotationGeometry.DimensionStyle.LengthResolution;
               }
 
-              string formattedString = Rhino.UI.Localization.FormatNumber(double_result, units, UI.DistanceDisplayMode.Decimal, displayPrecision, false);
+              string formattedString = Pixel.Rhino.UI.Localization.FormatNumber(double_result, units, UI.DistanceDisplayMode.Decimal, displayPrecision, false);
               if (!string.IsNullOrWhiteSpace(formattedString))
                 return formattedString;
             }
@@ -2460,16 +2460,16 @@ namespace Rhino.Runtime
       int rc = 0;
 #if RHINO_SDK
       RhinoDoc doc = null;
-      var rhobj = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject);
+      var rhobj = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject);
       if (rhobj != null)
         doc = rhobj.Document;
-      Rhino.DocObjects.RhinoObject topParent = null;
+      Pixel.Rhino.DocObjects.RhinoObject topParent = null;
       if (pRhinoObject == pTopParent || pTopParent == IntPtr.Zero)
         topParent = rhobj;
       else
-        topParent = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pTopParent);
+        topParent = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pTopParent);
 
-      Rhino.DocObjects.InstanceObject immediateParent = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pImmediateParent) as Rhino.DocObjects.InstanceObject;
+      Pixel.Rhino.DocObjects.InstanceObject immediateParent = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pImmediateParent) as Pixel.Rhino.DocObjects.InstanceObject;
 
       if (doc == null)
         doc = RhinoDoc.ActiveDoc;
@@ -2519,7 +2519,7 @@ namespace Rhino.Runtime
     {
       // TODO: refactor to something more generic like GetPackageFolder
       // %programdata%\mcneel\rhinoceros\packages\6.0
-      string data_dir = Rhino.ApplicationSettings.FileSettings.GetDataFolder(currentUser);
+      string data_dir = Pixel.Rhino.ApplicationSettings.FileSettings.GetDataFolder(currentUser);
       var dir = new System.IO.DirectoryInfo(data_dir);
       // use MAJOR.0 for package folder regardless of whether this is an official build or not
       string name = $"{RhinoBuildConstants.MAJOR_VERSION_STRING}.0";
@@ -2624,7 +2624,7 @@ namespace Rhino.Runtime
       try
       {
         var assembly = System.Reflection.Assembly.LoadFrom( str_path );
-        // look for a class derived from Rhino.Runtime.Skin
+        // look for a class derived from Pixel.Rhino.Runtime.Skin
         var internal_types = assembly.GetExportedTypes();
         var skin_type = typeof(Skin);
         Skin skin = null;
@@ -2701,15 +2701,15 @@ namespace Rhino.Runtime
 
       AssemblyResolver.InitializeAssemblyResolving();
       {
-        Type t = typeof(Rhino.DocObjects.Custom.UserDictionary);
+        Type t = typeof(Pixel.Rhino.DocObjects.Custom.UserDictionary);
         Guid class_id = DocObjects.Custom.ClassIdAttribute.GetGuid(t);
         UnsafeNativeMethods.ON_UserData_RegisterCustomUserData(t.FullName, t.GUID, class_id);
-        Rhino.DocObjects.Custom.UserData.RegisterType(t);
+        Pixel.Rhino.DocObjects.Custom.UserData.RegisterType(t);
 
-        t = typeof(Rhino.DocObjects.Custom.SharedUserDictionary);
+        t = typeof(Pixel.Rhino.DocObjects.Custom.SharedUserDictionary);
         class_id = DocObjects.Custom.ClassIdAttribute.GetGuid(t);
         UnsafeNativeMethods.ON_UserData_RegisterCustomUserData(t.FullName, t.GUID, class_id);
-        Rhino.DocObjects.Custom.UserData.RegisterType(t);
+        Pixel.Rhino.DocObjects.Custom.UserData.RegisterType(t);
       }
 
 #if RHINO_SDK
@@ -2752,18 +2752,18 @@ namespace Rhino.Runtime
         return;
       m_rhinocommonrdkinitialized = true;
 
-      Rhino.UI.Controls.CollapsibleSectionImpl.SetCppHooks(true);
-      Rhino.UI.Controls.CollapsibleSectionHolderImpl.SetCppHooks(true);
-      Rhino.UI.Controls.InternalRdkViewModel.SetCppHooks(true);
-      Rhino.Render.PostEffects.EarlyPostEffectPlugIn.SetCppHooks(true);
-      Rhino.Render.PostEffects.ToneMappingPostEffectPlugIn.SetCppHooks(true);
-      Rhino.Render.PostEffects.LatePostEffectPlugIn.SetCppHooks(true);
-      Rhino.Render.PostEffects.PostEffectFactory.SetCppHooks(true);
-      Rhino.Render.PostEffects.PostEffectJob.SetCppHooks(true);
-      Rhino.DocObjects.SnapShots.SnapShotsClient.SetCppHooks(true);
-      Rhino.UI.Controls.FactoryBase.Register();
+      Pixel.Rhino.UI.Controls.CollapsibleSectionImpl.SetCppHooks(true);
+      Pixel.Rhino.UI.Controls.CollapsibleSectionHolderImpl.SetCppHooks(true);
+      Pixel.Rhino.UI.Controls.InternalRdkViewModel.SetCppHooks(true);
+      Pixel.Rhino.Render.PostEffects.EarlyPostEffectPlugIn.SetCppHooks(true);
+      Pixel.Rhino.Render.PostEffects.ToneMappingPostEffectPlugIn.SetCppHooks(true);
+      Pixel.Rhino.Render.PostEffects.LatePostEffectPlugIn.SetCppHooks(true);
+      Pixel.Rhino.Render.PostEffects.PostEffectFactory.SetCppHooks(true);
+      Pixel.Rhino.Render.PostEffects.PostEffectJob.SetCppHooks(true);
+      Pixel.Rhino.DocObjects.SnapShots.SnapShotsClient.SetCppHooks(true);
+      Pixel.Rhino.UI.Controls.FactoryBase.Register();
 
-      UnsafeNativeMethods.SetRhCsInternetFunctionalityCallback(Rhino.Render.InternalUtilities.OnDownloadFileProc, Rhino.Render.InternalUtilities.OnUrlResponseProc);
+      UnsafeNativeMethods.SetRhCsInternetFunctionalityCallback(Pixel.Rhino.Render.InternalUtilities.OnDownloadFileProc, Pixel.Rhino.Render.InternalUtilities.OnUrlResponseProc);
     }
 
     /// <summary>
@@ -2775,15 +2775,15 @@ namespace Rhino.Runtime
     {
       UnsafeNativeMethods.SetRhCsInternetFunctionalityCallback(null, null);
 
-      Rhino.UI.Controls.CollapsibleSectionImpl.SetCppHooks(false);
-      Rhino.UI.Controls.CollapsibleSectionHolderImpl.SetCppHooks(false);
-      Rhino.UI.Controls.InternalRdkViewModel.SetCppHooks(false);
-      Rhino.Render.PostEffects.EarlyPostEffectPlugIn.SetCppHooks(false);
-      Rhino.Render.PostEffects.ToneMappingPostEffectPlugIn.SetCppHooks(false);
-      Rhino.Render.PostEffects.LatePostEffectPlugIn.SetCppHooks(false);
-      Rhino.Render.PostEffects.PostEffectFactory.SetCppHooks(false);
-      Rhino.Render.PostEffects.PostEffectJob.SetCppHooks(false);
-      Rhino.DocObjects.SnapShots.SnapShotsClient.SetCppHooks(false);
+      Pixel.Rhino.UI.Controls.CollapsibleSectionImpl.SetCppHooks(false);
+      Pixel.Rhino.UI.Controls.CollapsibleSectionHolderImpl.SetCppHooks(false);
+      Pixel.Rhino.UI.Controls.InternalRdkViewModel.SetCppHooks(false);
+      Pixel.Rhino.Render.PostEffects.EarlyPostEffectPlugIn.SetCppHooks(false);
+      Pixel.Rhino.Render.PostEffects.ToneMappingPostEffectPlugIn.SetCppHooks(false);
+      Pixel.Rhino.Render.PostEffects.LatePostEffectPlugIn.SetCppHooks(false);
+      Pixel.Rhino.Render.PostEffects.PostEffectFactory.SetCppHooks(false);
+      Pixel.Rhino.Render.PostEffects.PostEffectJob.SetCppHooks(false);
+      Pixel.Rhino.DocObjects.SnapShots.SnapShotsClient.SetCppHooks(false);
     }
 #endif
 
@@ -2814,7 +2814,7 @@ namespace Rhino.Runtime
 #if DEBUG
       // only show dialog for the UI thread. Background threads dump to the console.
       if (m_uiThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId)
-        Rhino.UI.Dialogs.ShowMessage(msg, "Unhandled CurrentDomain Exception in .NET");
+        Pixel.Rhino.UI.Dialogs.ShowMessage(msg, "Unhandled CurrentDomain Exception in .NET");
       else
         DebugString (msg);
 #endif
@@ -2992,9 +2992,9 @@ namespace Rhino.Runtime
       DelegateReport(RhinoApp.m_init_app, "InitApp");
       DelegateReport(RhinoApp.m_close_app, "CloseApp");
       DelegateReport(RhinoApp.m_appsettings_changed, "AppSettingsChanged");
-      DelegateReport(Rhino.Commands.Command.m_begin_command, "BeginCommand");
-      DelegateReport(Rhino.Commands.Command.m_end_command, "EndCommand");
-      DelegateReport(Rhino.Commands.Command.m_undo_event, "Undo");
+      DelegateReport(Pixel.Rhino.Commands.Command.m_begin_command, "BeginCommand");
+      DelegateReport(Pixel.Rhino.Commands.Command.m_end_command, "EndCommand");
+      DelegateReport(Pixel.Rhino.Commands.Command.m_undo_event, "Undo");
       DelegateReport(RhinoDoc.m_close_document, "CloseDocument");
       DelegateReport(RhinoDoc.m_new_document, "NewDocument");
       DelegateReport(RhinoDoc.m_document_properties_changed, "DocuemtnPropertiesChanged");
@@ -3014,13 +3014,13 @@ namespace Rhino.Runtime
     internal static void RdkEventWatcherReport(int c)
     {
       UnsafeNativeMethods.CRdkCmnEventWatcher_LogState("RhinoRdkCommon delegate based event watcher\n");
-      DelegateReport(Rhino.Render.RenderContent.m_content_added_event, "RenderContentAdded");
+      DelegateReport(Pixel.Rhino.Render.RenderContent.m_content_added_event, "RenderContentAdded");
     }
 
     internal static object m_rhinoscript;
     internal static object GetRhinoScriptObject()
     {
-      return m_rhinoscript ?? (m_rhinoscript = Rhino.RhinoApp.GetPlugInObject("RhinoScript"));
+      return m_rhinoscript ?? (m_rhinoscript = Pixel.Rhino.RhinoApp.GetPlugInObject("RhinoScript"));
     }
 
     /// <summary>
@@ -3093,7 +3093,7 @@ namespace Rhino.Runtime
         UnsafeNativeMethods.RhCmn_SetInShutDown();
         // Remove callbacks that should not happen after this point in time
 #if RHINO_SDK
-        Rhino.Render.RdkPlugIn.SetRdkCallbackFunctions(false);
+        Pixel.Rhino.Render.RdkPlugIn.SetRdkCallbackFunctions(false);
         Skin.DeletePointer();
 #endif
       }
@@ -3207,28 +3207,28 @@ namespace Rhino.Runtime
               break;
             case _3dpoint:
               {
-                Rhino.Geometry.Point3d pt = new Geometry.Point3d();
+                Pixel.Rhino.Geometry.Point3d pt = new Geometry.Point3d();
                 UnsafeNativeMethods.CRhinoProfileContext_LoadPoint3d(pRhCmnProfileContext, section, entry, ref pt);
                 info.AddValue(name, pt);
               }
               break;
             case _xform:
               {
-                Rhino.Geometry.Transform xf = new Geometry.Transform();
+                Pixel.Rhino.Geometry.Transform xf = new Geometry.Transform();
                 UnsafeNativeMethods.CRhinoProfileContext_LoadXform(pRhCmnProfileContext, section, entry, ref xf);
                 info.AddValue(name, xf);
               }
               break;
             case _3dvector:
               {
-                Rhino.Geometry.Vector3d vec = new Geometry.Vector3d();
+                Pixel.Rhino.Geometry.Vector3d vec = new Geometry.Vector3d();
                 UnsafeNativeMethods.CRhinoProfileContext_LoadVector3d(pRhCmnProfileContext, section, entry, ref vec);
                 info.AddValue(name, vec);
               }
               break;
             case _meshparams:
               {
-                Rhino.Geometry.MeshingParameters mp = new Geometry.MeshingParameters();
+                Pixel.Rhino.Geometry.MeshingParameters mp = new Geometry.MeshingParameters();
                 UnsafeNativeMethods.CRhinoProfileContext_LoadMeshParameters(pRhCmnProfileContext, section, entry, mp.NonConstPointer());
                 info.AddValue(name, mp);
                 mp.Dispose();
@@ -3296,24 +3296,24 @@ namespace Rhino.Runtime
           System.Drawing.Point pt = (System.Drawing.Point)e.Value;
           UnsafeNativeMethods.CRhinoProfileContext_SaveProfilePoint(pProfileContext, section, entry, pt.X, pt.Y);
         }
-        else if( typeof(Rhino.Geometry.Point3d) == t )
+        else if( typeof(Pixel.Rhino.Geometry.Point3d) == t )
         {
-          Rhino.Geometry.Point3d pt = (Rhino.Geometry.Point3d)e.Value;
+          Pixel.Rhino.Geometry.Point3d pt = (Pixel.Rhino.Geometry.Point3d)e.Value;
           UnsafeNativeMethods.CRhinoProfileContext_SaveProfilePoint3d(pProfileContext, section, entry, pt);
         }
-        else if( typeof(Rhino.Geometry.Transform) == t )
+        else if( typeof(Pixel.Rhino.Geometry.Transform) == t )
         {
-          Rhino.Geometry.Transform xf = (Rhino.Geometry.Transform)e.Value;
+          Pixel.Rhino.Geometry.Transform xf = (Pixel.Rhino.Geometry.Transform)e.Value;
           UnsafeNativeMethods.CRhinoProfileContext_SaveProfileXform(pProfileContext, section, entry, ref xf);
         }
-        else if( typeof(Rhino.Geometry.Vector3d) == t )
+        else if( typeof(Pixel.Rhino.Geometry.Vector3d) == t )
         {
-          Rhino.Geometry.Vector3d v = (Rhino.Geometry.Vector3d)e.Value;
+          Pixel.Rhino.Geometry.Vector3d v = (Pixel.Rhino.Geometry.Vector3d)e.Value;
           UnsafeNativeMethods.CRhinoProfileContext_SaveProfileVector3d(pProfileContext, section, entry, v);
         }
-        else if( typeof(Rhino.Geometry.MeshingParameters) == t )
+        else if( typeof(Pixel.Rhino.Geometry.MeshingParameters) == t )
         {
-          Rhino.Geometry.MeshingParameters mp = e.Value as Rhino.Geometry.MeshingParameters;
+          Pixel.Rhino.Geometry.MeshingParameters mp = e.Value as Pixel.Rhino.Geometry.MeshingParameters;
           if (mp != null)
           {
             IntPtr pMp = mp.ConstPointer();

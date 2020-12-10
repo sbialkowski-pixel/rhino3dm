@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Rhino.DocObjects.Custom
+namespace Pixel.Rhino.DocObjects.Custom
 {
   /// <summary>
   /// Provides a base class for custom classes of information which may be attached to
@@ -57,7 +57,7 @@ namespace Rhino.DocObjects.Custom
       }
       catch (Exception ex)
       {
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
       }
     }
     #endregion
@@ -614,7 +614,7 @@ namespace Rhino.DocObjects.Custom
   }
 
   /// <summary>
-  /// Defines the storage data class for a <see cref="Rhino.Collections.ArchivableDictionary">user dictionary</see>.
+  /// Defines the storage data class for a <see cref="Pixel.Rhino.Collections.ArchivableDictionary">user dictionary</see>.
   /// </summary>
   [System.Runtime.InteropServices.Guid("171E831F-7FEF-40E2-9857-E5CCD39446F0")]
   public class UserDictionary : UserData

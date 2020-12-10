@@ -2,11 +2,11 @@ using System.Drawing;
 using System;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 #pragma warning disable 1591
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Can also be considered an annotation style since it is used for
@@ -32,7 +32,7 @@ namespace Rhino.DocObjects
     }
 
 #if RHINO_SDK
-    internal DimensionStyle(Rhino.DocObjects.Tables.DimStyleTableEventArgs parent)
+    internal DimensionStyle(Pixel.Rhino.DocObjects.Tables.DimStyleTableEventArgs parent)
     {
       m__parent = parent;
     }
@@ -129,7 +129,7 @@ namespace Rhino.DocObjects
           throw new Runtime.DocumentCollectedException($"Could not find DimensionStyle with ID {m_id}");
         return rc;
       }
-      var args_parent = m__parent as Rhino.DocObjects.Tables.DimStyleTableEventArgs;
+      var args_parent = m__parent as Pixel.Rhino.DocObjects.Tables.DimStyleTableEventArgs;
       if (args_parent != null)
         return args_parent.OldStatePointer();
 #endif
@@ -1212,7 +1212,7 @@ namespace Rhino.DocObjects
 }
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public enum DimStyleTableEventType
   {

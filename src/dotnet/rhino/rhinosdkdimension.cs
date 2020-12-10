@@ -1,6 +1,6 @@
 #if RHINO_SDK
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Rhino Object that represents a linear dimension geometry and attributes

@@ -4,7 +4,7 @@ using System;
 
 #if RHINO_SDK
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   [Flags]
   public enum MouseButton
@@ -111,7 +111,7 @@ namespace Rhino.UI
   public abstract class MouseCallback
   {
     /// <summary>
-    /// Called at the beginning of handling of a mouse move event in Rhino.
+    /// Called at the beginning of handling of a mouse move event in Pixel.Rhino.
     /// If you don't want the default Rhino functionality to be run, then set
     /// Cancel to true on the passed in event arguments.
     /// Base class implementation of this function does nothing.
@@ -120,7 +120,7 @@ namespace Rhino.UI
     protected virtual void OnMouseMove(MouseCallbackEventArgs e) { }
 
     /// <summary>
-    /// Called at the end of handling of a mouse move event in Rhino.
+    /// Called at the end of handling of a mouse move event in Pixel.Rhino.
     /// All of the default Rhino mouse move functionality has already been
     /// executed unless a MouseCallback has set Cancel to true for the event arguments.
     /// You can tell if this is the case by inspecting the Cancel property in
@@ -131,7 +131,7 @@ namespace Rhino.UI
     protected virtual void OnEndMouseMove(MouseCallbackEventArgs e) { }
 
     /// <summary>
-    /// Called at the beginning of handling of a mouse down event in Rhino.
+    /// Called at the beginning of handling of a mouse down event in Pixel.Rhino.
     /// If you don't want the default Rhino functionality to be run, then set
     /// Cancel to true on the passed in event arguments
     /// Base class implementation of this function does nothing
@@ -140,7 +140,7 @@ namespace Rhino.UI
     protected virtual void OnMouseDown(MouseCallbackEventArgs e) { }
 
     /// <summary>
-    /// Called at the end of handling of a mouse down event in Rhino.
+    /// Called at the end of handling of a mouse down event in Pixel.Rhino.
     /// All of the default Rhino mouse down functionality has already been
     /// executed unless a MouseCallback has set Cancel to true for the event arguments.
     /// You can tell if this is the case by inspecting the Cancel property in
@@ -151,7 +151,7 @@ namespace Rhino.UI
     protected virtual void OnEndMouseDown(MouseCallbackEventArgs e) { }
 
     /// <summary>
-    /// Called at the beginning of handling of a mouse up event in Rhino.
+    /// Called at the beginning of handling of a mouse up event in Pixel.Rhino.
     /// If you don't want the default Rhino functionality to be run, then set
     /// Cancel to true on the passed in event arguments
     /// Base class implementation of this function does nothing
@@ -160,7 +160,7 @@ namespace Rhino.UI
     protected virtual void OnMouseUp(MouseCallbackEventArgs e) { }
 
     /// <summary>
-    /// Called at the end of handling of a mouse up event in Rhino.
+    /// Called at the end of handling of a mouse up event in Pixel.Rhino.
     /// All of the default Rhino mouse down functionality has already been
     /// executed unless a MouseCallback has set Cancel to true for the event arguments.
     /// You can tell if this is the case by inspecting the Cancel property in

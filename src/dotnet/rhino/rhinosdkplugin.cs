@@ -3,19 +3,19 @@
 using System;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.UI;
-using Rhino.UI.Controls;
-using Rhino.Render;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.UI;
+using Pixel.Rhino.UI.Controls;
+using Pixel.Rhino.Render;
 using System.Reflection;
 
-namespace Rhino.PlugIns
+namespace Pixel.Rhino.PlugIns
 {
   public enum DescriptionType
   {
@@ -208,7 +208,7 @@ namespace Rhino.PlugIns
         if (load_at_start)
           lt = PlugInLoadTime.AtStartup;
 
-        Type rhdn_type = pluginType.GetInterface("RMA.Rhino.IRhinoPlugIn");
+        Type rhdn_type = pluginType.GetInterface("RMA.Pixel.Rhino.IRhinoPlugIn");
         bool is_rhino_dotnet = rhdn_type != null;
         if (is_rhino_dotnet)
         {
@@ -420,11 +420,11 @@ namespace Rhino.PlugIns
       {
         if (string.Equals(kvp.Value, "IronPython", StringComparison.InvariantCultureIgnoreCase))
         {
-          Rhino.PlugIns.PlugIn.LoadPlugIn(kvp.Key);
+          Pixel.Rhino.PlugIns.PlugIn.LoadPlugIn(kvp.Key);
           continue;
         }
 
-        var pluginSettings = Rhino.PersistentSettings.FromPlugInId(kvp.Key);
+        var pluginSettings = Pixel.Rhino.PersistentSettings.FromPlugInId(kvp.Key);
         if (pluginSettings == null)
           continue;
         if (pluginSettings.GetBool("HasComputeEndpoint", false))
@@ -1077,7 +1077,7 @@ namespace Rhino.PlugIns
       }
     }
 
-    protected bool RegisterCommand(Rhino.Commands.Command command)
+    protected bool RegisterCommand(Pixel.Rhino.Commands.Command command)
     {
       return CreateCommandsHelper(this, this.NonConstPointer(), command.GetType(), command);
     }
@@ -1756,7 +1756,7 @@ namespace Rhino.PlugIns
       {
         // 2-Nov-2011 Dale Fugier
         // Look in our local collection of plug-ins. We may be in "OnLoad"
-        // and the plug-in hasn't officially been registered with Rhino.
+        // and the plug-in hasn't officially been registered with Pixel.Rhino.
         for (int i = 0; i < m_plugins.Count; i++)
         {
           if (string.Compare(m_plugins[i].Assembly.Location, pluginPath, StringComparison.OrdinalIgnoreCase) == 0)
@@ -1810,7 +1810,7 @@ namespace Rhino.PlugIns
       {
         // 2-Nov-2011 Dale Fugier
         // Look in our local collection of plug-ins. We may be in "OnLoad"
-        // and the plug-in hasn't officially been registered with Rhino.
+        // and the plug-in hasn't officially been registered with Pixel.Rhino.
         for (int i = 0; i < m_plugins.Count; i++)
         {
           if (string.Compare(m_plugins[i].Assembly.Location, pluginPath, true) == 0)
@@ -1835,7 +1835,7 @@ namespace Rhino.PlugIns
       if (rc.Equals(Guid.Empty))
       {
         // Look in our local collection of plug-ins. We may be in "OnLoad"
-        // and the plug-in hasn't officially been registered with Rhino.
+        // and the plug-in hasn't officially been registered with Pixel.Rhino.
         for (int i = 0; i < m_plugins.Count; i++)
         {
           if (string.Compare(m_plugins[i].Name, pluginName, true) == 0)
@@ -1920,7 +1920,7 @@ namespace Rhino.PlugIns
 
 
     // Attempt to create a RhinoCommon plugin through reflection.
-    // Taken from original Rhino.NET plug-in loading code
+    // Taken from original Pixel.Rhino.NET plug-in loading code
     internal static UnsafeNativeMethods.LoadPlugInFileReturnCodesConsts LoadPlugInHelper(string path, IntPtr pluginInfo, IntPtr errorMessage, bool displayDebugInfo)
     {
       if(HostUtils.RunningOnOSX) {
@@ -2223,7 +2223,7 @@ namespace Rhino.PlugIns
       // I just want to make sure that a single Directory.Delete call can
       // eliminate our current caching scheme so we can start over in the future.
 
-      string cache_directory = Path.Combine(Rhino.ApplicationSettings.FileSettings.GetDataFolder(true), "compat_cache");
+      string cache_directory = Path.Combine(Pixel.Rhino.ApplicationSettings.FileSettings.GetDataFolder(true), "compat_cache");
       if( !g_rhcommon_hash_checked )
       {
         // rebuild this directory if it has been constructed for a different
@@ -2290,10 +2290,10 @@ namespace Rhino.PlugIns
       // run tasks with progress meter and keep rhino alive
       int lower = 0;
       int upper = tasks.Length;
-      Rhino.UI.StatusBar.ShowProgressMeter(lower, upper, msg, false, true);
+      Pixel.Rhino.UI.StatusBar.ShowProgressMeter(lower, upper, msg, false, true);
       while (!System.Threading.Tasks.Task.WaitAll(tasks, 250))
       {
-        Rhino.UI.StatusBar.UpdateProgressMeter(lower, true);
+        Pixel.Rhino.UI.StatusBar.UpdateProgressMeter(lower, true);
         RhinoApp.Wait();
         for (int i = incomplete_tasks.Count - 1; i >= 0; i--)
         {
@@ -2306,7 +2306,7 @@ namespace Rhino.PlugIns
         lower = tasks.Length - incomplete_tasks.Count;
         HostUtils.DebugString($"- Tested {lower} / {tasks.Length}");
       }
-      Rhino.UI.StatusBar.HideProgressMeter();
+      Pixel.Rhino.UI.StatusBar.HideProgressMeter();
       var time = DateTime.Now - start; // end timer
 
       // fail if one or more of the dlls failed
@@ -3255,7 +3255,7 @@ namespace Rhino.PlugIns
     protected virtual void DisplayOptionsDialog(IntPtr parent, string description, string extension) { }
 
     protected abstract FileTypeList AddFileTypes(FileIO.FileWriteOptions options);
-    protected abstract WriteFileResult WriteFile(string filename, int index, RhinoDoc doc, Rhino.FileIO.FileWriteOptions options);
+    protected abstract WriteFileResult WriteFile(string filename, int index, RhinoDoc doc, Pixel.Rhino.FileIO.FileWriteOptions options);
   }
 
   public sealed class PreviewNotification
@@ -3613,7 +3613,7 @@ namespace Rhino.PlugIns
         ? null
         : render_plug_in.m_custom_render_save_file_types.CustomRenderSaveFileTypeFromExtension(fileType));
       // If a CustomRenderSaveFileType was found then use it to save the file
-      var render_window = Rhino.Render.RenderWindow.FromSessionId(sessionId);
+      var render_window = Pixel.Rhino.Render.RenderWindow.FromSessionId(sessionId);
       var success = (file_type != null  && file_type.SaveFileCallback(fileName, includeAlpha, render_window));
       return success;
     }
@@ -3641,7 +3641,7 @@ namespace Rhino.PlugIns
     /// the end of the standard list followed by your own types.  You may omit
     /// the base class call and only chosen types yourself, followed by a
     /// separator and your own types.  A 'More Types...' item is automatically
-    /// added when needed by Rhino.  Specify a separator by adding
+    /// added when needed by Pixel.Rhino.  Specify a separator by adding
     /// uuidUiContentType_Separator.
     /// </summary>
     /// <remarks>
@@ -4482,7 +4482,7 @@ namespace Rhino.PlugIns
     /// channel.
     /// </param>
     /// <param name="renderWindow">
-    /// The <see cref="Rhino.Render.RenderWindow"/> to save.
+    /// The <see cref="Pixel.Rhino.Render.RenderWindow"/> to save.
     /// </param>
     /// <returns>
     /// Return true if the file was written successfully otherwise return
@@ -4659,7 +4659,7 @@ namespace Rhino.PlugIns
     protected abstract double PointTolerance { get; }
 
     /// <summary>
-    /// If the digitizer is enabled, call this function to send a point to Rhino.
+    /// If the digitizer is enabled, call this function to send a point to Pixel.Rhino.
     /// Call this function as much as you like.  The digitizers that Rhino currently
     /// supports send a point every 15 milliseconds or so. This function should be
     /// called when users press or release any digitizer button.
@@ -4676,7 +4676,7 @@ namespace Rhino.PlugIns
     }
 
     /// <summary>
-    /// If the digitizer is enabled, call this function to send a point and direction to Rhino.
+    /// If the digitizer is enabled, call this function to send a point and direction to Pixel.Rhino.
     /// Call this function as much as you like.  The digitizers that Rhino currently
     /// supports send a point every 15 milliseconds or so. This function should be
     /// called when users press or release any digitizer button.
@@ -4746,7 +4746,7 @@ namespace Rhino.PlugIns
     /// <param name="result"></param>
     /// <returns></returns>
     /// <since>6.0</since>
-    public static bool ShowRhinoExpiredMessage(Rhino.Runtime.Mode mode, ref int result)
+    public static bool ShowRhinoExpiredMessage(Pixel.Rhino.Runtime.Mode mode, ref int result)
     {
       return ZooClient.ShowRhinoExpiredMessage(mode, ref result);
     }
@@ -4793,8 +4793,8 @@ namespace Rhino.PlugIns
 
     /// <summary>
     /// 20-May-2013 Dale Fugier
-    /// This (internal) version of Rhino.PlugIns.LicenseUtils.GetLicense
-    /// is used by Rhino.PlugIns.PlugIn objects.
+    /// This (internal) version of Pixel.Rhino.PlugIns.LicenseUtils.GetLicense
+    /// is used by Pixel.Rhino.PlugIns.PlugIn objects.
     /// </summary>
     internal static bool GetLicense(string productPath, Guid pluginId, Guid licenseId, int productBuildType, string productTitle, 
       LicenseCapabilities licenseCapabilities, string textMask, ValidateProductKeyDelegate validateProductKeyDelegate, OnLeaseChangedDelegate leaseChangedDelegate)
@@ -4860,7 +4860,7 @@ namespace Rhino.PlugIns
     }
 
     /// <summary>
-    /// This version of Rhino.PlugIns.LicenseUtils.GetLicense
+    /// This version of Pixel.Rhino.PlugIns.LicenseUtils.GetLicense
     /// is used by Rhino C++ plug-ins.
     /// </summary>
     /// <since>6.0</since>
@@ -4948,7 +4948,7 @@ namespace Rhino.PlugIns
 
 
     /// <summary>
-    /// This version of Rhino.PlugIns.LicenseUtils.AskUserForLicense
+    /// This version of Pixel.Rhino.PlugIns.LicenseUtils.AskUserForLicense
     /// is used by Rhino C++ plug-ins.
     /// </summary>
     /// <since>6.0</since>
@@ -4976,8 +4976,8 @@ namespace Rhino.PlugIns
     }
 
     /// <summary>
-    /// This (internal) version of Rhino.PlugIns.LicenseUtils.ReturnLicense is used
-    /// is used by Rhino.PlugIns.PlugIn objects.
+    /// This (internal) version of Pixel.Rhino.PlugIns.LicenseUtils.ReturnLicense is used
+    /// is used by Pixel.Rhino.PlugIns.PlugIn objects.
     /// </summary>
     internal static bool ReturnLicense(string productPath, Guid productId, string productTitle)
     {
@@ -5965,7 +5965,7 @@ namespace Rhino.PlugIns
 }
 #endif
 
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   public class FileType
   {

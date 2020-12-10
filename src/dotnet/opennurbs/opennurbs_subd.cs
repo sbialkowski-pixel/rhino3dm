@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Subdivision surface
@@ -1007,7 +1007,7 @@ namespace Rhino.Geometry
 
 }
 
-namespace Rhino.Geometry.Collections
+namespace Pixel.Rhino.Geometry.Collections
 {
   /// <summary>
   /// Provides access to the vertices and vertex-related functionality of a SubD

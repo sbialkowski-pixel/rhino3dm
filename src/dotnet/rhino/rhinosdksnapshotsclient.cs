@@ -3,12 +3,12 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Rhino.UI.Controls.Definitions;
+using Pixel.Rhino.UI.Controls.Definitions;
 using System.Collections.Generic;
-using Rhino.FileIO;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.FileIO;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.DocObjects.SnapShots
+namespace Pixel.Rhino.DocObjects.SnapShots
 {
   internal class ShapShotsClientList
   {
@@ -93,7 +93,7 @@ namespace Rhino.DocObjects.SnapShots
     public static string ApplicationCategory()
     {
       string category = "";
-      var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(category);
+      var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(category);
       var p_string = sh.NonConstPointer;
 
       UnsafeNativeMethods.CRdkCmnSnapShotClient_ApplicationCategory(p_string);
@@ -109,7 +109,7 @@ namespace Rhino.DocObjects.SnapShots
     public static string DocumentCategory()
     {
       string category = "";
-      var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(category);
+      var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(category);
       var p_string = sh.NonConstPointer;
 
       UnsafeNativeMethods.CRdkCmnSnapShotClient_DocumentCategory(p_string);
@@ -125,7 +125,7 @@ namespace Rhino.DocObjects.SnapShots
     public static string RenderingCategory()
     {
       string category = "";
-      var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(category);
+      var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(category);
       var p_string = sh.NonConstPointer;
 
       UnsafeNativeMethods.CRdkCmnSnapShotClient_RenderingCategory(p_string);
@@ -141,7 +141,7 @@ namespace Rhino.DocObjects.SnapShots
     public static string ViewsCategory()
     {
       string category = "";
-      var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(category);
+      var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(category);
       var p_string = sh.NonConstPointer;
 
       UnsafeNativeMethods.CRdkCmnSnapShotClient_ViewsCategory(p_string);
@@ -157,7 +157,7 @@ namespace Rhino.DocObjects.SnapShots
     public static string ObjectsCategory()
     {
       string category = "";
-      var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(category);
+      var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(category);
       var p_string = sh.NonConstPointer;
 
       UnsafeNativeMethods.CRdkCmnSnapShotClient_ObjectsCategory(p_string);
@@ -173,7 +173,7 @@ namespace Rhino.DocObjects.SnapShots
     public static string LayersCategory()
     {
       string category = "";
-      var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(category);
+      var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(category);
       var p_string = sh.NonConstPointer;
 
       UnsafeNativeMethods.CRdkCmnSnapShotClient_LayersCategory(p_string);
@@ -189,7 +189,7 @@ namespace Rhino.DocObjects.SnapShots
     public static string LightsCategory()
     {
       string category = "";
-      var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(category);
+      var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(category);
       var p_string = sh.NonConstPointer;
 
       UnsafeNativeMethods.CRdkCmnSnapShotClient_LightsCategory(p_string);
@@ -256,9 +256,9 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="doc_object">doc_object is the given object</param>
     /// <returns> true if the client saves/restores object user data for the given object.</returns>
     /// <since>6.0</since>
-    public abstract bool SupportsObject(Rhino.DocObjects.RhinoObject doc_object);
+    public abstract bool SupportsObject(Pixel.Rhino.DocObjects.RhinoObject doc_object);
     /// <summary>
-    /// Called when the user saves a snapshot and SupportsObjects() and SupportsObject(Rhino.DocObjects.RhinoObject doc_object) returns true.
+    /// Called when the user saves a snapshot and SupportsObjects() and SupportsObject(Pixel.Rhino.DocObjects.RhinoObject doc_object) returns true.
     /// </summary>
     /// <param name="doc">doc is the current document.</param>
     /// <param name="doc_object">doc_obj is the current object.</param>
@@ -267,9 +267,9 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="archive">archive is the archive to write the data to.</param>
     /// <returns>true if successful, otherwise false.</returns>
     /// <since>6.0</since>
-    public abstract bool SaveObject(RhinoDoc doc, Rhino.DocObjects.RhinoObject doc_object, ref Rhino.Geometry.Transform transform, BinaryArchiveWriter archive);
+    public abstract bool SaveObject(RhinoDoc doc, Pixel.Rhino.DocObjects.RhinoObject doc_object, ref Pixel.Rhino.Geometry.Transform transform, BinaryArchiveWriter archive);
     /// <summary>
-    /// Called when the user restores a snapshot and SupportsObjects() and SupportsObject(Rhino.DocObjects.RhinoObject doc_object) returns true.
+    /// Called when the user restores a snapshot and SupportsObjects() and SupportsObject(Pixel.Rhino.DocObjects.RhinoObject doc_object) returns true.
     /// </summary>
     /// <param name="doc">doc is the current document.</param>
     /// <param name="doc_object">doc_obj is the current object.</param>
@@ -278,7 +278,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="archive">archive is the archive to read the data from.</param>
     /// <returns>true if successful, otherwise false.</returns>
     /// <since>6.0</since>
-    public abstract bool RestoreObject(RhinoDoc doc, Rhino.DocObjects.RhinoObject doc_object, ref Rhino.Geometry.Transform transform, BinaryArchiveReader archive);
+    public abstract bool RestoreObject(RhinoDoc doc, Pixel.Rhino.DocObjects.RhinoObject doc_object, ref Pixel.Rhino.Geometry.Transform transform, BinaryArchiveReader archive);
     /// <summary>
     /// Called after all clients restored their data.
     /// </summary>
@@ -315,7 +315,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="archive_stop">archive_stop is a archive to the data of the ending position.</param>
     /// <param name="bbox">bbox is the current scene bounding box.</param>
     /// <since>6.0</since>
-    public abstract void ExtendBoundingBoxForDocumentAnimation(RhinoDoc doc, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop, ref Rhino.Geometry.BoundingBox bbox);
+    public abstract void ExtendBoundingBoxForDocumentAnimation(RhinoDoc doc, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop, ref Pixel.Rhino.Geometry.BoundingBox bbox);
     /// <summary>
     /// Called for each frame. Starting at 0.0.
     /// </summary>
@@ -337,7 +337,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="archive_stop">archive_stop is a archive to the data of the ending position.</param>
     /// <returns>true if successful, otherwise false.</returns>
     /// <since>6.0</since>
-    public abstract bool PrepareForObjectAnimation(RhinoDoc doc, Rhino.DocObjects.RhinoObject doc_object, ref Rhino.Geometry.Transform transform, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop);
+    public abstract bool PrepareForObjectAnimation(RhinoDoc doc, Pixel.Rhino.DocObjects.RhinoObject doc_object, ref Pixel.Rhino.Geometry.Transform transform, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop);
     /// <summary>
     /// Called once at the start of an animation. This can be used to extend the scene bounding box to avoid clipping.
     /// </summary>
@@ -349,7 +349,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="archive_stop">archive_stop is a archive to the data of the ending position.</param>
     /// <param name="bbox">bbox is the current scene bounding box.</param>
     /// <since>6.0</since>
-    public abstract void ExtendBoundingBoxForObjectAnimation(RhinoDoc doc, Rhino.DocObjects.RhinoObject doc_object, ref Rhino.Geometry.Transform transform, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop, ref Rhino.Geometry.BoundingBox bbox);
+    public abstract void ExtendBoundingBoxForObjectAnimation(RhinoDoc doc, Pixel.Rhino.DocObjects.RhinoObject doc_object, ref Pixel.Rhino.Geometry.Transform transform, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop, ref Pixel.Rhino.Geometry.BoundingBox bbox);
     /// <summary>
     /// Called for each frame. Starting at 0.0.
     /// </summary>
@@ -362,7 +362,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="archive_stop">archive_stop is a archive to the data of the ending position.</param>
     /// <returns></returns>
     /// <since>6.0</since>
-    public abstract bool AnimateObject(RhinoDoc doc, Rhino.DocObjects.RhinoObject doc_object, ref Rhino.Geometry.Transform transform, double dPos, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop);
+    public abstract bool AnimateObject(RhinoDoc doc, Pixel.Rhino.DocObjects.RhinoObject doc_object, ref Pixel.Rhino.Geometry.Transform transform, double dPos, BinaryArchiveReader archive_start, BinaryArchiveReader archive_stop);
     /// <summary>
     /// Called once at the end of an animation.
     /// </summary>
@@ -371,7 +371,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <since>6.0</since>
     public abstract bool AnimationStop(RhinoDoc doc);
     /// <summary>
-    /// Called for every object that is associated with a snapshot and gets transformed in Rhino. This is getting called for each stored snapshot and gives the client the possibility to update the stored data.
+    /// Called for every object that is associated with a snapshot and gets transformed in Pixel.Rhino. This is getting called for each stored snapshot and gives the client the possibility to update the stored data.
     /// </summary>
     /// <param name="doc">doc is the current document.</param>
     /// <param name="doc_object">doc_obj is the current object.</param>
@@ -380,7 +380,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="archive">archive is a archive which can be used to update the stored data.</param>
     /// <returns>true if successful, otherwise false.</returns>
     /// <since>6.0</since>
-    public abstract bool ObjectTransformNotification(RhinoDoc doc, Rhino.DocObjects.RhinoObject doc_object, ref Rhino.Geometry.Transform transform, BinaryArchiveReader archive);
+    public abstract bool ObjectTransformNotification(RhinoDoc doc, Pixel.Rhino.DocObjects.RhinoObject doc_object, ref Pixel.Rhino.Geometry.Transform transform, BinaryArchiveReader archive);
     /// <summary>
     /// Called before restoring a snapshot. Warns the user if the current model state is not already saved.
     /// </summary>
@@ -401,7 +401,7 @@ namespace Rhino.DocObjects.SnapShots
     /// <param name="text_log">text_log is used to list the missing items that cannot be found in the current model.</param>
     /// <returns>return true if successful, otherwise false.</returns>
     /// <since>6.0</since>
-    public abstract bool IsCurrentModelStateInAnySnapshot(RhinoDoc doc, Rhino.DocObjects.RhinoObject doc_object, BinaryArchiveReader archive, SimpleArrayBinaryArchiveReader archive_array, TextLog text_log = null);
+    public abstract bool IsCurrentModelStateInAnySnapshot(RhinoDoc doc, Pixel.Rhino.DocObjects.RhinoObject doc_object, BinaryArchiveReader archive, SimpleArrayBinaryArchiveReader archive_array, TextLog text_log = null);
     private static SnapShotsClient FromSerialNumber(int serial)
     {
       foreach (SnapShotsClient client in ShapShotsClientList.ShapShotsClientsList)
@@ -479,7 +479,7 @@ namespace Rhino.DocObjects.SnapShots
       if (client != null)
       {
         RhinoDoc doc = RhinoDoc.FromRuntimeSerialNumber(doc_serial);
-        Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+        Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
         BinaryArchiveReader archive_start = new BinaryArchiveReader(pArchive_start);
         BinaryArchiveReader archive_stop = new BinaryArchiveReader(pArchive_stop);
 
@@ -497,7 +497,7 @@ namespace Rhino.DocObjects.SnapShots
       if (client != null)
       {
         RhinoDoc doc = RhinoDoc.FromRuntimeSerialNumber(pDoc_serial);
-        Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+        Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
         BinaryArchiveReader archive_start = new BinaryArchiveReader(pArchive_start);
         BinaryArchiveReader archive_stop = new BinaryArchiveReader(pArchive_stop);
 
@@ -513,7 +513,7 @@ namespace Rhino.DocObjects.SnapShots
       if (client != null)
       {
         RhinoDoc doc = RhinoDoc.FromRuntimeSerialNumber(pDoc_serial);
-        Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+        Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
         BinaryArchiveReader archive_start = new BinaryArchiveReader(pArchive_start);
         BinaryArchiveReader archive_stop = new BinaryArchiveReader(pArchive_stop);
 
@@ -593,7 +593,7 @@ namespace Rhino.DocObjects.SnapShots
       {
         RhinoDoc doc = RhinoDoc.FromRuntimeSerialNumber(doc_serial);
         BinaryArchiveReader archive = new BinaryArchiveReader(pArchive);
-        Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+        Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
 
         bool save_doc = client.ObjectTransformNotification(doc, obj, ref transform, archive);
         return save_doc ? 1 : 0;
@@ -610,7 +610,7 @@ namespace Rhino.DocObjects.SnapShots
       {
         RhinoDoc doc = RhinoDoc.FromRuntimeSerialNumber(doc_serial);
         BinaryArchiveWriter archive = new BinaryArchiveWriter(pArchive);
-        Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+        Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
 
         bool save_doc = client.SaveObject(doc, obj, ref transform, archive);
         return save_doc ? 1 : 0;
@@ -627,7 +627,7 @@ namespace Rhino.DocObjects.SnapShots
       {
         RhinoDoc doc = RhinoDoc.FromRuntimeSerialNumber(doc_serial);
         BinaryArchiveReader archive = new BinaryArchiveReader(pArchive);
-        Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+        Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
 
         bool save_doc = client.RestoreObject(doc, obj, ref transform, archive);
         return save_doc ? 1 : 0;
@@ -656,7 +656,7 @@ namespace Rhino.DocObjects.SnapShots
       if (client != null)
       {
 
-        Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+        Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
         bool save_doc = client.SupportsObject(obj);
         return save_doc ? 1 : 0;
       }
@@ -787,7 +787,7 @@ namespace Rhino.DocObjects.SnapShots
             RhinoDoc doc = RhinoDoc.FromRuntimeSerialNumber(pDoc_serial);
             BinaryArchiveReader archive = new BinaryArchiveReader(pArchive);
             SimpleArrayBinaryArchiveReader archives = new SimpleArrayBinaryArchiveReader(pArchives);
-            Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
+            Pixel.Rhino.DocObjects.RhinoObject obj = new DocObjects.RhinoObject(obj_serial);
 
             TextLog log = null;
             if (IntPtr.Zero != pTextLog)

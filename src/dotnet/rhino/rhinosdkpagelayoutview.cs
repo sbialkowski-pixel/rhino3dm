@@ -1,10 +1,10 @@
-using Rhino.DocObjects;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Runtime.InteropWrappers;
 #pragma warning disable 1591
 using System;
 
 #if RHINO_SDK
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// A window that contains a single layout 'page'

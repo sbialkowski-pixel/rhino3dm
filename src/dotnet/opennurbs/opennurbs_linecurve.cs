@@ -1,8 +1,9 @@
 using System;
-using Rhino.Display;
+using System.Linq;
+using Pixel.Rhino.Display;
 using System.Runtime.Serialization;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Represents a linear curve.
@@ -143,7 +144,8 @@ namespace Rhino.Geometry
             double length = GetLength();
             if (segmentLength > length) return false;
             if (length == 0.0) return false;
-            t = length / segmentLength;
+            t = (segmentLength / length);
+            t = Interval.Map(t, new Interval(0, 1), this.Domain);
             return true;
         }
 
@@ -162,8 +164,10 @@ namespace Rhino.Geometry
         /// <since>5.0</since>
         public override bool NormalizedLengthParameter(double s, out double t)
         {
-            t = 0.0;
-            return LengthParameter(s, out t);
+            t = Interval.Map(s, new Interval(0, 1), this.Domain);
+            return true;
+
+            // return LengthParameter(s, out t);
             //return NormalizedLengthParameter(s, out t, 1.0e-8);
         }
 
@@ -192,7 +196,8 @@ namespace Rhino.Geometry
         public override bool ClosestPoint(Point3d testPoint, out double t, double maximumDistance)
         {
             Point3d pp = this.Line.ClosestPoint(testPoint, true, out t);
-            if(maximumDistance <= 0.0) return true;
+            t = Interval.Map(t, new Interval(0, 1), this.Domain);
+            if (maximumDistance <= 0.0) return true;
             if (pp.DistanceTo(testPoint) > maximumDistance)
             {
                 t = 0.0;
@@ -242,8 +247,9 @@ namespace Rhino.Geometry
                 UnsafeNativeMethods.ON_LineCurve_GetSetLine(ptr, true, ref value);
             }
         }
-        //public static implicit operator PolylineCurve(LineCurve crv) => new PolylineCurve(new Point3d[] { crv.Line.From, crv.Line.To });
+
         public static explicit operator PolylineCurve(LineCurve crv) => new PolylineCurve(new Point3d[] { crv.Line.From, crv.Line.To });
+        public static explicit operator LineCurve(PolylineCurve plineCrv) => new LineCurve(new Line(plineCrv.ToPolyline().First(), plineCrv.ToPolyline().Last()));
 
 
     }

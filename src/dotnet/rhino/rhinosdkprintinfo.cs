@@ -6,11 +6,11 @@ using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
-using Rhino.Geometry;
-using Rhino.Runtime;
-using Font = Rhino.DocObjects.Font;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime;
+using Font = Pixel.Rhino.DocObjects.Font;
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   public class ViewCapture
   {
@@ -862,7 +862,7 @@ namespace Rhino.Display
   }
 }
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   /// <summary>
   /// Callback system used by SVG and PDF exporter to generate documents
@@ -1450,11 +1450,11 @@ namespace Rhino.Runtime
       IntPtr points, int linearGradient, int bc)
     {
       var dp = new Display.DisplayPipeline(pPipeline);
-      Hatch hatch = Rhino.Geometry.GeometryBase.CreateGeometryHelper(pHatch, null) as Hatch;
+      Hatch hatch = Pixel.Rhino.Geometry.GeometryBase.CreateGeometryHelper(pHatch, null) as Hatch;
       if (hatch == null || gradientCount < 1)
         return;
 
-      Rhino.DocObjects.HatchPattern pattern = null;
+      Pixel.Rhino.DocObjects.HatchPattern pattern = null;
       if( pHatchPattern != IntPtr.Zero )
         pattern = new DocObjects.HatchPattern(pHatchPattern);
 
@@ -1488,7 +1488,7 @@ namespace Rhino.Runtime
     protected abstract void FillPolygon(PointF[] points, Color fillColor);
 
     protected abstract void SetClipPath(PathPoint[] points);
-    protected abstract void DrawGradientHatch(Display.DisplayPipeline pipeline, Hatch hatch, Rhino.DocObjects.HatchPattern pattern, Color[] gradientColors,
+    protected abstract void DrawGradientHatch(Display.DisplayPipeline pipeline, Hatch hatch, Pixel.Rhino.DocObjects.HatchPattern pattern, Color[] gradientColors,
       float[] gradientStops, Point3d gradientPoint1, Point3d gradientPoint2, bool linearGradient, Color boundaryColor, double pointScale);
 
     protected void PushClipPath(RectangleF rect)

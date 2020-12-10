@@ -1,8 +1,8 @@
 #if RHINO_SDK
 using System;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Base class for all annotation objects (text and dimensions)
@@ -99,7 +99,7 @@ namespace Rhino.DocObjects
 }
 
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// 3D aligned text with font settings.

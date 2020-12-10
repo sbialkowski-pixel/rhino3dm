@@ -2,13 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.Collections;
-using Rhino.Runtime;
+using Pixel.Rhino.Collections;
+using Pixel.Rhino.Runtime;
 
 //public class ON_TensorProduct { } never seen this used
 //  public class ON_CageMorph { }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a Non Uniform Rational B-Splines (NURBS) surface.
@@ -240,7 +240,7 @@ namespace Rhino.Geometry
       if (null == points) { throw new ArgumentNullException("points"); }
 
       int total_count;
-      Point3d[] point_array = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out total_count);
+      Point3d[] point_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out total_count);
       if (total_count < 4)
       {
         throw new InvalidOperationException("Insufficient points for a NURBS surface");
@@ -282,7 +282,7 @@ namespace Rhino.Geometry
       if (null == points) { throw new ArgumentNullException("points"); }
 
       int total_count;
-      Point3d[] point_array = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out total_count);
+      Point3d[] point_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out total_count);
       if (total_count < 4)
       {
         throw new InvalidOperationException("Insufficient points for a NURBS surface");
@@ -1214,7 +1214,7 @@ namespace Rhino.Geometry
 }
 
 
-namespace Rhino.Geometry.Collections
+namespace Pixel.Rhino.Geometry.Collections
 {
   /// <summary>
   /// Provides access to the control points of a NURBS surface.
@@ -1480,7 +1480,7 @@ namespace Rhino.Geometry.Collections
     /// </summary>
     /// <param name="u">Index of control-point along surface U direction.</param>
     /// <param name="v">Index of control-point along surface V direction.</param>
-    /// <returns>The control point weight if successful, Rhino.Math.UnsetValue otherwise.</returns>
+    /// <returns>The control point weight if successful, Pixel.Rhino.Math.UnsetValue otherwise.</returns>
     /// <since>6.0</since>
     public double GetWeight(int u, int v)
     {
@@ -1692,7 +1692,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to the knot vector of a NURBS surface.
   /// </summary>
-  public sealed class NurbsSurfaceKnotList : IEnumerable<double>, Rhino.Collections.IRhinoTable<double>, IEpsilonComparable<NurbsSurfaceKnotList>
+  public sealed class NurbsSurfaceKnotList : IEnumerable<double>, Pixel.Rhino.Collections.IRhinoTable<double>, IEpsilonComparable<NurbsSurfaceKnotList>
   {
     private readonly NurbsSurface m_surface;
     private readonly int m_direction;
@@ -1954,11 +1954,11 @@ namespace Rhino.Geometry.Collections
 #region IEnumerable<double> Members
     IEnumerator<double> IEnumerable<double>.GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<NurbsSurfaceKnotList, double>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<NurbsSurfaceKnotList, double>(this);
     }
     IEnumerator IEnumerable.GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<NurbsSurfaceKnotList, double>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<NurbsSurfaceKnotList, double>(this);
     }
 #endregion
 

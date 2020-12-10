@@ -5,17 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using ClipperLib;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     public static class ClipperInterop
     {
         public static List<IntPoint> ToClipper(Curve crv)
         {
-            NurbsCurve ncrv = crv.ToNurbsCurve();
-            List<IntPoint> intPath = new List<IntPoint>(ncrv.Points.Count);
-            foreach (ControlPoint cpt in ncrv.Points)
+
+            Polyline pline = crv.TryGetPolyline();
+
+          //  NurbsCurve ncrv = crv.ToNurbsCurve();
+            List<IntPoint> intPath = new List<IntPoint>(pline.Count);
+            foreach (Point3d pt in pline)
             {
-                intPath.Add(ToClipper(cpt.Location));
+                intPath.Add(ToClipper(pt));
             }
             intPath = UnifyClipper(intPath);
             return intPath;
@@ -25,7 +28,6 @@ namespace Rhino.Geometry
             Point3d tempPt = pt * Factor();
             return new IntPoint((long)tempPt.X, (long)tempPt.Y);
         }
-
 
         public static PolylineCurve FromClipper(List<IntPoint> path)
         {

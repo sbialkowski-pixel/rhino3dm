@@ -1,10 +1,11 @@
 using System;
-using Rhino.Display;
+using System.Linq;
+using Pixel.Rhino.Display;
 using System.Runtime.Serialization;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Represents the geometry of a set of linked line segments.
@@ -50,7 +51,7 @@ namespace Rhino.Geometry
         public PolylineCurve(System.Collections.Generic.IEnumerable<Point3d> points)
         {
             int count;
-            Point3d[] ptArray = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+            Point3d[] ptArray = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
             IntPtr ptr;
             if (null == ptArray || count < 1)
             {
@@ -193,10 +194,28 @@ namespace Rhino.Geometry
         public override bool LengthParameter(double segmentLength, out double t)
         {
             t = 0.0;
+            double length = GetLength();
+            if (length == 0.0) return false;
+            if (segmentLength > length)
+            {
+                t = 1.0;
+                return false;
+            }
+
+            if (segmentLength < 0.0) return false;
+            
+            Polyline pline = this.ToPolyline();
+            t = pline.ParameterAtLength(segmentLength);
+            t = Interval.Map(t, new Interval(0, (double)pline.SegmentCount), Domain);
+         //   t = (t / (double)pline.SegmentCount);
+            return true;
+            /*
+            t = 0.0;
             bool rc = NormalizedLengthParameter(segmentLength, out t );
             if (!rc) return false;
             t *= Domain.T1;
             return true;
+            */
         }
 
         /// <summary>
@@ -214,13 +233,22 @@ namespace Rhino.Geometry
         public override bool NormalizedLengthParameter(double segmentLength, out double t)
         {
             t = 0.0;
+            bool rc = LengthParameter(segmentLength* GetLength() , out t);
+            if (!rc) return false;
+         //   t = Interval.Map(t, Domain, new Interval(0,1));
+            return true;
+
+            /*
+            t = 0.0;
             double length = GetLength();
-            if (segmentLength > length) return false;
+            if (segmentLength > 1.0 || segmentLength < 0.0) return false;
             if (length == 0.0) return false;
+
             Polyline pline = this.ToPolyline();
             t = pline.ParameterAtLength(segmentLength);
             t = (t / (double)pline.SegmentCount);
             return true;
+            */
         }
 
         /// <summary>
@@ -259,7 +287,7 @@ namespace Rhino.Geometry
             if (rc > 0)
             {
                 int count;
-                Point3d[] ptArray = Rhino.Collections.RhinoListHelpers.GetConstArray(pline, out count);
+                Point3d[] ptArray = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(pline, out count);
                 IntPtr ptr = UnsafeNativeMethods.ON_PolylineCurve_New2(count, ptArray);
                 ConstructNonConstObject(ptr);
                 return true;
@@ -282,8 +310,9 @@ namespace Rhino.Geometry
         /// <since>5.0</since>
         public override bool ClosestPoint(Point3d testPoint, out double t, double maximumDistance)
         {
-          
-            Point3d pp = this.ToPolyline().ClosestPoint(testPoint, out t);
+            Polyline pline = this.ToPolyline();
+            Point3d pp = pline.ClosestPoint(testPoint, out t);
+            t = Interval.Map(t, new Interval(0, pline.Count-1) , this.Domain);
             if (maximumDistance <= 0.0) return true;
             if (pp.DistanceTo(testPoint) > maximumDistance)
             {
@@ -311,5 +340,8 @@ namespace Rhino.Geometry
                 return Polyline.PolyLineFromNativeArray(output_points);
             }
         }
+        public static explicit operator PolylineCurve(LineCurve crv) => new PolylineCurve(new Point3d[] { crv.Line.From, crv.Line.To });
+        public static explicit operator LineCurve(PolylineCurve plineCrv) => new LineCurve(new Line(plineCrv.ToPolyline().First(), plineCrv.ToPolyline().Last()));
+
     }
 }

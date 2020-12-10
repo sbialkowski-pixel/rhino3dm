@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using Rhino.Runtime;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Defines enumerated values for isoparametric curve direction on a surface, such as X or Y,
@@ -1728,7 +1728,7 @@ namespace Rhino.Geometry
       if (null == points)
         return null;
 
-      Rhino.Collections.RhinoList<Point2d> pts = new Rhino.Collections.RhinoList<Point2d>();
+      Pixel.Rhino.Collections.RhinoList<Point2d> pts = new Pixel.Rhino.Collections.RhinoList<Point2d>();
       foreach (Point2d pt in points)
         pts.Add(pt);
       int count = pts.Count;
@@ -1776,7 +1776,7 @@ namespace Rhino.Geometry
     }
 
     /// <summary>
-    /// Constructs a geodesic between 2 points, used by ShortPath command in Rhino.
+    /// Constructs a geodesic between 2 points, used by ShortPath command in Pixel.Rhino.
     /// </summary>
     /// <param name="start">start point of curve in parameter space. Points must be distinct in the domain of the surface.</param>
     /// <param name="end">end point of curve in parameter space. Points must be distinct in the domain of the surface.</param>

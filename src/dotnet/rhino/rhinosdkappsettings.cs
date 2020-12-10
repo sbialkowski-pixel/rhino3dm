@@ -1,11 +1,11 @@
 #if RHINO_SDK
 using System;
 using System.Drawing;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Geometry;
 using System.Collections.Generic;
 
-namespace Rhino.ApplicationSettings
+namespace Pixel.Rhino.ApplicationSettings
 {
   /// <summary>Represents a snapshot of the values in <see cref="AppearanceSettings"/>.</summary>
   public class AppearanceSettingsState
@@ -266,7 +266,7 @@ namespace Rhino.ApplicationSettings
     }
 
     /// <summary>
-    /// Gets or sets the default font face name used in Rhino.
+    /// Gets or sets the default font face name used in Pixel.Rhino.
     /// </summary>
     /// <since>5.0</since>
     public static string DefaultFontFaceName
@@ -307,7 +307,7 @@ namespace Rhino.ApplicationSettings
     static Color GetColor(int which, IntPtr pAppearanceSettings)
     {
       int abgr = UnsafeNativeMethods.RhAppearanceSettings_GetSetColor(which, false, 0, pAppearanceSettings);
-      return Rhino.Runtime.Interop.ColorFromWin32(abgr);
+      return Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
     }
 
     static Color GetColor(int which)
@@ -603,7 +603,7 @@ namespace Rhino.ApplicationSettings
     static Color GetGridColor(int which, IntPtr pSettings)
     {
       int abgr = UnsafeNativeMethods.CRhinoAppGridSettings_GetSetColor(which, false, 0, pSettings);
-      return Rhino.Runtime.Interop.ColorFromWin32(abgr);
+      return Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
     }
     static void SetGridColor(int which, Color c, IntPtr pSettings)
     {
@@ -772,7 +772,7 @@ namespace Rhino.ApplicationSettings
       get
       {
 		// ZO-135 - called by the Zoo, and needs some answer.
-        if (Rhino.Runtime.HostUtils.RunningInRhino)
+        if (Pixel.Rhino.Runtime.HostUtils.RunningInRhino)
         {
           uint rc = UnsafeNativeMethods.RhAppearanceSettings_GetSetUINT(0, false, 0);
           return (int)rc;
@@ -823,7 +823,7 @@ namespace Rhino.ApplicationSettings
   /// </summary>
   public static class CommandAliasList
   {
-    ///<summary>Returns the number of command alias in Rhino.</summary>
+    ///<summary>Returns the number of command alias in Pixel.Rhino.</summary>
     /// <since>5.0</since>
     public static int Count
     {
@@ -882,7 +882,7 @@ namespace Rhino.ApplicationSettings
       return UnsafeNativeMethods.RhCommandAliasList_SetMacro(alias, macro);
     }
 
-    ///<summary>Adds a new command alias to Rhino.</summary>
+    ///<summary>Adds a new command alias to Pixel.Rhino.</summary>
     ///<param name='alias'>[in] The name of the command alias.</param>
     ///<param name='macro'>[in] The command macro to run when the alias is executed.</param>
     ///<returns>true if successful.</returns>
@@ -892,7 +892,7 @@ namespace Rhino.ApplicationSettings
       return UnsafeNativeMethods.RhCommandAliasList_Add(alias, macro);
     }
 
-    ///<summary>Deletes an existing command alias from Rhino.</summary>
+    ///<summary>Deletes an existing command alias from Pixel.Rhino.</summary>
     ///<param name='alias'>[in] The name of the command alias.</param>
     ///<returns>true if successful.</returns>
     /// <since>5.0</since>
@@ -901,7 +901,7 @@ namespace Rhino.ApplicationSettings
       return UnsafeNativeMethods.RhCommandAliasList_Delete(alias);
     }
 
-    ///<summary>Verifies that a command alias exists in Rhino.</summary>
+    ///<summary>Verifies that a command alias exists in Pixel.Rhino.</summary>
     ///<param name='alias'>[in] The name of the command alias.</param>
     ///<returns>true if the alias exists.</returns>
     /// <since>5.0</since>
@@ -1161,7 +1161,7 @@ namespace Rhino.ApplicationSettings
       EdgeAnalysisSettingsState rc = new EdgeAnalysisSettingsState();
 
       int abgr = UnsafeNativeMethods.RhEdgeAnalysisSettings_ShowEdgeColor(false, 0, pSettings);
-      rc.ShowEdgeColor = Rhino.Runtime.Interop.ColorFromWin32(abgr);
+      rc.ShowEdgeColor = Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
       rc.ShowEdges = UnsafeNativeMethods.RhEdgeAnalysisSettings_ShowEdges(false, 0, pSettings);
       UnsafeNativeMethods.CRhinoEdgeAnalysisSettings_Delete(pSettings);
       return rc;
@@ -1214,7 +1214,7 @@ namespace Rhino.ApplicationSettings
       get
       {
         int abgr = UnsafeNativeMethods.RhEdgeAnalysisSettings_ShowEdgeColor(false, 0, IntPtr.Zero);
-        return Rhino.Runtime.Interop.ColorFromWin32(abgr);
+        return Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
       }
       set
       {
@@ -1409,7 +1409,7 @@ namespace Rhino.ApplicationSettings
     }
 
     /// <summary>
-    /// Searches for a file using Rhino's search imagePath. Rhino will look for a file in the following locations:
+    /// Searches for a file using Pixel.Rhino's search imagePath. Rhino will look for a file in the following locations:
     /// 1. The current document's folder.
     /// 2. Folder's specified in Options dialog, File tab.
     /// 3. Rhino's System folders.
@@ -3203,7 +3203,7 @@ namespace Rhino.ApplicationSettings
     {
       IntPtr pSettings = UnsafeNativeMethods.CRhinoOpenGLSettings_New(current);
       OpenGLSettingsState rc = new OpenGLSettingsState();
-      //rc.AntialiasLevel = (Rhino.AntialiasLevel)GetInt();
+      //rc.AntialiasLevel = (Pixel.Rhino.AntialiasLevel)GetInt();
       UnsafeNativeMethods.CRhinoOpenGLSettings_Delete(pSettings);
       return rc;
     }
@@ -3850,7 +3850,7 @@ namespace Rhino.ApplicationSettings
     static Color GetColor(int which, IntPtr pSmartTrackSettings)
     {
       int abgr = UnsafeNativeMethods.CRhinoAppSmartTrackSettings_GetSetColor(which, false, 0, pSmartTrackSettings);
-      return Rhino.Runtime.Interop.ColorFromWin32(abgr);
+      return Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
     }
     static Color GetColor(int which) { return GetColor(which, IntPtr.Zero); }
 
@@ -3969,9 +3969,9 @@ namespace Rhino.ApplicationSettings
       int y = GetInt(idx_yoffset, pSettings);
       rc.Offset = new System.Drawing.Point(x, y);
       int abgr = GetInt(idx_background_color, pSettings);
-      rc.BackgroundColor = Rhino.Runtime.Interop.ColorFromWin32(abgr);
+      rc.BackgroundColor = Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
       abgr = GetInt(idx_text_color, pSettings);
-      rc.TextColor = Rhino.Runtime.Interop.ColorFromWin32(abgr);
+      rc.TextColor = Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
       rc.OsnapPane = GetInt(idx_bOsnapPane, pSettings) != 0;
       rc.DistancePane = GetInt(idx_bDistancePane, pSettings) != 0;
       rc.PointPane = GetInt(idx_bPointPane, pSettings) != 0;
@@ -4038,7 +4038,7 @@ namespace Rhino.ApplicationSettings
       get
       {
         int abgr = GetInt(idx_background_color, IntPtr.Zero);
-        return Rhino.Runtime.Interop.ColorFromWin32(abgr);
+        return Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
       }
       set
       {
@@ -4054,7 +4054,7 @@ namespace Rhino.ApplicationSettings
       get
       {
         int abgr = GetInt(idx_text_color, IntPtr.Zero);
-        return Rhino.Runtime.Interop.ColorFromWin32(abgr);
+        return Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
       }
       set
       {
@@ -4156,25 +4156,25 @@ namespace Rhino.ApplicationSettings
     /// Gets or sets the Gaussian curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public Rhino.Geometry.Interval GaussRange { get; set; }
+    public Pixel.Rhino.Geometry.Interval GaussRange { get; set; }
 
     /// <summary>
     /// Gets or sets the Mean curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public Rhino.Geometry.Interval MeanRange { get; set; }
+    public Pixel.Rhino.Geometry.Interval MeanRange { get; set; }
 
     /// <summary>
     /// Gets or sets the Minimum Radius curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public Rhino.Geometry.Interval MinRadiusRange { get; set; }
+    public Pixel.Rhino.Geometry.Interval MinRadiusRange { get; set; }
 
     /// <summary>
     /// Gets or sets the Maximum Radius curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public Rhino.Geometry.Interval MaxRadiusRange { get; set; }
+    public Pixel.Rhino.Geometry.Interval MaxRadiusRange { get; set; }
 
     /// <summary>
     /// Gets or sets the curvature analysis style.
@@ -4216,22 +4216,22 @@ namespace Rhino.ApplicationSettings
       IntPtr ptr_settings = UnsafeNativeMethods.CRhinoCurvatureAnalysisSettings_New(current);
       CurvatureAnalysisSettingsState rc = new CurvatureAnalysisSettingsState();
 
-      Rhino.Geometry.Interval range = Rhino.Geometry.Interval.Unset;
+      Pixel.Rhino.Geometry.Interval range = Pixel.Rhino.Geometry.Interval.Unset;
       int style = (int) CurvatureStyle.Gaussian;
       if (UnsafeNativeMethods.RhCurvatureAnalysisSettings_Interval(ptr_settings, ref range, style, false))
         rc.GaussRange = range;
 
-      range = Rhino.Geometry.Interval.Unset;
+      range = Pixel.Rhino.Geometry.Interval.Unset;
       style = (int)CurvatureStyle.Mean;
       if (UnsafeNativeMethods.RhCurvatureAnalysisSettings_Interval(ptr_settings, ref range, style, false))
         rc.MeanRange = range;
 
-      range = Rhino.Geometry.Interval.Unset;
+      range = Pixel.Rhino.Geometry.Interval.Unset;
       style = (int)CurvatureStyle.MinRadius;
       if (UnsafeNativeMethods.RhCurvatureAnalysisSettings_Interval(ptr_settings, ref range, style, false))
         rc.MinRadiusRange = range;
 
-      range = Rhino.Geometry.Interval.Unset;
+      range = Pixel.Rhino.Geometry.Interval.Unset;
       style = (int)CurvatureStyle.MaxRadius;
       if (UnsafeNativeMethods.RhCurvatureAnalysisSettings_Interval(ptr_settings, ref range, style, false))
         rc.MaxRadiusRange = range;
@@ -4285,14 +4285,14 @@ namespace Rhino.ApplicationSettings
       Style = state.Style;
     }
 
-    private static Rhino.Geometry.Interval GetRange(CurvatureStyle style)
+    private static Pixel.Rhino.Geometry.Interval GetRange(CurvatureStyle style)
     {
-      Rhino.Geometry.Interval range = Rhino.Geometry.Interval.Unset;
+      Pixel.Rhino.Geometry.Interval range = Pixel.Rhino.Geometry.Interval.Unset;
       UnsafeNativeMethods.RhCurvatureAnalysisSettings_Interval(IntPtr.Zero, ref range, (int) style, false);
       return range;
     }
 
-    private static void SetRange(CurvatureStyle style, Rhino.Geometry.Interval range)
+    private static void SetRange(CurvatureStyle style, Pixel.Rhino.Geometry.Interval range)
     {
       UnsafeNativeMethods.RhCurvatureAnalysisSettings_Interval(IntPtr.Zero, ref range, (int) style, true);
     }
@@ -4301,7 +4301,7 @@ namespace Rhino.ApplicationSettings
     /// Gets or sets the Gaussian curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public static Rhino.Geometry.Interval GaussRange
+    public static Pixel.Rhino.Geometry.Interval GaussRange
     {
       get => GetRange(CurvatureStyle.Gaussian);
       set => SetRange(CurvatureStyle.Gaussian, value);
@@ -4311,7 +4311,7 @@ namespace Rhino.ApplicationSettings
     /// Gets or sets the Mean curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public static Rhino.Geometry.Interval MeanRange
+    public static Pixel.Rhino.Geometry.Interval MeanRange
     {
       get => GetRange(CurvatureStyle.Mean);
       set => SetRange(CurvatureStyle.Mean, value);
@@ -4321,7 +4321,7 @@ namespace Rhino.ApplicationSettings
     /// Gets or sets the Minimum Radius curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public static Rhino.Geometry.Interval MinRadiusRange
+    public static Pixel.Rhino.Geometry.Interval MinRadiusRange
     {
       get => GetRange(CurvatureStyle.MinRadius);
       set => SetRange(CurvatureStyle.MinRadius, value);
@@ -4331,7 +4331,7 @@ namespace Rhino.ApplicationSettings
     /// Gets or sets the Maximum Radius curvature range.
     /// </summary>
     /// <since>6.0</since>
-    public static Rhino.Geometry.Interval MaxRadiusRange
+    public static Pixel.Rhino.Geometry.Interval MaxRadiusRange
     {
       get => GetRange(CurvatureStyle.MaxRadius);
       set => SetRange(CurvatureStyle.MaxRadius, value);
@@ -4373,7 +4373,7 @@ namespace Rhino.ApplicationSettings
 
         IntPtr ptr_meshes = inmeshes.ConstPointer();
 
-        Rhino.Geometry.Interval range = Rhino.Geometry.Interval.Unset;
+        Pixel.Rhino.Geometry.Interval range = Pixel.Rhino.Geometry.Interval.Unset;
         rc = UnsafeNativeMethods.RHC_CalculateCurvatureAutoRange(ptr_meshes, (int)settings.Style, ref range);
         if(rc)
         {
@@ -4416,7 +4416,7 @@ namespace Rhino.ApplicationSettings
     /// </summary>
     /// <since>7.0</since>
     [CLSCompliant(false)]
-    public Rhino.DocObjects.ObjectType GlobalGeometryFilter { get; set; }
+    public Pixel.Rhino.DocObjects.ObjectType GlobalGeometryFilter { get; set; }
 
     /// <summary>
     /// The one-shot geometry type filter controls which types of geometry will be filtered for one selection.
@@ -4424,7 +4424,7 @@ namespace Rhino.ApplicationSettings
     /// </summary>
     /// <since>7.0</since>
     [CLSCompliant(false)]
-    public Rhino.DocObjects.ObjectType OneShotGeometryFilter { get; set; }
+    public Pixel.Rhino.DocObjects.ObjectType OneShotGeometryFilter { get; set; }
 
     /// <summary>
     /// Enables or disables the global object selection filter.
@@ -4462,13 +4462,13 @@ namespace Rhino.ApplicationSettings
       IntPtr ptr_settings = UnsafeNativeMethods.CRhinoAppSelectionFilterSettings_New(current);
       SelectionFilterSettingsState rc = new SelectionFilterSettingsState();
 
-      uint global_filter = (uint)Rhino.DocObjects.ObjectType.AnyObject; // default
+      uint global_filter = (uint)Pixel.Rhino.DocObjects.ObjectType.AnyObject; // default
       if (UnsafeNativeMethods.CRhinoAppSelectionFilterSettings_Filter(ptr_settings, (int)FilterValue.GlobalFilter, ref global_filter, false))
-        rc.GlobalGeometryFilter = (Rhino.DocObjects.ObjectType)global_filter;
+        rc.GlobalGeometryFilter = (Pixel.Rhino.DocObjects.ObjectType)global_filter;
 
-      uint one_shot_filter = (uint)Rhino.DocObjects.ObjectType.None; // default
+      uint one_shot_filter = (uint)Pixel.Rhino.DocObjects.ObjectType.None; // default
       if (UnsafeNativeMethods.CRhinoAppSelectionFilterSettings_Filter(ptr_settings, (int)FilterValue.OneShotFilter, ref one_shot_filter, false))
-        rc.OneShotGeometryFilter = (Rhino.DocObjects.ObjectType)one_shot_filter;
+        rc.OneShotGeometryFilter = (Pixel.Rhino.DocObjects.ObjectType)one_shot_filter;
 
       bool enabled = true; // default
       if (UnsafeNativeMethods.CRhinoAppSelectionFilterSettings_Bool(ptr_settings, (int)BoolValue.Enabled, ref enabled, false))
@@ -4533,13 +4533,13 @@ namespace Rhino.ApplicationSettings
     /// </summary>
     /// <since>7.0</since>
     [CLSCompliant(false)]
-    public static Rhino.DocObjects.ObjectType GlobalGeometryFilter
+    public static Pixel.Rhino.DocObjects.ObjectType GlobalGeometryFilter
     {
       get
       {
-        uint global_filter = (uint)Rhino.DocObjects.ObjectType.AnyObject; // default
+        uint global_filter = (uint)Pixel.Rhino.DocObjects.ObjectType.AnyObject; // default
         UnsafeNativeMethods.CRhinoAppSelectionFilterSettings_Filter(IntPtr.Zero, (int)FilterValue.GlobalFilter, ref global_filter, false);
-        return (Rhino.DocObjects.ObjectType)global_filter;
+        return (Pixel.Rhino.DocObjects.ObjectType)global_filter;
       }
       set
       {
@@ -4554,13 +4554,13 @@ namespace Rhino.ApplicationSettings
     /// </summary>
     /// <since>7.0</since>
     [CLSCompliant(false)]
-    public static Rhino.DocObjects.ObjectType OneShotGeometryFilter
+    public static Pixel.Rhino.DocObjects.ObjectType OneShotGeometryFilter
     {
       get
       {
-        uint one_shot_filter = (uint)Rhino.DocObjects.ObjectType.None; // default
+        uint one_shot_filter = (uint)Pixel.Rhino.DocObjects.ObjectType.None; // default
         UnsafeNativeMethods.CRhinoAppSelectionFilterSettings_Filter(IntPtr.Zero, (int)FilterValue.OneShotFilter, ref one_shot_filter, false);
-        return (Rhino.DocObjects.ObjectType)one_shot_filter;
+        return (Pixel.Rhino.DocObjects.ObjectType)one_shot_filter;
       }
       set
       {

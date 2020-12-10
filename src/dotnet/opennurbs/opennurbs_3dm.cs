@@ -1,7 +1,7 @@
 #pragma warning disable 1591
 using System;
 
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   ///<summary>
   ///Typecode format 4 bytes long

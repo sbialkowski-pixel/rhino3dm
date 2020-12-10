@@ -3,10 +3,10 @@ using System;
 using System.Runtime.InteropServices;
 
 #if RHINO_SDK
-using Rhino.PlugIns;
+using Pixel.Rhino.PlugIns;
 #endif
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   /// <summary>
   /// This class should only ever be called from the MonoManager.rhp. Luckily
@@ -58,7 +58,7 @@ namespace Rhino.Runtime
         msg += sender.ToString();
       }
 #if RHINO_SDK
-      Rhino.UI.Dialogs.ShowMessage(msg, "Unhandled CurrentDomain Exception in .NET plug-in");
+      Pixel.Rhino.UI.Dialogs.ShowMessage(msg, "Unhandled CurrentDomain Exception in .NET plug-in");
 #else
       Console.Error.Write(msg);
 #endif
@@ -75,7 +75,7 @@ namespace Rhino.Runtime
         msg += sender.ToString();
       }
 #if RHINO_SDK
-      Rhino.UI.Dialogs.ShowMessage(msg, "Unhandled Thread Exception in .NET plug-in");
+      Pixel.Rhino.UI.Dialogs.ShowMessage(msg, "Unhandled Thread Exception in .NET plug-in");
 #else
       Console.Error.Write(msg);
 #endif

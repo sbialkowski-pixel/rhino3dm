@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>Defines styles used for creating Brep pipes.</summary>
   public enum PipeCapMode
@@ -567,7 +567,7 @@ namespace Rhino.Geometry
     {
       if (null == inputLoops)
         return null;
-      var crvs = new Rhino.Collections.CurveList(inputLoops);
+      var crvs = new Pixel.Rhino.Collections.CurveList(inputLoops);
       return CreatePlanarBreps(crvs, tolerance);
     }
 
@@ -596,7 +596,7 @@ namespace Rhino.Geometry
     {
       if (null == inputLoop)
         return null;
-      var crvs = new Rhino.Collections.CurveList { inputLoop };
+      var crvs = new Pixel.Rhino.Collections.CurveList { inputLoop };
       return CreatePlanarBreps(crvs, tolerance);
     }
 
@@ -714,7 +714,7 @@ namespace Rhino.Geometry
     /// <returns>An array of Planar Breps or null on error.</returns>
     /// <since>5.0</since>
     [Obsolete("Use version that takes tolerance as input")]
-    public static Brep[] CreatePlanarBreps(Rhino.Collections.CurveList inputLoops)
+    public static Brep[] CreatePlanarBreps(Pixel.Rhino.Collections.CurveList inputLoops)
     {
       double tolerance, angle_tolerance;
       RhinoDoc.ActiveDocTolerances(out tolerance, out angle_tolerance);
@@ -728,7 +728,7 @@ namespace Rhino.Geometry
     /// <param name="tolerance"></param>
     /// <returns>An array of Planar Breps.</returns>
     /// <since>6.0</since>
-    public static Brep[] CreatePlanarBreps(Rhino.Collections.CurveList inputLoops, double tolerance)
+    public static Brep[] CreatePlanarBreps(Pixel.Rhino.Collections.CurveList inputLoops, double tolerance)
     {
       if (null == inputLoops)
         return null;
@@ -2141,7 +2141,7 @@ namespace Rhino.Geometry
 
     /// <summary>
     /// Combines two or more breps into one. A merge is like a boolean union that keeps the inside pieces. This
-    /// function creates non-manifold Breps which in general are unusual in Rhino. You may want to consider using
+    /// function creates non-manifold Breps which in general are unusual in Pixel.Rhino. You may want to consider using
     /// JoinBreps or CreateBooleanUnion functions instead.
     /// </summary>
     /// <param name="brepsToMerge">must contain more than one Brep.</param>
@@ -2221,7 +2221,7 @@ namespace Rhino.Geometry
     /// <param name="state"> CurvatureAnalysisSettingsState </param>
     /// <returns>true if meshes were created</returns>
     /// <since>6.0</since>
-    public static Mesh[] CreateCurvatureAnalysisMesh(Brep brep, Rhino.ApplicationSettings.CurvatureAnalysisSettingsState state)
+    public static Mesh[] CreateCurvatureAnalysisMesh(Brep brep, Pixel.Rhino.ApplicationSettings.CurvatureAnalysisSettingsState state)
     {
       IntPtr ptr_brep = brep.NonConstPointer();
       using (var outmeshes = new SimpleArrayMeshPointer())
@@ -3538,7 +3538,7 @@ namespace Rhino.Geometry
     /// <summary>
     /// Fills in missing or fixes incorrect component information from a Brep. 
     /// Useful when reading Brep information from other file formats that do not 
-    /// provide as complete of a Brep definition as required by Rhino.
+    /// provide as complete of a Brep definition as required by Pixel.Rhino.
     /// </summary>
     /// <param name="tolerance">The repair tolerance. When in doubt, use the document's model absolute tolerance.</param>
     /// <returns>True on success.</returns>
@@ -3566,7 +3566,7 @@ namespace Rhino.Geometry
     /// <summary>
     /// Removes inner loops, or holes, in a Brep.
     /// </summary>
-    /// <param name="loops">A list of BrepLoop component indexes, where BrepLoop.LoopType == Rhino.Geometry.BrepLoopType.Inner.</param>
+    /// <param name="loops">A list of BrepLoop component indexes, where BrepLoop.LoopType == Pixel.Rhino.Geometry.BrepLoopType.Inner.</param>
     /// <param name="tolerance">The tolerance. When in doubt, use the document's model absolute tolerance.</param>
     /// <returns>The Brep without holes if successful, null otherwise.</returns>
     /// <since>6.8</since>
@@ -3583,7 +3583,7 @@ namespace Rhino.Geometry
             if (ci.Index >= 0 && ci.Index < Loops.Count)
             {
               BrepLoop loop = Loops[ci.Index];
-              if (null != loop && loop.LoopType == Rhino.Geometry.BrepLoopType.Inner)
+              if (null != loop && loop.LoopType == Pixel.Rhino.Geometry.BrepLoopType.Inner)
                 loop_ci.Add(ci);
             }
           }
@@ -4813,7 +4813,7 @@ namespace Rhino.Geometry
     public Point3d[] PullPointsToFace(IEnumerable<Point3d> points, double tolerance)
     {
       int count;
-      Point3d[] inpoints = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] inpoints = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (inpoints == null || inpoints.Length < 1)
         return null;
       IntPtr const_ptr_brep = m_brep.ConstPointer();
@@ -5599,12 +5599,12 @@ namespace Rhino.Geometry
   }
 }
 
-namespace Rhino.Geometry.Collections
+namespace Pixel.Rhino.Geometry.Collections
 {
   /// <summary>
   /// Provides access to all the Vertices in a Brep object
   /// </summary>
-  public class BrepVertexList : IEnumerable<BrepVertex>, Rhino.Collections.IRhinoTable<BrepVertex>
+  public class BrepVertexList : IEnumerable<BrepVertex>, Pixel.Rhino.Collections.IRhinoTable<BrepVertex>
   {
     readonly Brep m_brep;
     internal BrepVertexList(Brep ownerBrep)
@@ -5716,7 +5716,7 @@ namespace Rhino.Geometry.Collections
     /// <since>5.4</since>
     public IEnumerator<BrepVertex> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<BrepVertexList, BrepVertex>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<BrepVertexList, BrepVertex>(this);
     }
     #endregion
   }
@@ -5724,7 +5724,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the Faces in a Brep object.
   /// </summary>
-  public class BrepFaceList : IEnumerable<BrepFace>, Rhino.Collections.IRhinoTable<BrepFace>
+  public class BrepFaceList : IEnumerable<BrepFace>, Pixel.Rhino.Collections.IRhinoTable<BrepFace>
   {
     readonly Brep m_brep;
 
@@ -6119,7 +6119,7 @@ namespace Rhino.Geometry.Collections
     /// <since>5.0</since>
     public IEnumerator<BrepFace> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<BrepFaceList, BrepFace>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<BrepFaceList, BrepFace>(this);
     }
     #endregion
   }
@@ -6127,7 +6127,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the underlying surfaces in a Brep object.
   /// </summary>
-  public class BrepSurfaceList : IEnumerable<Surface>, Rhino.Collections.IRhinoTable<Surface>
+  public class BrepSurfaceList : IEnumerable<Surface>, Pixel.Rhino.Collections.IRhinoTable<Surface>
   {
     readonly Brep m_brep;
 
@@ -6207,7 +6207,7 @@ namespace Rhino.Geometry.Collections
     /// <since>5.4</since>
     public IEnumerator<Surface> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<BrepSurfaceList, Surface>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<BrepSurfaceList, Surface>(this);
     }
     #endregion
   }
@@ -6215,7 +6215,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the underlying curves in a Brep object.
   /// </summary>
-  public class BrepCurveList : IEnumerable<Curve>, Rhino.Collections.IRhinoTable<Curve>
+  public class BrepCurveList : IEnumerable<Curve>, Pixel.Rhino.Collections.IRhinoTable<Curve>
   {
     readonly Brep m_brep;
     readonly bool m_c2list; // if false, then m_c3
@@ -6312,7 +6312,7 @@ namespace Rhino.Geometry.Collections
     /// <since>5.6</since>
     public IEnumerator<Curve> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<BrepCurveList, Curve>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<BrepCurveList, Curve>(this);
     }
     #endregion
   }
@@ -6320,7 +6320,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the Edges in a Brep object.
   /// </summary>
-  public class BrepEdgeList : IEnumerable<BrepEdge>, Rhino.Collections.IRhinoTable<BrepEdge>
+  public class BrepEdgeList : IEnumerable<BrepEdge>, Pixel.Rhino.Collections.IRhinoTable<BrepEdge>
   {
     readonly Brep m_brep;
     List<BrepEdge> m_edges; // = null; initialized to null by runtime
@@ -6539,7 +6539,7 @@ namespace Rhino.Geometry.Collections
     /// <since>5.0</since>
     public IEnumerator<BrepEdge> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<BrepEdgeList, BrepEdge>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<BrepEdgeList, BrepEdge>(this);
     }
     #endregion
   }
@@ -6547,7 +6547,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the Trims in a Brep object
   /// </summary>
-  public class BrepTrimList : IEnumerable<BrepTrim>, Rhino.Collections.IRhinoTable<BrepTrim>
+  public class BrepTrimList : IEnumerable<BrepTrim>, Pixel.Rhino.Collections.IRhinoTable<BrepTrim>
   {
     readonly Brep m_brep;
     readonly BrepLoop m_breploop;
@@ -6812,7 +6812,7 @@ namespace Rhino.Geometry.Collections
     /// <since>5.1</since>
     public IEnumerator<BrepTrim> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<BrepTrimList, BrepTrim>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<BrepTrimList, BrepTrim>(this);
     }
     #endregion
   }
@@ -6820,7 +6820,7 @@ namespace Rhino.Geometry.Collections
   /// <summary>
   /// Provides access to all the Loops in a Brep object.
   /// </summary>
-  public class BrepLoopList : IEnumerable<BrepLoop>, Rhino.Collections.IRhinoTable<BrepLoop>
+  public class BrepLoopList : IEnumerable<BrepLoop>, Pixel.Rhino.Collections.IRhinoTable<BrepLoop>
   {
     readonly Brep m_brep;
     readonly BrepFace m_brepface;
@@ -6997,7 +6997,7 @@ namespace Rhino.Geometry.Collections
     /// <since>5.0</since>
     public IEnumerator<BrepLoop> GetEnumerator()
     {
-      return new Rhino.Collections.TableEnumerator<BrepLoopList, BrepLoop>(this);
+      return new Pixel.Rhino.Collections.TableEnumerator<BrepLoopList, BrepLoop>(this);
     }
     #endregion
   }

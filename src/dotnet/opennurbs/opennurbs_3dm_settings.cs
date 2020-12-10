@@ -1,17 +1,17 @@
 using System;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 // Most of these should not need to be wrapped. Some of their
 // functionality is merged into other wrapper classes
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   // Can't add a cref to an XML comment here since the NamedConstructionPlaneTable
   // is not included in the OpenNURBS flavor build of RhinoCommon
 
   /// <summary>
   /// Represents a construction plane inside the document.
-  /// <para>Use Rhino.DocObjects.Tables.NamedConstructionPlaneTable
+  /// <para>Use Pixel.Rhino.DocObjects.Tables.NamedConstructionPlaneTable
   /// methods and indexers to add and access a <see cref="ConstructionPlane"/>.</para>
   /// </summary>
   public class ConstructionPlane
@@ -1216,14 +1216,14 @@ namespace Rhino.DocObjects
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmAnimationProperties_SetFileExtension(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmAnimationProperties_FileExtension(ConstPointer(), p_string);
@@ -1240,14 +1240,14 @@ namespace Rhino.DocObjects
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmAnimationProperties_SetCaptureMethod(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmAnimationProperties_CaptureMethod(ConstPointer(), p_string);
@@ -1264,14 +1264,14 @@ namespace Rhino.DocObjects
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmAnimationProperties_SetViewportName(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmAnimationProperties_ViewportName(ConstPointer(), p_string);
@@ -1288,14 +1288,14 @@ namespace Rhino.DocObjects
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmAnimationProperties_SetHtmlFilename(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmAnimationProperties_HtmlFilename(ConstPointer(), p_string);
@@ -1737,14 +1737,14 @@ namespace Rhino.DocObjects
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmAnimationProperties_SetFolderName(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmAnimationProperties_FolderName(ConstPointer(), p_string);
@@ -1841,7 +1841,7 @@ namespace Rhino.DocObjects
   }
 }
 
-namespace Rhino.Render
+namespace Pixel.Rhino.Render
 {
   /// <summary> Contains settings used in rendering. </summary>
   public class RenderSettings : Runtime.CommonObject
@@ -2251,14 +2251,14 @@ namespace Rhino.Render
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmSettings_SetNamedView(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmSettings_GetNamedView(ConstPointer(), p_string);
@@ -2275,14 +2275,14 @@ namespace Rhino.Render
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmSettings_SetSnapshot(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmSettings_GetSnapshot(ConstPointer(), p_string);
@@ -2299,14 +2299,14 @@ namespace Rhino.Render
     {
       set
       {
-        var sh = new Rhino.Runtime.InteropWrappers.StringWrapper(value);
+        var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper(value);
         var p_string = sh.ConstPointer;
         UnsafeNativeMethods.ON_3dmSettings_SetSpecificViewport(NonConstPointer(), p_string);
       }
 
       get
       {
-        using (var sh = new Rhino.Runtime.InteropWrappers.StringHolder())
+        using (var sh = new Pixel.Rhino.Runtime.InteropWrappers.StringHolder())
         {
           var p_string = sh.NonConstPointer();
           UnsafeNativeMethods.ON_3dmSettings_GetSpecificViewport(ConstPointer(), p_string);
@@ -2359,7 +2359,7 @@ namespace Rhino.Render
   }
 }
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Constants that define how the background of a viewport should be filled.
@@ -2378,7 +2378,7 @@ namespace Rhino.Display
 
 }
 
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   /// <summary> General settings in a 3dm file. </summary>
   public class File3dmSettings
@@ -2445,12 +2445,12 @@ namespace Rhino.FileIO
     }
 
     /*
-    Rhino.DocObjects.EarthAnchorPoint m_earth_anchor;
+    Pixel.Rhino.DocObjects.EarthAnchorPoint m_earth_anchor;
     /// <summary>
     /// If set, this is the model's location on the earth.  This information is
     /// used when the model is used with GIS information.
     /// </summary>
-    Rhino.DocObjects.EarthAnchorPoint EarthAnchorPoint
+    Pixel.Rhino.DocObjects.EarthAnchorPoint EarthAnchorPoint
     {
       get
       {
@@ -2552,7 +2552,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Gets or sets the model unit system, using <see cref="Rhino.UnitSystem"/> enumeration.
+    /// Gets or sets the model unit system, using <see cref="Pixel.Rhino.UnitSystem"/> enumeration.
     /// </summary>
     /// <since>5.0</since>
     public UnitSystem ModelUnitSystem
@@ -2572,7 +2572,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Gets or sets the page unit system, using <see cref="Rhino.UnitSystem"/> enumeration.
+    /// Gets or sets the page unit system, using <see cref="Pixel.Rhino.UnitSystem"/> enumeration.
     /// </summary>
     /// <since>5.0</since>
     public UnitSystem PageUnitSystem

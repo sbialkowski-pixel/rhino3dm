@@ -4,10 +4,10 @@ using System.Runtime.Serialization;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq.Expressions;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.FileIO;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.FileIO;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   public enum HatchPatternFillType
   {
@@ -56,7 +56,7 @@ namespace Rhino.DocObjects
         ConstructNonConstObject(pHatchPattern);
     }
 
-    internal HatchPattern(Guid id, Rhino.FileIO.File3dm parent)
+    internal HatchPattern(Guid id, Pixel.Rhino.FileIO.File3dm parent)
     {
       m_id = id;
       m__parent = parent;
@@ -110,7 +110,7 @@ namespace Rhino.DocObjects
         return rc;
       }
 #endif
-      Rhino.FileIO.File3dm parent_file = m__parent as Rhino.FileIO.File3dm;
+      Pixel.Rhino.FileIO.File3dm parent_file = m__parent as Pixel.Rhino.FileIO.File3dm;
       if (parent_file!=null)
       {
         IntPtr pModel = parent_file.NonConstPointer();
@@ -121,7 +121,7 @@ namespace Rhino.DocObjects
 
     internal override IntPtr NonConstPointer()
     {
-      if (m__parent is Rhino.FileIO.File3dm)
+      if (m__parent is Pixel.Rhino.FileIO.File3dm)
         return _InternalGetConstPointer();
 
       return base.NonConstPointer();
@@ -186,7 +186,7 @@ namespace Rhino.DocObjects
     /// <param name="angle">The rotation angle of the pattern display in radians.</param>
     /// <returns>The preview line segments if successful, an empty array on failure.</returns>
     /// <since>6.8</since>
-    public Rhino.Geometry.Line[] CreatePreviewGeometry(int width, int height, double angle)
+    public Pixel.Rhino.Geometry.Line[] CreatePreviewGeometry(int width, int height, double angle)
     {
       IntPtr const_ptr_this = ConstPointer();
       using (var line_array = new Runtime.InteropWrappers.SimpleArrayLine())
@@ -194,7 +194,7 @@ namespace Rhino.DocObjects
         IntPtr ptr_lines = line_array.NonConstPointer();
         int rc = UnsafeNativeMethods.RHC_RhCreateHatchPatternPreviewGeometry(const_ptr_this, width, height, angle, ptr_lines);
         if (rc == 0)
-          return new Rhino.Geometry.Line[0];
+          return new Pixel.Rhino.Geometry.Line[0];
         return line_array.ToArray();
       }
     }
@@ -366,7 +366,7 @@ namespace Rhino.DocObjects
 }
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   /// <summary>
   /// All of the hatch pattern definitions contained in a rhino document.
@@ -394,7 +394,7 @@ namespace Rhino.DocObjects.Tables
       {
         if (index < 0 || index >= Count)
           index = CurrentHatchPatternIndex;
-        return new Rhino.DocObjects.HatchPattern(index, m_doc);
+        return new Pixel.Rhino.DocObjects.HatchPattern(index, m_doc);
       }
     }
 
@@ -502,7 +502,7 @@ namespace Rhino.DocObjects.Tables
     /// some other problem occurred.
     /// </returns>
     /// <since>5.0</since>
-    public int Add(Rhino.DocObjects.HatchPattern pattern)
+    public int Add(Pixel.Rhino.DocObjects.HatchPattern pattern)
     {
       if (null == pattern)
         return -1;

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.DocObjects;
-using Rhino.Runtime;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a hatch in planar boundary loop or loops.
@@ -325,7 +325,7 @@ namespace Rhino.Geometry
     /// </summary>
     /// <returns></returns>
     /// <since>7.0</since>
-    public Rhino.Display.ColorGradient GetGradientFill()
+    public Pixel.Rhino.Display.ColorGradient GetGradientFill()
     {
       IntPtr const_ptr_this = ConstPointer();
       IntPtr ptrColorStopArray = UnsafeNativeMethods.ON_ColorStopArray_New();
@@ -334,7 +334,7 @@ namespace Rhino.Geometry
       int gradientType = 0;
       double repeat = 0;
       int stopCount = UnsafeNativeMethods.ON_Hatch_GetGradientData(const_ptr_this, ref startPoint, ref endPoint, ref gradientType, ref repeat, ptrColorStopArray);
-      var rc = new Rhino.Display.ColorGradient();
+      var rc = new Pixel.Rhino.Display.ColorGradient();
       rc.StartPoint = startPoint;
       rc.EndPoint = endPoint;
       rc.GradientType = (Display.GradientType)gradientType;
@@ -357,12 +357,12 @@ namespace Rhino.Geometry
     /// </summary>
     /// <param name="fill"></param>
     /// <since>7.0</since>
-    public void SetGradientFill(Rhino.Display.ColorGradient fill)
+    public void SetGradientFill(Pixel.Rhino.Display.ColorGradient fill)
     {
       IntPtr ptr_this = NonConstPointer();
       if( null==fill )
       {
-        UnsafeNativeMethods.ON_Hatch_SetGradientData(ptr_this, Point3d.Unset, Point3d.Unset, (int)Rhino.Display.GradientType.None, 0, IntPtr.Zero);
+        UnsafeNativeMethods.ON_Hatch_SetGradientData(ptr_this, Point3d.Unset, Point3d.Unset, (int)Pixel.Rhino.Display.GradientType.None, 0, IntPtr.Zero);
         return;
       }
       var stops = fill.GetColorStops();
@@ -378,7 +378,7 @@ namespace Rhino.Geometry
   }
 }
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Combination of a color and position. Used in defining gradient fills
@@ -416,7 +416,7 @@ namespace Rhino.Display
     /// Gradient fill type associated with this hatch
     /// </summary>
     /// <since>7.0</since>
-    public Rhino.Display.GradientType GradientType
+    public Pixel.Rhino.Display.GradientType GradientType
     {
       get;
       set;
@@ -457,7 +457,7 @@ namespace Rhino.Display
     /// Start point of gradient
     /// </summary>
     /// <since>7.0</since>
-    public Rhino.Geometry.Point3d StartPoint
+    public Pixel.Rhino.Geometry.Point3d StartPoint
     {
       get;
       set;
@@ -467,7 +467,7 @@ namespace Rhino.Display
     /// End point of gradient
     /// </summary>
     /// <since>7.0</since>
-    public Rhino.Geometry.Point3d EndPoint
+    public Pixel.Rhino.Geometry.Point3d EndPoint
     {
       get;
       set;

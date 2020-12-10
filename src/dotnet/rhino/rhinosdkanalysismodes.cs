@@ -1,9 +1,9 @@
 #if RHINO_SDK
 using System;
-using Rhino.Runtime;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Represents a base class for visual analysis modes.
@@ -54,7 +54,7 @@ namespace Rhino.Display
       VisualAnalysisMode mode = FindLocal(am_id);
       if (mode != null)
       {
-        var rhobj = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
+        var rhobj = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
         try
         {
           bool rc = mode.ObjectSupportsAnalysisMode(rhobj);
@@ -86,7 +86,7 @@ namespace Rhino.Display
       VisualAnalysisMode mode = FindLocal(am_id);
       if (mode != null)
       {
-        var rhobj = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
+        var rhobj = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
         DisplayPipelineAttributes attr = new DisplayPipelineAttributes(pDisplayPipelineAttributes);
         try
         {
@@ -103,8 +103,8 @@ namespace Rhino.Display
       VisualAnalysisMode mode = FindLocal(am_id);
       if (mode != null)
       {
-        var rhobj = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
-        Rhino.Geometry.Mesh[] meshes = new Geometry.Mesh[meshCount];
+        var rhobj = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
+        Pixel.Rhino.Geometry.Mesh[] meshes = new Geometry.Mesh[meshCount];
         for( int i=0; i<meshCount; i++ )
         {
           IntPtr pMesh = UnsafeNativeMethods.ON_MeshArray_Get(pSimpleArrayConstMeshes, i);
@@ -128,35 +128,35 @@ namespace Rhino.Display
       VisualAnalysisMode mode = FindLocal(am_id);
       if (mode != null)
       {
-        var rhobj = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
+        var rhobj = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
         DisplayPipeline dp = new DisplayPipeline(pRhinoDisplayPipeline);
         try
         {
-          Rhino.DocObjects.BrepObject brep = rhobj as Rhino.DocObjects.BrepObject;
+          Pixel.Rhino.DocObjects.BrepObject brep = rhobj as Pixel.Rhino.DocObjects.BrepObject;
           if (brep != null)
           {
             mode.DrawBrepObject(brep, dp);
             return;
           }
-          Rhino.DocObjects.CurveObject curve = rhobj as Rhino.DocObjects.CurveObject;
+          Pixel.Rhino.DocObjects.CurveObject curve = rhobj as Pixel.Rhino.DocObjects.CurveObject;
           if (curve != null)
           {
             mode.DrawCurveObject(curve, dp);
             return;
           }
-          Rhino.DocObjects.MeshObject mesh = rhobj as Rhino.DocObjects.MeshObject;
+          Pixel.Rhino.DocObjects.MeshObject mesh = rhobj as Pixel.Rhino.DocObjects.MeshObject;
           if (mesh != null)
           {
             mode.DrawMeshObject(mesh, dp);
             return;
           }
-          Rhino.DocObjects.PointCloudObject pointcloud = rhobj as Rhino.DocObjects.PointCloudObject;
+          Pixel.Rhino.DocObjects.PointCloudObject pointcloud = rhobj as Pixel.Rhino.DocObjects.PointCloudObject;
           if (pointcloud != null)
           {
             mode.DrawPointCloudObject(pointcloud, dp);
             return;
           }
-          Rhino.DocObjects.PointObject pointobj = rhobj as Rhino.DocObjects.PointObject;
+          Pixel.Rhino.DocObjects.PointObject pointobj = rhobj as Pixel.Rhino.DocObjects.PointObject;
           if (pointobj != null)
           {
             mode.DrawPointObject(pointobj, dp);
@@ -173,12 +173,12 @@ namespace Rhino.Display
       VisualAnalysisMode mode = FindLocal(am_id);
       if (mode != null)
       {
-        var rhobj = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
-        var geom = Rhino.Geometry.GeometryBase.CreateGeometryHelper(pConstGeometry, null);
+        var rhobj = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pConstRhinoObject);
+        var geom = Pixel.Rhino.Geometry.GeometryBase.CreateGeometryHelper(pConstGeometry, null);
         if (geom != null)
           geom.DoNotDestructOnDispose();
         DisplayPipeline dp = new DisplayPipeline(pRhinoDisplayPipeline);
-        Rhino.Geometry.Mesh mesh = geom as Rhino.Geometry.Mesh;
+        Pixel.Rhino.Geometry.Mesh mesh = geom as Pixel.Rhino.Geometry.Mesh;
         try
         {
           if (mesh != null)
@@ -186,13 +186,13 @@ namespace Rhino.Display
             mode.DrawMesh(rhobj, mesh, dp);
             return;
           }
-          Rhino.Geometry.NurbsCurve nurbscurve = geom as Rhino.Geometry.NurbsCurve;
+          Pixel.Rhino.Geometry.NurbsCurve nurbscurve = geom as Pixel.Rhino.Geometry.NurbsCurve;
           if (nurbscurve != null)
           {
             mode.DrawNurbsCurve(rhobj, nurbscurve, dp);
             return;
           }
-          Rhino.Geometry.NurbsSurface nurbssurf = geom as Rhino.Geometry.NurbsSurface;
+          Pixel.Rhino.Geometry.NurbsSurface nurbssurf = geom as Pixel.Rhino.Geometry.NurbsSurface;
           if (nurbssurf != null)
           {
             mode.DrawNurbsSurface(rhobj, nurbssurf, dp);
@@ -303,7 +303,7 @@ namespace Rhino.Display
     }
 
     /// <summary>
-    /// Registers a custom visual analysis mode for use in Rhino.  It is OK to call
+    /// Registers a custom visual analysis mode for use in Pixel.Rhino.  It is OK to call
     /// register multiple times for a single custom analysis mode type, since subsequent
     /// register calls will notice that the type has already been registered.
     /// </summary>
@@ -443,7 +443,7 @@ namespace Rhino.Display
     /// <param name="obj">The object to be tested.</param>
     /// <returns>true if this mode can indeed be used on the object; otherwise false.</returns>
     /// <since>5.0</since>
-    public virtual bool ObjectSupportsAnalysisMode(Rhino.DocObjects.RhinoObject obj)
+    public virtual bool ObjectSupportsAnalysisMode(Pixel.Rhino.DocObjects.RhinoObject obj)
     {
       IntPtr pConstPointer = ConstPointer();
       IntPtr pConstRhinoObject = obj.ConstPointer();
@@ -474,7 +474,7 @@ namespace Rhino.Display
     /// </remarks>
     /// <param name="obj">The object for which to set up attributes.</param>
     /// <param name="attributes">The linked attributes.</param>
-    protected virtual void SetUpDisplayAttributes(Rhino.DocObjects.RhinoObject obj, DisplayPipelineAttributes attributes) { }
+    protected virtual void SetUpDisplayAttributes(Pixel.Rhino.DocObjects.RhinoObject obj, DisplayPipelineAttributes attributes) { }
 
     /// <summary>
     /// If Style==falseColor, then this virtual function must be overridden.
@@ -484,7 +484,7 @@ namespace Rhino.Display
     /// </summary>
     /// <param name="obj">The object for which to update vertex colors.</param>
     /// <param name="meshes">An array of meshes that should be updated.</param>
-    protected virtual void UpdateVertexColors(Rhino.DocObjects.RhinoObject obj, Rhino.Geometry.Mesh[] meshes) { }
+    protected virtual void UpdateVertexColors(Pixel.Rhino.DocObjects.RhinoObject obj, Pixel.Rhino.Geometry.Mesh[] meshes) { }
 
     /// <summary>
     /// If Style==Wireframe, then the default decomposes the curve object into
@@ -492,7 +492,7 @@ namespace Rhino.Display
     /// </summary>
     /// <param name="curve">A document curve object.</param>
     /// <param name="pipeline">The drawing pipeline.</param>
-    protected virtual void DrawCurveObject(Rhino.DocObjects.CurveObject curve, DisplayPipeline pipeline )
+    protected virtual void DrawCurveObject(Pixel.Rhino.DocObjects.CurveObject curve, DisplayPipeline pipeline )
     {
       IntPtr pConstThis = ConstPointer();
       IntPtr pConstCurve = curve.ConstPointer();
@@ -506,7 +506,7 @@ namespace Rhino.Display
     /// </summary>
     /// <param name="mesh">A mesh object.</param>
     /// <param name="pipeline">The current display pipeline.</param>
-    protected virtual void DrawMeshObject(Rhino.DocObjects.MeshObject mesh, DisplayPipeline pipeline )
+    protected virtual void DrawMeshObject(Pixel.Rhino.DocObjects.MeshObject mesh, DisplayPipeline pipeline )
     {
     }
 
@@ -516,7 +516,7 @@ namespace Rhino.Display
     /// </summary>
     /// <param name="brep">A brep object.</param>
     /// <param name="pipeline">The current display pipeline.</param>
-    protected virtual void DrawBrepObject(Rhino.DocObjects.BrepObject brep, DisplayPipeline pipeline )
+    protected virtual void DrawBrepObject(Pixel.Rhino.DocObjects.BrepObject brep, DisplayPipeline pipeline )
     {
     }
 
@@ -526,7 +526,7 @@ namespace Rhino.Display
     /// </summary>
     /// <param name="point">A point object.</param>
     /// <param name="pipeline">The current display pipeline.</param>
-    protected virtual void DrawPointObject(Rhino.DocObjects.PointObject point, DisplayPipeline pipeline )
+    protected virtual void DrawPointObject(Pixel.Rhino.DocObjects.PointObject point, DisplayPipeline pipeline )
     {
     }
 
@@ -536,7 +536,7 @@ namespace Rhino.Display
     /// </summary>
     /// <param name="pointCloud">A point cloud object.</param>
     /// <param name="pipeline">The current display pipeline.</param>
-    protected virtual void DrawPointCloudObject(Rhino.DocObjects.PointCloudObject pointCloud, DisplayPipeline pipeline )
+    protected virtual void DrawPointCloudObject(Pixel.Rhino.DocObjects.PointCloudObject pointCloud, DisplayPipeline pipeline )
     {
     }
 
@@ -548,7 +548,7 @@ namespace Rhino.Display
     /// <param name="obj">A Rhino object corresponding to the curve.</param>
     /// <param name="curve">The curve geometry.</param>
     /// <param name="pipeline">The current display pipeline.</param>
-    protected virtual void DrawNurbsCurve(Rhino.DocObjects.RhinoObject obj, Rhino.Geometry.NurbsCurve curve, DisplayPipeline pipeline)
+    protected virtual void DrawNurbsCurve(Pixel.Rhino.DocObjects.RhinoObject obj, Pixel.Rhino.Geometry.NurbsCurve curve, DisplayPipeline pipeline)
     {
     }
 
@@ -560,7 +560,7 @@ namespace Rhino.Display
     /// <param name="obj">A Rhino object corresponding to the surface.</param>
     /// <param name="surface">The surface geometry.</param>
     /// <param name="pipeline">The current display pipeline.</param>
-    protected virtual void DrawNurbsSurface(Rhino.DocObjects.RhinoObject obj, Rhino.Geometry.NurbsSurface surface, DisplayPipeline pipeline)
+    protected virtual void DrawNurbsSurface(Pixel.Rhino.DocObjects.RhinoObject obj, Pixel.Rhino.Geometry.NurbsSurface surface, DisplayPipeline pipeline)
     {
     }
 
@@ -571,7 +571,7 @@ namespace Rhino.Display
     /// <param name="obj">A Rhino object corresponding to the surface.</param>
     /// <param name="mesh">The mesh geometry.</param>
     /// <param name="pipeline">The current display pipeline.</param>
-    protected virtual void DrawMesh(Rhino.DocObjects.RhinoObject obj, Rhino.Geometry.Mesh mesh, DisplayPipeline pipeline )
+    protected virtual void DrawMesh(Pixel.Rhino.DocObjects.RhinoObject obj, Pixel.Rhino.Geometry.Mesh mesh, DisplayPipeline pipeline )
     {
     }
   }

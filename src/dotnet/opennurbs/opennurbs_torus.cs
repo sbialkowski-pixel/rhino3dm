@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the value of a plane and two radii in a torus that is oriented in three-dimensional space.

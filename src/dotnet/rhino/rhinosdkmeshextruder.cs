@@ -1,9 +1,9 @@
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System;
 using System.Collections.Generic;
 
 #if RHINO_SDK
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Extrudes a mesh and provides preview

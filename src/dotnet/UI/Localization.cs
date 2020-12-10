@@ -2,12 +2,12 @@
 using System;
 using System.Reflection;
 #if RHINO_SDK
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 #endif
 
 // RMA_DONT_LOCALIZE (Tells the build process string parser to ignore this file)
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   /// <summary>
   /// Used a placeholder which is used by LocalizationProcessor application to create contextId
@@ -44,8 +44,8 @@ namespace Rhino.UI
     /// Command names that need to be localized should call this function. The COMMANDNAME function doesn't actually
     /// do anything but return the original string. The LocalizationProcessor application walks
     /// through the source code of a project and looks for LOC.COMMANDNAME and builds a record for each command
-    /// name for the translators that can be used by developers in a commands overridden Rhino.Commands.Command.LocalName
-    /// which should call Rhino.UI.Localization.LocalizeCommandName(EnglishName)
+    /// name for the translators that can be used by developers in a commands overridden Pixel.Rhino.Commands.Command.LocalName
+    /// which should call Pixel.Rhino.UI.Localization.LocalizeCommandName(EnglishName)
     ///</summary>
     ///<param name='english'>[in] The English string to localize.</param>
     /// <since>5.0</since>
@@ -211,7 +211,7 @@ namespace Rhino.UI
     /// <param name="alternate">primary or alternate</param>
     /// <returns></returns>
     /// <since>7.0</since>
-    public static string FormatDistanceAndTolerance(double distance, UnitSystem units, Rhino.DocObjects.DimensionStyle dimStyle, bool alternate)
+    public static string FormatDistanceAndTolerance(double distance, UnitSystem units, Pixel.Rhino.DocObjects.DimensionStyle dimStyle, bool alternate)
     {
       using (var sw = new StringWrapper())
       {
@@ -231,7 +231,7 @@ namespace Rhino.UI
     /// <param name="alternate"></param>
     /// <returns></returns>
     /// <since>7.0</since>
-    public static string FormatArea(double area, UnitSystem units, Rhino.DocObjects.DimensionStyle dimStyle, bool alternate)
+    public static string FormatArea(double area, UnitSystem units, Pixel.Rhino.DocObjects.DimensionStyle dimStyle, bool alternate)
     {
       using (var sw = new StringWrapper())
       {
@@ -251,7 +251,7 @@ namespace Rhino.UI
     /// <param name="alternate"></param>
     /// <returns></returns>
     /// <since>7.0</since>
-    public static string FormatVolume(double volume, UnitSystem units, Rhino.DocObjects.DimensionStyle dimStyle, bool alternate)
+    public static string FormatVolume(double volume, UnitSystem units, Pixel.Rhino.DocObjects.DimensionStyle dimStyle, bool alternate)
     {
       using (var sw = new StringWrapper())
       {
@@ -422,7 +422,7 @@ namespace Rhino.UI
 #if RHINO_SDK
           // This code is commonly called while working in theVisual Studio designer
           // and we want to try and not throw exceptions in order to show the winform
-          g_language_id = Rhino.ApplicationSettings.AppearanceSettings.LanguageIdentifier;
+          g_language_id = Pixel.Rhino.ApplicationSettings.AppearanceSettings.LanguageIdentifier;
 #else
           g_language_id = 1033;
 #endif
@@ -447,7 +447,7 @@ namespace Rhino.UI
     public static bool SetLanguageId(int id)
     {
 #if RHINO_SDK
-      if (Rhino.Runtime.HostUtils.RunningInRhino)
+      if (Pixel.Rhino.Runtime.HostUtils.RunningInRhino)
         return false;
 #endif
       g_language_id = id;

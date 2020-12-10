@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // NOTE: Much of this is a combination of rhinoSdkGetFileDialog.h and RhinoSdkUiFileDialog.h
 
 
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
   // Commented out items that I'm not sure apply. We can always
   // uncomment these if we find a need for them
@@ -44,7 +44,7 @@ namespace Rhino.Input.Custom
 
 
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   //public enum OpenFileDialogType : int
   //{

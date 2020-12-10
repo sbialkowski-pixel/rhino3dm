@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   /// <summary>
   /// This class probably does not have to be publicly exposed

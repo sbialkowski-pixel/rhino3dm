@@ -1,12 +1,12 @@
 #pragma warning disable 1591
 using System;
 using System.Reflection;
-using Rhino.Geometry;
-using Rhino.Display;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Display;
 using System.Collections.Generic;
 
 #if RHINO_SDK
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
 
   /// <summary>
@@ -1024,7 +1024,7 @@ namespace Rhino.Input.Custom
 
       MouseCallback mouseCB = CustomMouseCallback;
       DrawCallback drawCB = CustomDrawCallback;
-      Rhino.Display.DisplayPipeline.ConduitCallback postDrawCB = null;
+      Pixel.Rhino.Display.DisplayPipeline.ConduitCallback postDrawCB = null;
       if (FullFrameRedrawDuringGet)
       {
         postDrawCB = GetPointPostDrawObjectsCallback;
@@ -1062,13 +1062,13 @@ namespace Rhino.Input.Custom
     /// Gets the type of object snap used to obtain the point.
     /// </summary>
     /// <since>6.24</since>
-    public Rhino.ApplicationSettings.OsnapModes OsnapEventType
+    public Pixel.Rhino.ApplicationSettings.OsnapModes OsnapEventType
     {
       get
       {
         IntPtr ptr_this = ConstPointer();
         int rc = UnsafeNativeMethods.CRhinoGetPoint_SnapEventMode(ptr_this);
-        return (Rhino.ApplicationSettings.OsnapModes)rc;
+        return (Pixel.Rhino.ApplicationSettings.OsnapModes)rc;
       }
     }
 

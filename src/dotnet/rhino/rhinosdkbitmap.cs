@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
-  /// Rhino.DocObjects.Tables.BitmapTable entry
+  /// Pixel.Rhino.DocObjects.Tables.BitmapTable entry
   /// </summary>
   [Serializable]
   public sealed class BitmapEntry : ModelComponent
@@ -132,7 +132,7 @@ namespace Rhino.DocObjects
 }
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   /// <summary>
   /// Stores the list of bitmaps in a Rhino document.

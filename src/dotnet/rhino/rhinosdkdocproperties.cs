@@ -1,10 +1,10 @@
 #pragma warning disable 1591
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System;
 using System.Collections.Generic;
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   /// <summary>
   /// Contains all named construction planes in a rhino document.

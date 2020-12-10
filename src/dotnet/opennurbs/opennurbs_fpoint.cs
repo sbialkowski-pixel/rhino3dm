@@ -1,9 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the two coordinates of a point in two-dimensional space,
@@ -757,7 +757,7 @@ namespace Rhino.Geometry
     }
   }
 
-  //skipping ON_4fPoint. I don't think I've ever seen this used in Rhino.
+  //skipping ON_4fPoint. I don't think I've ever seen this used in Pixel.Rhino.
 
   /// <summary>
   /// Represents the two components of a vector in two-dimensional space,

@@ -1,9 +1,9 @@
 using System;
 using System.Text;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
 // ReSharper disable once CheckNamespace
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Provides information about selection, highlighting, visibility, editability and integrity states of a component.

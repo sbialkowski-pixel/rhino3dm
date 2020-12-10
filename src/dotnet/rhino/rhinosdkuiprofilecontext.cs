@@ -14,10 +14,10 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Security.AccessControl;
 
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 using Timer = System.Threading.Timer;
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   interface ISettingsWriteErrorService
   {
@@ -709,7 +709,7 @@ namespace Rhino.Runtime
   }
 }
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   /// <summary>
   /// Used to convert string to string lists and string dictionaries and back
@@ -1838,7 +1838,7 @@ namespace Rhino
   }
 
   /// <summary>
-  /// Event argument passed to the <see cref="Rhino.PlugIns.PlugIn.SettingsSaved"/> event.
+  /// Event argument passed to the <see cref="Pixel.Rhino.PlugIns.PlugIn.SettingsSaved"/> event.
   /// </summary>
   public class PersistentSettingsSavedEventArgs : EventArgs
   {
@@ -1859,8 +1859,8 @@ namespace Rhino
     /// <summary>
     /// The old PlugIn settings
     /// </summary>
-    /// <seealso cref="Rhino.PlugIns.PlugIn.Settings"/>
-    /// <seealso cref="Rhino.PlugIns.PlugIn.SettingsSaved"/>
+    /// <seealso cref="Pixel.Rhino.PlugIns.PlugIn.Settings"/>
+    /// <seealso cref="Pixel.Rhino.PlugIns.PlugIn.SettingsSaved"/>
     /// <since>6.0</since>
     public PersistentSettings PlugInSettings
     {
@@ -4656,7 +4656,7 @@ namespace Rhino
     private static List<SettingsSavedEvent> g_settings_changed_list;
     private static readonly object g_settings_changed_lock = new object();
     /// <summary>
-    /// Rhino.Idle event callback. Only raise the settings changed event
+    /// Pixel.Rhino.Idle event callback. Only raise the settings changed event
     /// during an OnIdle event when a command is not running.
     /// </summary>
     /// <param name="sender"></param>
@@ -4991,7 +4991,7 @@ namespace Rhino
     /// PersistentSettingsManager constructor.
     /// </summary>
     /// <param name="skin"></param>
-    PersistentSettingsManager(Rhino.Runtime.Skin skin)
+    PersistentSettingsManager(Pixel.Rhino.Runtime.Skin skin)
     {
       m_plugin_id = Guid.Empty;
       System.Reflection.Assembly assembly = skin.GetType().Assembly;

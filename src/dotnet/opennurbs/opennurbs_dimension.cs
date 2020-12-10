@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.DocObjects;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Runtime;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary> Base class for dimensions </summary>
   [Serializable]
@@ -1060,7 +1060,7 @@ namespace Rhino.Geometry
   }
 }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary> Represents a linear dimension </summary>
   [Serializable]
@@ -1367,7 +1367,7 @@ namespace Rhino.Geometry
 
 }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary> 
   /// Represents a dimension of an entity that can be measured with an angle.

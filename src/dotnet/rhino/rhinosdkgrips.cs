@@ -4,7 +4,7 @@ using System.Collections.Generic;
 //public struct GripDirections { }
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Custom
+namespace Pixel.Rhino.DocObjects.Custom
 {
   public class GripStatus
   {
@@ -57,7 +57,7 @@ namespace Rhino.DocObjects.Custom
      */
   }
 
-  public class GripsDrawEventArgs : Rhino.Display.DrawEventArgs
+  public class GripsDrawEventArgs : Pixel.Rhino.Display.DrawEventArgs
   {
     internal IntPtr m_pGripsDrawSettings;
 
@@ -115,7 +115,7 @@ namespace Rhino.DocObjects.Custom
     System.Drawing.Color GetColor(int which)
     {
       int abgr = UnsafeNativeMethods.CRhinoDrawGripSettings_GetColor(m_pGripsDrawSettings, which);
-      return Rhino.Runtime.Interop.ColorFromWin32(abgr);
+      return Pixel.Rhino.Runtime.Interop.ColorFromWin32(abgr);
     }
 
     /// <since>5.0</since>
@@ -170,7 +170,7 @@ namespace Rhino.DocObjects.Custom
     /// <param name="startStatus">Grip status at start of line.</param>
     /// <param name="endStatus">Grip status at end of line.</param>
     /// <since>5.0</since>
-    public void DrawControlPolygonLine( Rhino.Geometry.Line line, GripStatus startStatus, GripStatus endStatus )
+    public void DrawControlPolygonLine( Pixel.Rhino.Geometry.Line line, GripStatus startStatus, GripStatus endStatus )
     {
       DrawControlPolygonLine(line, startStatus.m_index, endStatus.m_index);
     }
@@ -182,7 +182,7 @@ namespace Rhino.DocObjects.Custom
     /// <param name="startStatus">Index of Grip status at start of line.</param>
     /// <param name="endStatus">Index if Grip status at end of line.</param>
     /// <since>5.0</since>
-    public void DrawControlPolygonLine(Rhino.Geometry.Line line, int startStatus, int endStatus)
+    public void DrawControlPolygonLine(Pixel.Rhino.Geometry.Line line, int startStatus, int endStatus)
     {
       DrawControlPolygonLine(line.From, line.To, startStatus, endStatus);
     }
@@ -195,7 +195,7 @@ namespace Rhino.DocObjects.Custom
     /// <param name="startStatus">Index of Grip status at start of line defined by start and end.</param>
     /// <param name="endStatus">Index if Grip status at end of line defined by start and end.</param>
     /// <since>5.0</since>
-    public void DrawControlPolygonLine(Rhino.Geometry.Point3d start, Rhino.Geometry.Point3d end, int startStatus, int endStatus)
+    public void DrawControlPolygonLine(Pixel.Rhino.Geometry.Point3d start, Pixel.Rhino.Geometry.Point3d end, int startStatus, int endStatus)
     {
       UnsafeNativeMethods.CRhinoDrawGripsSettings_DrawControlPolygonLine(m_pGripsDrawSettings, start, end, startStatus, endStatus);
     }
@@ -211,7 +211,7 @@ namespace Rhino.DocObjects.Custom
 //public class CopyGripsHelper{}
 //public class KeepKinkySurfaces{}
 
-  public delegate void TurnOnGripsEventHandler(Rhino.DocObjects.RhinoObject rhObj);
+  public delegate void TurnOnGripsEventHandler(Pixel.Rhino.DocObjects.RhinoObject rhObj);
 
   public abstract class CustomObjectGrips : IDisposable
   {
@@ -260,7 +260,7 @@ namespace Rhino.DocObjects.Custom
     internal IntPtr NonConstPointer() { return m_ptr; }
     IntPtr ConstPointer() { return m_ptr; }
 
-    internal void OnAttachedToRhinoObject(Rhino.DocObjects.RhinoObject rhObj)
+    internal void OnAttachedToRhinoObject(Pixel.Rhino.DocObjects.RhinoObject rhObj)
     {
       m_bDeleteOnDispose = false;
       // make sure all of the callback functions are hooked up
@@ -280,7 +280,7 @@ namespace Rhino.DocObjects.Custom
     }
 
     readonly List<CustomGripObject> m_grip_list = new List<CustomGripObject>();
-    protected void AddGrip(Rhino.DocObjects.Custom.CustomGripObject grip)
+    protected void AddGrip(Pixel.Rhino.DocObjects.Custom.CustomGripObject grip)
     {
       m_grip_list.Add(grip);
 
@@ -352,13 +352,13 @@ namespace Rhino.DocObjects.Custom
 
     /// <summary>Owner of the grips.</summary>
     /// <since>5.0</since>
-    public Rhino.DocObjects.RhinoObject OwnerObject
+    public Pixel.Rhino.DocObjects.RhinoObject OwnerObject
     {
       get
       {
         IntPtr pThis = NonConstPointer();
         IntPtr pRhinoObject = UnsafeNativeMethods.CRhinoObjectGrips_OwnerObject(pThis);
-        return Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject);
+        return Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject);
       }
     }
 
@@ -393,7 +393,7 @@ namespace Rhino.DocObjects.Custom
     /// must override this function and modify the display meshes here.
     /// </summary>
     /// <param name="meshType">The mesh type being updated.</param>
-    protected virtual void OnUpdateMesh(Rhino.Geometry.MeshType meshType)
+    protected virtual void OnUpdateMesh(Pixel.Rhino.Geometry.MeshType meshType)
     {
       //base class does nothing
     }
@@ -403,7 +403,7 @@ namespace Rhino.DocObjects.Custom
     //protected virtual RhinoObject NewObject()
     //{
     //  // The default calls NewGeometry
-    //  Rhino.Geometry.GeometryBase geometry = NewGeometry();
+    //  Pixel.Rhino.Geometry.GeometryBase geometry = NewGeometry();
     //  if (geometry != null)
     //  {
     //    IntPtr pConstThis = ConstPointer();
@@ -420,7 +420,7 @@ namespace Rhino.DocObjects.Custom
     /// grip locations. This happens once at the end of a grip drag.
     /// </summary>
     /// <returns>The new geometry. The default implementation returns null.</returns>
-    protected virtual Rhino.Geometry.GeometryBase NewGeometry()
+    protected virtual Pixel.Rhino.Geometry.GeometryBase NewGeometry()
     {
       return null;
     }
@@ -468,7 +468,7 @@ namespace Rhino.DocObjects.Custom
     /// surface.  You can look at but you must NEVER change this surface.
     /// </summary>
     /// <returns>A pointer to a NURBS surface or null.</returns>
-    protected virtual Rhino.Geometry.NurbsSurface NurbsSurface() { return null; }
+    protected virtual Pixel.Rhino.Geometry.NurbsSurface NurbsSurface() { return null; }
 
     ~CustomObjectGrips() { Dispose(false); }
     /// <since>5.0</since>
@@ -529,7 +529,7 @@ namespace Rhino.DocObjects.Custom
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
     }
@@ -544,7 +544,7 @@ namespace Rhino.DocObjects.Custom
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
     }
@@ -559,7 +559,7 @@ namespace Rhino.DocObjects.Custom
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
     }
@@ -571,7 +571,7 @@ namespace Rhino.DocObjects.Custom
       {
         try
         {
-          Rhino.Geometry.GeometryBase geom = grips.NewGeometry();
+          Pixel.Rhino.Geometry.GeometryBase geom = grips.NewGeometry();
           if (geom != null)
           {
             rc = geom.NonConstPointer();
@@ -580,7 +580,7 @@ namespace Rhino.DocObjects.Custom
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
       return rc;
@@ -598,7 +598,7 @@ namespace Rhino.DocObjects.Custom
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
     }
@@ -617,7 +617,7 @@ namespace Rhino.DocObjects.Custom
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
       return rc;
@@ -636,7 +636,7 @@ namespace Rhino.DocObjects.Custom
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
       return rc;
@@ -650,13 +650,13 @@ namespace Rhino.DocObjects.Custom
       {
         try
         {
-          Rhino.Geometry.NurbsSurface ns = grips.NurbsSurface();
+          Pixel.Rhino.Geometry.NurbsSurface ns = grips.NurbsSurface();
           if (ns != null)
             rc = ns.ConstPointer();
         }
         catch (Exception ex)
         {
-          Rhino.Runtime.HostUtils.ExceptionReport(ex);
+          Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
         }
       }
       return rc;

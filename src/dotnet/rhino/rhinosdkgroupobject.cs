@@ -1,12 +1,12 @@
 // I'm don't think these are needed with the high level group table
 // interface I wrote
 
-//namespace Rhino.Geometry
+//namespace Pixel.Rhino.Geometry
 //{
 //  public class GroupGeometry : ON_Geometry { }
 //}
 
-//namespace Rhino.DocObjects
+//namespace Pixel.Rhino.DocObjects
 //{
 //  public class GroupObject : RhinoObject { }
 //}

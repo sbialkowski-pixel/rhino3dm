@@ -1,12 +1,12 @@
 #pragma warning disable 1591
 using System;
 using System.Collections;
-using Rhino.Render;
+using Pixel.Rhino.Render;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   public class MaterialRef : IDisposable
   {
@@ -1102,7 +1102,7 @@ namespace Rhino.DocObjects
 
 #if RHINO_SDK
     /// <since>7.0</since>
-    public Rhino.Render.PhysicallyBasedMaterial PhysicallyBased
+    public Pixel.Rhino.Render.PhysicallyBasedMaterial PhysicallyBased
     {
       get
       {
@@ -1110,7 +1110,7 @@ namespace Rhino.DocObjects
       }
     }
 
-    public Rhino.Render.PhysicallyBasedMaterial ConvertToPhysicallyBased()
+    public Pixel.Rhino.Render.PhysicallyBasedMaterial ConvertToPhysicallyBased()
     {
       var material = new Material(this);
 
@@ -1221,8 +1221,8 @@ namespace Rhino.DocObjects
     /// <summary>
     /// Set the texture that corresponds with the specified texture type for this material.
     /// </summary>
-    /// <param name="texture">An instance of Rhino.DocObjects.Texture</param>
-    /// <param name="which">Use Rhino.DocObjects.TextureType</param>
+    /// <param name="texture">An instance of Pixel.Rhino.DocObjects.Texture</param>
+    /// <param name="which">Use Pixel.Rhino.DocObjects.TextureType</param>
     /// <returns></returns>
     /// <since>7.0</since>
     public bool SetTexture(Texture texture, TextureType which)
@@ -1445,7 +1445,7 @@ namespace Rhino.DocObjects
 }
 
 #if RHINO_SDK
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public enum MaterialTableEventType
   {

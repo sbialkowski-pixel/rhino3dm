@@ -2,7 +2,7 @@
 using System;
 using Microsoft.Win32;
 
-namespace Rhino.Input
+namespace Pixel.Rhino.Input
 {
   /// <summary> Parse strings to numbers, distances and angles </summary>
   public class StringParser

@@ -3,10 +3,10 @@
 
 
 #if RHINO_SDK
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
-  /// Represents a <see cref="Rhino.Geometry.MorphControl">MorphControl</see> in a document.
+  /// Represents a <see cref="Pixel.Rhino.Geometry.MorphControl">MorphControl</see> in a document.
   /// </summary>
   public class MorphControlObject : RhinoObject
   {

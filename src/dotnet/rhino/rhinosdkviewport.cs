@@ -1,10 +1,10 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>Parallel and perspective projections that are "standard" in Rhino</summary>
   public enum DefinedViewportProjection
@@ -888,7 +888,7 @@ namespace Rhino.Display
     /// Takes a rectangle in screen coordinates and returns a transformation
     /// that maps the 3d frustum defined by the rectangle to a -1/+1 clipping
     /// coordinate box. This takes a single point and inflates it by
-    /// Rhino.ApplicationSettings.ModelAidSettings.MousePickBoxRadius to define
+    /// Pixel.Rhino.ApplicationSettings.ModelAidSettings.MousePickBoxRadius to define
     /// the screen rectangle.
     /// </summary>
     /// <param name="clientX">The client point X coordinate.</param>
@@ -907,7 +907,7 @@ namespace Rhino.Display
     /// Takes a rectangle in screen coordinates and returns a transformation
     /// that maps the 3d frustum defined by the rectangle to a -1/+1 clipping
     /// coordinate box. This takes a single point and inflates it by
-    /// Rhino.ApplicationSettings.ModelAidSettings.MousePickBoxRadius to define
+    /// Pixel.Rhino.ApplicationSettings.ModelAidSettings.MousePickBoxRadius to define
     /// the screen rectangle.
     /// </summary>
     /// <param name="clientPoint">The client point.</param>
@@ -1214,7 +1214,7 @@ namespace Rhino.Display
     /// and FrustumIsTopBottomSymmetric() are all equal, then no changes are made and true is returned.
     /// </returns>
     /// <since>6.0</since>
-    public bool ChangeToTwoPointPerspectiveProjection(double targetDistance, Rhino.Geometry.Vector3d up,
+    public bool ChangeToTwoPointPerspectiveProjection(double targetDistance, Pixel.Rhino.Geometry.Vector3d up,
       double lensLength)
     {
       IntPtr ptr_this = NonConstPointer();

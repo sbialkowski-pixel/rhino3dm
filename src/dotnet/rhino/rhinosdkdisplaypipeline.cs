@@ -1,9 +1,9 @@
 #pragma warning disable 1591
 #if RHINO_SDK
 using System;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   public enum DepthMode
   {
@@ -1497,7 +1497,7 @@ namespace Rhino.Display
     /// <since>7.0</since>
     public static string CrossCompileHLSL(string hlsl, string functionName, ShaderLanguage targetLanguage)
     {
-      using (var outString = new Rhino.Runtime.InteropWrappers.StringWrapper())
+      using (var outString = new Pixel.Rhino.Runtime.InteropWrappers.StringWrapper())
       {
         IntPtr ptrString = outString.NonConstPointer;
         UnsafeNativeMethods.RHC_TranslateHLSLFromMem(hlsl, functionName, 0, targetLanguage, ptrString);
@@ -3659,9 +3659,9 @@ namespace Rhino.Display
     {
     }
 
-    Rhino.DocObjects.RhinoObject m_rhino_object;
+    Pixel.Rhino.DocObjects.RhinoObject m_rhino_object;
     /// <since>5.3</since>
-    public Rhino.DocObjects.RhinoObject RhinoObject
+    public Pixel.Rhino.DocObjects.RhinoObject RhinoObject
     {
       get
       {
@@ -3706,16 +3706,16 @@ namespace Rhino.Display
     {
     }
 
-    internal Rhino.DocObjects.RhinoObject m_rhino_object;
+    internal Pixel.Rhino.DocObjects.RhinoObject m_rhino_object;
     /// <since>5.0</since>
-    public Rhino.DocObjects.RhinoObject RhinoObject
+    public Pixel.Rhino.DocObjects.RhinoObject RhinoObject
     {
       get
       {
         if (m_rhino_object == null)
         {
           IntPtr pRhinoObject = UnsafeNativeMethods.CChannelAttributes_RhinoObject(m_pDisplayConduit);
-          m_rhino_object = Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject);
+          m_rhino_object = Pixel.Rhino.DocObjects.RhinoObject.CreateRhinoObjectHelper(pRhinoObject);
         }
         return m_rhino_object;
       }

@@ -1,10 +1,10 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Geometry;
-using Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.DocObjects;
 
 #if RHINO_SDK
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
   public delegate bool GetObjectGeometryFilter(RhinoObject rhObject, GeometryBase geometry, ComponentIndex componentIndex);
 

@@ -4,19 +4,19 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Linq;
-using Rhino.Geometry;
-using Rhino.Display;
-using Rhino.Collections;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Display;
+using Pixel.Rhino.Collections;
 using System.Collections.Generic;
-using Rhino.DocObjects;
-using Rhino.Render;
-using Rhino.Render.PostEffects;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.DocObjects.Tables;
-using Rhino.FileIO;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Render;
+using Pixel.Rhino.Render.PostEffects;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects.Tables;
+using Pixel.Rhino.FileIO;
 using System.Diagnostics;
 
-namespace Rhino.Commands
+namespace Pixel.Rhino.Commands
 {
   /// <summary>
   /// Argument package that is passed to a custom undo delegate
@@ -54,7 +54,7 @@ namespace Rhino.Commands
   }
 }
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   class CustomUndoCallback
   {
@@ -787,7 +787,7 @@ namespace Rhino
     #endregion
 
     /// <summary>
-    /// Search for a file using Rhino's search path.  Rhino will look in the
+    /// Search for a file using Pixel.Rhino's search path.  Rhino will look in the
     /// following places:
     /// 1. Current model folder
     /// 2. Path specified in options dialog/File tab
@@ -1077,7 +1077,7 @@ namespace Rhino
     /// <summary>
     /// Returns the active plane of Rhino's auto-gumball widget.
     /// Note, when calling from a Rhino command, make sure the command 
-    /// class has the Rhino.Commands.Style.Transparent command style attribute.
+    /// class has the Pixel.Rhino.Commands.Style.Transparent command style attribute.
     /// </summary>
     /// <param name="plane">The active plane.</param>
     /// <returns>true if the auto-gumball widget is enabled and visible. False otherwise.</returns>
@@ -1774,7 +1774,7 @@ namespace Rhino
 
     private GroundPlane m_ground_plane;
     /// <summary>Gets the ground plane of this document.</summary>
-    /// <exception cref="Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
+    /// <exception cref="Pixel.Rhino.Runtime.RdkNotLoadedException">If the RDK is not loaded.</exception>
     /// <since>5.0</since>
     public GroundPlane GroundPlane
     {
@@ -2161,7 +2161,7 @@ namespace Rhino
     /// Returns true if custom render mesh(es) will get built for this document.
     /// </returns>
     /// <since>6.9</since>
-    public bool SupportsRenderPrimitiveList(ViewportInfo viewport, Rhino.Display.DisplayPipelineAttributes attrs)
+    public bool SupportsRenderPrimitiveList(ViewportInfo viewport, Pixel.Rhino.Display.DisplayPipelineAttributes attrs)
     {
       // Andy, we are just passing Guid.Empty for the plug-in Id for now until there is an actual
       // need for it, if it ever comes up we can add an overloaded version that includes the Guid.
@@ -2183,7 +2183,7 @@ namespace Rhino
     /// Returns a RenderPrimitiveList if successful otherwise returns null.
     /// </returns>
     /// <since>6.9</since>
-    public RenderPrimitiveList GetRenderPrimitiveList(ViewportInfo viewport, Rhino.Display.DisplayPipelineAttributes attrs)
+    public RenderPrimitiveList GetRenderPrimitiveList(ViewportInfo viewport, Pixel.Rhino.Display.DisplayPipelineAttributes attrs)
     {
       // Andy, we are just passing Guid.Empty for the plug-in Id for now until there is an actual
       // need for it, if it ever comes up we can add an overloaded version that includes the Guid.
@@ -2217,7 +2217,7 @@ namespace Rhino
     /// returns false on error.
     /// </returns>
     /// <since>6.9</since>
-    public bool TryGetRenderPrimitiveBoundingBox(ViewportInfo viewport, Rhino.Display.DisplayPipelineAttributes attrs, out BoundingBox boundingBox)
+    public bool TryGetRenderPrimitiveBoundingBox(ViewportInfo viewport, Pixel.Rhino.Display.DisplayPipelineAttributes attrs, out BoundingBox boundingBox)
     {
       boundingBox = BoundingBox.Unset;
 
@@ -4536,7 +4536,7 @@ namespace Rhino
 }
 
 
-namespace Rhino.DocObjects.Tables
+namespace Pixel.Rhino.DocObjects.Tables
 {
   public abstract class RhinoDocCommonTable<T> : CommonComponentTable<T>
     where T : ModelComponent
@@ -5382,7 +5382,7 @@ namespace Rhino.DocObjects.Tables
       AddRhinoObjectHelper(brepObject, brep, null);
     }
     /*
-    public void AddRhinoObject(Rhino.DocObjects.PointCloudObject pointCloudObject, Rhino.Geometry.PointCloud pointCloud)
+    public void AddRhinoObject(Pixel.Rhino.DocObjects.PointCloudObject pointCloudObject, Pixel.Rhino.Geometry.PointCloud pointCloud)
     {
       AddRhinoObjectHelper(pointCloudObject, pointCloud);
     }
@@ -5422,9 +5422,9 @@ namespace Rhino.DocObjects.Tables
                                 rhinoObject is PointObject;
 
       // Once the deprecated functions are removed, we should switch to checking for custom subclasses
-      //bool is_proper_subclass = rhinoObject is Rhino.DocObjects.Custom.CustomBrepObject ||
-      //                          rhinoObject is Rhino.DocObjects.Custom.CustomCurveObject ||
-      //                          rhinoObject is Rhino.DocObjects.Custom.CustomMeshObject;
+      //bool is_proper_subclass = rhinoObject is Pixel.Rhino.DocObjects.Custom.CustomBrepObject ||
+      //                          rhinoObject is Pixel.Rhino.DocObjects.Custom.CustomCurveObject ||
+      //                          rhinoObject is Pixel.Rhino.DocObjects.Custom.CustomMeshObject;
       if (!is_proper_subclass)
         throw new NotImplementedException();
 
@@ -5958,7 +5958,7 @@ namespace Rhino.DocObjects.Tables
     }
 
     /// <summary>
-    /// Adds a clipping plane object to Rhino.
+    /// Adds a clipping plane object to Pixel.Rhino.
     /// </summary>
     /// <param name="plane">The plane value.</param>
     /// <param name="uMagnitude">The size in the U direction.</param>
@@ -5977,7 +5977,7 @@ namespace Rhino.DocObjects.Tables
     }
 
     /// <summary>
-    /// Adds a clipping plane object to Rhino.
+    /// Adds a clipping plane object to Pixel.Rhino.
     /// </summary>
     /// <param name="plane">The plane value.</param>
     /// <param name="uMagnitude">The size in the U direction.</param>
@@ -6001,7 +6001,7 @@ namespace Rhino.DocObjects.Tables
       return rc;
     }
     /// <summary>
-    /// Adds a clipping plane object to Rhino.
+    /// Adds a clipping plane object to Pixel.Rhino.
     /// </summary>
     /// <param name="plane">The plane value.</param>
     /// <param name="uMagnitude">The size in the U direction.</param>
@@ -6172,7 +6172,7 @@ namespace Rhino.DocObjects.Tables
     }
 
 
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <param name="from">The line origin.</param>
     /// <param name="to">The line end.</param>
     /// <returns>A unique identifier for the object.</returns>
@@ -6186,7 +6186,7 @@ namespace Rhino.DocObjects.Tables
     {
       return AddLine(from, to, null);
     }
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <param name="from">The line origin.</param>
     /// <param name="to">The line end.</param>
     /// <param name="attributes">Attributes to apply to line.</param>
@@ -6205,14 +6205,14 @@ namespace Rhino.DocObjects.Tables
       return UnsafeNativeMethods.CRhinoDoc_AddLine(m_doc.RuntimeSerialNumber, from, to, pAttributes, pHistory, reference);
     }
 
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
     public Guid AddLine(Line line)
     {
       return AddLine(line.From, line.To);
     }
-    /// <summary>Adds a line object to Rhino.</summary>
+    /// <summary>Adds a line object to Pixel.Rhino.</summary>
     /// <param name="line">The line value.</param>
     /// <param name="attributes">Attributes to apply to line.</param>
     /// <returns>A unique identifier for the object.</returns>
@@ -6223,7 +6223,7 @@ namespace Rhino.DocObjects.Tables
     }
 
 
-    /// <summary>Adds a polyline object to Rhino.</summary>
+    /// <summary>Adds a polyline object to Pixel.Rhino.</summary>
     /// <param name="points">A <see cref="Polyline"/>; a list, an array, or any enumerable set of <see cref="Point3d"/>.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <example>
@@ -6236,7 +6236,7 @@ namespace Rhino.DocObjects.Tables
     {
       return AddPolyline(points, null);
     }
-    /// <summary>Adds a polyline object to Rhino.</summary>
+    /// <summary>Adds a polyline object to Pixel.Rhino.</summary>
     /// <param name="points">A <see cref="Polyline"/>; a list, an array, or any enumerable set of <see cref="Point3d"/>.</param>
     /// <param name="attributes">attributes to apply to line.</param>
     /// <returns>A unique identifier for the object.</returns>
@@ -6371,8 +6371,8 @@ namespace Rhino.DocObjects.Tables
     //  CRhinoCurveObject* AddCurveObject( const ON_BezierCurve& bezier_curve, const ON_3dmObjectAttributes* pAttributes = NULL, CRhinoHistory* pHistory = NULL,  BOOL bReference = NULL );
 
 
-    /// <summary>Adds a curve object to Rhino.</summary>
-    /// <param name="curve">A curve. A duplicate of this curve is added to Rhino.</param>
+    /// <summary>Adds a curve object to Pixel.Rhino.</summary>
+    /// <param name="curve">A curve. A duplicate of this curve is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <example>
     /// <code source='examples\vbnet\ex_addnurbscircle.vb' lang='vbnet'/>
@@ -6384,8 +6384,8 @@ namespace Rhino.DocObjects.Tables
     {
       return AddCurve(curve, null);
     }
-    /// <summary>Adds a curve object to Rhino.</summary>
-    /// <param name="curve">A curve. A duplicate of this curve is added to Rhino.</param>
+    /// <summary>Adds a curve object to Pixel.Rhino.</summary>
+    /// <param name="curve">A curve. A duplicate of this curve is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes to apply to curve.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -6405,7 +6405,7 @@ namespace Rhino.DocObjects.Tables
       return UnsafeNativeMethods.CRhinoDoc_AddCurve(m_doc.RuntimeSerialNumber, curvePtr, pAttributes, pHistory, reference);
     }
 
-    /// <summary>Adds a text dot object to Rhino.</summary>
+    /// <summary>Adds a text dot object to Pixel.Rhino.</summary>
     /// <param name="text">A text string.</param>
     /// <param name="location">A point position.</param>
     /// <returns>A unique identifier for the object.</returns>
@@ -6414,7 +6414,7 @@ namespace Rhino.DocObjects.Tables
     {
       return AddTextDot(text, location, null);
     }
-    /// <summary>Adds a text dot object to Rhino.</summary>
+    /// <summary>Adds a text dot object to Pixel.Rhino.</summary>
     /// <param name="text">A text string.</param>
     /// <param name="location">A point position.</param>
     /// <param name="attributes">Attributes to apply to curve.</param>
@@ -6429,7 +6429,7 @@ namespace Rhino.DocObjects.Tables
         return rc;
       }
     }
-    /// <summary>Adds a text dot object to Rhino.</summary>
+    /// <summary>Adds a text dot object to Pixel.Rhino.</summary>
     /// <param name="dot">A text dot that will be copied.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -6437,7 +6437,7 @@ namespace Rhino.DocObjects.Tables
     {
       return AddTextDot(dot, null);
     }
-    /// <summary>Adds a text dot object to Rhino.</summary>
+    /// <summary>Adds a text dot object to Pixel.Rhino.</summary>
     /// <param name="dot">A text dot that will be copied.</param>
     /// <param name="attributes">Attributes to apply to text dot.</param>
     /// <returns>The Guid of the newly added object or Guid.Empty on failure.</returns>
@@ -6812,8 +6812,8 @@ namespace Rhino.DocObjects.Tables
       return UnsafeNativeMethods.CRhinoDoc_AddText(m_doc.RuntimeSerialNumber, AnnotationBase.PlainTextToRtf(text), ref plane, height, fontName, fontStyle, (int)justification, pConstAttributes, pHistory, reference);
     }
 
-    /// <summary>Adds a SubD object to Rhino.</summary>
-    /// <param name="subD">A duplicate of this SubD is added to Rhino.</param>
+    /// <summary>Adds a SubD object to Pixel.Rhino.</summary>
+    /// <param name="subD">A duplicate of this SubD is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>7.0</since>
     public Guid AddSubD(SubD subD)
@@ -6821,8 +6821,8 @@ namespace Rhino.DocObjects.Tables
       return AddSubD(subD, null);
     }
 
-    /// <summary>Adds a SubD object to Rhino.</summary>
-    /// <param name="subD">A duplicate of this SubD is added to Rhino.</param>
+    /// <summary>Adds a SubD object to Pixel.Rhino.</summary>
+    /// <param name="subD">A duplicate of this SubD is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes that will be linked with the object.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>7.0</since>
@@ -6831,8 +6831,8 @@ namespace Rhino.DocObjects.Tables
       return AddSubD(subD, attributes, null, false);
     }
 
-    /// <summary>Adds a SubD object to Rhino.</summary>
-    /// <param name="subD">A duplicate of this SubD is added to Rhino.</param>
+    /// <summary>Adds a SubD object to Pixel.Rhino.</summary>
+    /// <param name="subD">A duplicate of this SubD is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes that will be linked with the object.</param>
     /// <param name="history"></param>
     /// <param name="reference"></param>
@@ -6853,8 +6853,8 @@ namespace Rhino.DocObjects.Tables
       return id;
     }
 
-    /// <summary>Adds a surface object to Rhino.</summary>
-    /// <param name="surface">A duplicate of this surface is added to Rhino.</param>
+    /// <summary>Adds a surface object to Pixel.Rhino.</summary>
+    /// <param name="surface">A duplicate of this surface is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <example>
     /// <code source='examples\vbnet\ex_addtorus.vb' lang='vbnet'/>
@@ -6866,8 +6866,8 @@ namespace Rhino.DocObjects.Tables
     {
       return AddSurface(surface, null);
     }
-    /// <summary>Adds a surface object to Rhino.</summary>
-    /// <param name="surface">A duplicate of this surface is added to Rhino.</param>
+    /// <summary>Adds a surface object to Pixel.Rhino.</summary>
+    /// <param name="surface">A duplicate of this surface is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes that will be linked with the surface object.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -6887,16 +6887,16 @@ namespace Rhino.DocObjects.Tables
       return UnsafeNativeMethods.CRhinoDoc_AddSurface(m_doc.RuntimeSerialNumber, surfacePtr, pConstAttributes, pHistory, reference);
     }
 
-    /// <summary>Adds an extrusion object to Rhino.</summary>
-    /// <param name="extrusion">A duplicate of this extrusion is added to Rhino.</param>
+    /// <summary>Adds an extrusion object to Pixel.Rhino.</summary>
+    /// <param name="extrusion">A duplicate of this extrusion is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
     public Guid AddExtrusion(Extrusion extrusion)
     {
       return AddExtrusion(extrusion, null);
     }
-    /// <summary>Adds an extrusion object to Rhino.</summary>
-    /// <param name="extrusion">A duplicate of this extrusion is added to Rhino.</param>
+    /// <summary>Adds an extrusion object to Pixel.Rhino.</summary>
+    /// <param name="extrusion">A duplicate of this extrusion is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes that will be linked with the extrusion object.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -6916,8 +6916,8 @@ namespace Rhino.DocObjects.Tables
       return UnsafeNativeMethods.CRhinoDoc_AddExtrusion(m_doc.RuntimeSerialNumber, pConstExtrusion, pConstAttributes, pHistory, reference);
     }
 
-    /// <summary>Adds a mesh object to Rhino.</summary>
-    /// <param name="mesh">A duplicate of this mesh is added to Rhino.</param>
+    /// <summary>Adds a mesh object to Pixel.Rhino.</summary>
+    /// <param name="mesh">A duplicate of this mesh is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <example>
     /// <code source='examples\vbnet\ex_addmesh.vb' lang='vbnet'/>
@@ -6929,8 +6929,8 @@ namespace Rhino.DocObjects.Tables
     {
       return AddMesh(mesh, null);
     }
-    /// <summary>Adds a mesh object to Rhino.</summary>
-    /// <param name="mesh">A duplicate of this mesh is added to Rhino.</param>
+    /// <summary>Adds a mesh object to Pixel.Rhino.</summary>
+    /// <param name="mesh">A duplicate of this mesh is added to Pixel.Rhino.</param>
     /// <param name="attributes">Attributes that will be linked with the mesh object.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -6957,8 +6957,8 @@ namespace Rhino.DocObjects.Tables
       return UnsafeNativeMethods.CRhinoDoc_AddMesh(m_doc.RuntimeSerialNumber, meshPtr, pConstAttributes, pHistory, reference, requireValidMesh);
     }
 
-    /// <summary>Adds a brep object to Rhino.</summary>
-    /// <param name="brep">A duplicate of this brep is added to Rhino.</param>
+    /// <summary>Adds a brep object to Pixel.Rhino.</summary>
+    /// <param name="brep">A duplicate of this brep is added to Pixel.Rhino.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <example>
     /// <code source='examples\vbnet\ex_addbrepbox.vb' lang='vbnet'/>
@@ -6970,8 +6970,8 @@ namespace Rhino.DocObjects.Tables
     {
       return AddBrep(brep, null);
     }
-    /// <summary>Adds a brep object to Rhino.</summary>
-    /// <param name="brep">A duplicate of this brep is added to Rhino.</param>
+    /// <summary>Adds a brep object to Pixel.Rhino.</summary>
+    /// <param name="brep">A duplicate of this brep is added to Pixel.Rhino.</param>
     /// <param name="attributes">attributes to apply to brep.</param>
     /// <returns>A unique identifier for the object.</returns>
     /// <since>5.0</since>
@@ -8652,7 +8652,7 @@ namespace Rhino.DocObjects.Tables
     //{
     //  DocObjects.RhinoObject obj = this.Find(objectID);
     //  if (obj == null) { return Point3d.Unset; }
-    //  if (obj.ObjectType != Rhino.DocObjects.ObjectType.Point) { return Point3d.Unset; }
+    //  if (obj.ObjectType != Pixel.Rhino.DocObjects.ObjectType.Point) { return Point3d.Unset; }
     //  //return (DocObjects.PointObject)(obj).Point; //Doesn't work yet.
     //  return Point3d.Unset;
     //}
@@ -9775,7 +9775,7 @@ namespace Rhino.DocObjects.Tables
   }
 }
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
 #region private helper enums
   [FlagsAttribute]
@@ -9804,7 +9804,7 @@ namespace Rhino.DocObjects
 
   /// <summary>
   /// Settings used for getting an enumerator of objects in a document
-  /// See Rhino.Collections.ObjectTable.GetEnumerator()
+  /// See Pixel.Rhino.Collections.ObjectTable.GetEnumerator()
   /// </summary>
   /// <example>
   /// <code source='examples\vbnet\ex_moveobjectstocurrentlayer.vb' lang='vbnet'/>

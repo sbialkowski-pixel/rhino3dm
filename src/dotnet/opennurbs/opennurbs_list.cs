@@ -5,9 +5,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
 
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
-namespace Rhino.Collections
+namespace Pixel.Rhino.Collections
 {
   interface IRhinoTable<T>
   {
@@ -2008,7 +2008,7 @@ namespace Rhino.Collections
     /// <param name="needlePoints">Points to search for.</param>
     /// <param name="amount">The required amount of closest neighbors to find.</param>
     /// <returns>An enumerable of arrays of indices; each array contains the indices for each of the needlePts.</returns>
-    /// <seealso cref="Rhino.Geometry.RTree.PointCloudKNeighbors(PointCloud, IEnumerable{Point3d}, int)" />
+    /// <seealso cref="Pixel.Rhino.Geometry.RTree.PointCloudKNeighbors(PointCloud, IEnumerable{Point3d}, int)" />
     /// <since>6.0</since>
     public static IEnumerable<int[]> PointCloudKNeighbors(PointCloud pointcloud, IEnumerable<Point3d> needlePoints, int amount)
     {
@@ -2027,7 +2027,7 @@ namespace Rhino.Collections
     /// <param name="needlePoints">Points to search for.</param>
     /// <param name="amount">The required amount of closest neighbors to find.</param>
     /// <returns>An enumerable of arrays of indices; each array contains the indices for each of the needlePts.</returns>
-    /// <seealso cref="Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
+    /// <seealso cref="Pixel.Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
     /// <since>6.0</since>
     public static IEnumerable<int[]> Point3dKNeighbors(IEnumerable<Point3d> hayPoints, IEnumerable<Point3d> needlePoints, int amount)
     {
@@ -2042,7 +2042,7 @@ namespace Rhino.Collections
     /// <param name="needlePoints">Points to search for.</param>
     /// <param name="amount">The required amount of closest neighbors to find.</param>
     /// <returns>An enumerable of arrays of indices; each array contains the indices for each of the needlePts.</returns>
-    /// <seealso cref="Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
+    /// <seealso cref="Pixel.Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
     /// <since>6.0</since>
     public static IEnumerable<int[]> Point3fKNeighbors(IEnumerable<Point3f> hayPoints, IEnumerable<Point3f> needlePoints, int amount)
     {
@@ -2057,7 +2057,7 @@ namespace Rhino.Collections
     /// <param name="needlePoints">Points to search for.</param>
     /// <param name="amount">The required amount of closest neighbors to find.</param>
     /// <returns>An enumerable of arrays of indices; each array contains the indices for each of the needlePts.</returns>
-    /// <seealso cref="Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
+    /// <seealso cref="Pixel.Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
     /// <since>6.0</since>
     public static IEnumerable<int[]> Point2dKNeighbors(IEnumerable<Point2d> hayPoints, IEnumerable<Point2d> needlePoints, int amount)
     {
@@ -2072,7 +2072,7 @@ namespace Rhino.Collections
     /// <param name="needlePoints">Points to search for.</param>
     /// <param name="amount">The required amount of closest neighbors to find.</param>
     /// <returns>An enumerable of arrays of indices; each array contains the indices for each of the needlePts.</returns>
-    /// <seealso cref="Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
+    /// <seealso cref="Pixel.Rhino.Geometry.RTree.Point3dKNeighbors(IEnumerable{Point3d}, IEnumerable{Point3d}, int)"/>
     /// <since>6.0</since>
     public static IEnumerable<int[]> Point2fKNeighbors(IEnumerable<Point2f> hayPoints, IEnumerable<Point2f> needlePoints, int amount)
     {

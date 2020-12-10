@@ -1,8 +1,8 @@
 using System;
-using Rhino.Geometry;
-using Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.DocObjects;
 
-namespace Rhino.Render
+namespace Pixel.Rhino.Render
 {
   /// <summary>
   /// Defines enumerated constants for mapping types such as planar, cylindrical or spherical.

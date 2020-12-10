@@ -1,6 +1,6 @@
 using System;
 
-namespace Rhino.Runtime.InteropWrappers
+namespace Pixel.Rhino.Runtime.InteropWrappers
 {
   /// <summary>
   /// Represents a wrapper to an unmanaged OpenNurbs string.

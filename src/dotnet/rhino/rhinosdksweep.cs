@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 
 #if RHINO_SDK
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Utility class for generating Breps by sweeping cross section curves over a single rail curve. 
-  /// Note, this class has been superseded by the Rhino.Geometry.Brep.CreateFromSweep static functions.
+  /// Note, this class has been superseded by the Pixel.Rhino.Geometry.Brep.CreateFromSweep static functions.
   /// </summary>
   public class SweepOneRail
   {
@@ -205,7 +205,7 @@ namespace Rhino.Geometry
           throw new ArgumentException("must have same number of elements in crossSections and crossSectionParameters");
 
         IntPtr pConstRail = rail.ConstPointer();
-        Runtime.InteropWrappers.SimpleArrayCurvePointer sections = new Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer(crossSections);
+        Runtime.InteropWrappers.SimpleArrayCurvePointer sections = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer(crossSections);
         IntPtr pSections = sections.ConstPointer();
         double[] tvals = xsec_t.ToArray();
         rc.m_ptr = UnsafeNativeMethods.CArgsRhinoSweep1_New(pConstRail, pSections, tvals, roadlike_up, closed, sweep_tol, angle_tol, miter_type);
@@ -254,7 +254,7 @@ namespace Rhino.Geometry
       }
 
       ArgsSweep1 sweep = ArgsSweep1.Construct(rail, crossSections, crossSectionParameters, m_roadlike_up, m_bClosed, m_sweep_tol, m_angle_tol, m_miter_type);
-      Runtime.InteropWrappers.SimpleArrayBrepPointer breps = new Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer();
+      Runtime.InteropWrappers.SimpleArrayBrepPointer breps = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer();
       IntPtr pArgsSweep1 = sweep.NonConstPointer();
       IntPtr pBreps = breps.NonConstPointer();
       UnsafeNativeMethods.RHC_Sweep1(pArgsSweep1, pBreps, m_shape_blending);
@@ -296,7 +296,7 @@ namespace Rhino.Geometry
     public Brep[] PerformSweepRefit(Curve rail, IEnumerable<Curve> crossSections, IEnumerable<double> crossSectionParameters, double refitTolerance)
     {
       ArgsSweep1 sweep = ArgsSweep1.Construct(rail, crossSections, crossSectionParameters, m_roadlike_up, m_bClosed, m_sweep_tol, m_angle_tol, m_miter_type);
-      Runtime.InteropWrappers.SimpleArrayBrepPointer breps = new Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer();
+      Runtime.InteropWrappers.SimpleArrayBrepPointer breps = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer();
       IntPtr pArgsSweep1 = sweep.NonConstPointer();
       IntPtr pBreps = breps.NonConstPointer();
       UnsafeNativeMethods.RHC_Sweep1Refit(pArgsSweep1, pBreps, refitTolerance, m_shape_blending);
@@ -338,7 +338,7 @@ namespace Rhino.Geometry
     public Brep[] PerformSweepRebuild(Curve rail, IEnumerable<Curve> crossSections, IEnumerable<double> crossSectionParameters, int rebuildCount)
     {
       ArgsSweep1 sweep = ArgsSweep1.Construct(rail, crossSections, crossSectionParameters, m_roadlike_up, m_bClosed, m_sweep_tol, m_angle_tol, m_miter_type);
-      Runtime.InteropWrappers.SimpleArrayBrepPointer breps = new Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer();
+      Runtime.InteropWrappers.SimpleArrayBrepPointer breps = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer();
       IntPtr pArgsSweep1 = sweep.NonConstPointer();
       IntPtr pBreps = breps.NonConstPointer();
       UnsafeNativeMethods.RHC_Sweep1Rebuild(pArgsSweep1, pBreps, rebuildCount, m_shape_blending);
@@ -352,7 +352,7 @@ namespace Rhino.Geometry
 
   /// <summary>
   /// Utility class for generating Breps by sweeping cross section curves over two rail curves.
-  /// Note, this class has been superseded by the Rhino.Geometry.Brep.CreateFromSweep static functions.
+  /// Note, this class has been superseded by the Pixel.Rhino.Geometry.Brep.CreateFromSweep static functions.
   /// </summary>
   public class SweepTwoRail
   {
@@ -486,7 +486,7 @@ namespace Rhino.Geometry
     {
       // 12-Jun-2019 Dale Fugier, https://mcneel.myjetbrains.com/youtrack/issue/RH-31673
       //ArgsSweep2 sweep = ArgsSweep2.Construct(rail1, rail2, crossSections, crossSectionParameters1, crossSectionParameters2, m_bClosed, m_sweep_tol, m_angle_tol, MaintainHeight);
-      //using (var breps = new Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer())
+      //using (var breps = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer())
       //{
       //  IntPtr pArgsSweep2 = sweep.NonConstPointer();
       //  IntPtr pBreps = breps.NonConstPointer();
@@ -560,7 +560,7 @@ namespace Rhino.Geometry
     {
       // 12-Jun-2019 Dale Fugier, https://mcneel.myjetbrains.com/youtrack/issue/RH-31673
       //ArgsSweep2 sweep = ArgsSweep2.Construct(rail1, rail2, crossSections, crossSectionParametersRail1, crossSectionParametersRail2, m_bClosed, m_sweep_tol, m_angle_tol, MaintainHeight);
-      //using (var breps = new Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer())
+      //using (var breps = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer())
       //{
       //  IntPtr pArgsSweep2 = sweep.NonConstPointer();
       //  IntPtr pBreps = breps.NonConstPointer();
@@ -634,7 +634,7 @@ namespace Rhino.Geometry
     {
       // 12-Jun-2019 Dale Fugier, https://mcneel.myjetbrains.com/youtrack/issue/RH-31673
       //ArgsSweep2 sweep = ArgsSweep2.Construct(rail1, rail2, crossSections, crossSectionParametersRail1, crossSectionParametersRail2, m_bClosed, m_sweep_tol, m_angle_tol, MaintainHeight);
-      //using (var breps = new Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer())
+      //using (var breps = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayBrepPointer())
       //{
       //  IntPtr pArgsSweep2 = sweep.NonConstPointer();
       //  IntPtr pBreps = breps.NonConstPointer();
@@ -665,7 +665,7 @@ namespace Rhino.Geometry
 
         IntPtr pConstRail1 = rail1.ConstPointer();
         IntPtr pConstRail2 = rail2.ConstPointer();
-        using (var sections = new Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer(crossSections))
+        using (var sections = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayCurvePointer(crossSections))
         {
           IntPtr pSections = sections.ConstPointer();
           double[] tvals1 = xsec_t1.ToArray();

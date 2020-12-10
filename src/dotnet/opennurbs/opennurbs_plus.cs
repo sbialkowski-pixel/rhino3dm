@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Rhino.DocObjects;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.Runtime.InteropWrappers
+namespace Pixel.Rhino.Runtime.InteropWrappers
 {
   /// <summary>
   /// This is only needed when passing values to the Rhino C++ core, ignore
@@ -87,7 +87,7 @@ namespace Rhino.Runtime.InteropWrappers
   }
 }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
 
   /// <summary>
@@ -219,7 +219,7 @@ namespace Rhino.Geometry
   }
 }
 
-namespace Rhino.Geometry.Intersect
+namespace Pixel.Rhino.Geometry.Intersect
 {
   //// keep private until we have something that works/makes sense
   //public class RayShooter //: IDisposable
@@ -368,10 +368,10 @@ namespace Rhino.Geometry.Intersect
       IList<Mesh> _setB = setB as IList<Mesh> ?? new List<Mesh>(setB);
 
 
-      Rhino.Runtime.InteropWrappers.SimpleArrayMeshPointer meshes_a = new Runtime.InteropWrappers.SimpleArrayMeshPointer();
+      Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayMeshPointer meshes_a = new Runtime.InteropWrappers.SimpleArrayMeshPointer();
       foreach (Mesh m in setA)
         meshes_a.Add(m, true);
-      Rhino.Runtime.InteropWrappers.SimpleArrayMeshPointer meshes_b = new Runtime.InteropWrappers.SimpleArrayMeshPointer();
+      Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayMeshPointer meshes_b = new Runtime.InteropWrappers.SimpleArrayMeshPointer();
       foreach (Mesh m in setB)
         meshes_b.Add(m, true);
 

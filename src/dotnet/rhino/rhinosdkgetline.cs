@@ -1,9 +1,9 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 #if RHINO_SDK
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
   public enum GetLineMode : int
   {
@@ -261,8 +261,8 @@ namespace Rhino.Input.Custom
       }
     }
 
-    //public Rhino.DocObjects.ObjRef Point1ObjRef() { }
-    //public Rhino.DocObjects.ObjRef Point2ObjRef() { }
+    //public Pixel.Rhino.DocObjects.ObjRef Point1ObjRef() { }
+    //public Pixel.Rhino.DocObjects.ObjRef Point2ObjRef() { }
   }
 }
 #endif

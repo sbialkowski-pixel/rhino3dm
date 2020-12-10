@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.Serialization;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a plane surface, with plane and two intervals.

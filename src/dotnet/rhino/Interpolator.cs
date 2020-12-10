@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-using Rhino.Collections;
+using Pixel.Rhino.Collections;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Exposes a set of standard numeric interpolation algorithms.

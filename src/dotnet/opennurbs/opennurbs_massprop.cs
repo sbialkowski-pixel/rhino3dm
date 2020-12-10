@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #if RHINO_SDK
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Contains static initialization methods and allows access to the computed
@@ -254,7 +254,7 @@ namespace Rhino.Geometry
       const double relative_tolerance = 1.0e-6;
       const double absolute_tolerance = 1.0e-6;
 
-      Rhino.Runtime.InteropWrappers.SimpleArrayGeometryPointer array = new Runtime.InteropWrappers.SimpleArrayGeometryPointer(geometry);
+      Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayGeometryPointer array = new Runtime.InteropWrappers.SimpleArrayGeometryPointer(geometry);
       IntPtr pConstGeometryArray = array.ConstPointer();
       IntPtr rc = UnsafeNativeMethods.ON_Geometry_AreaMassProperties(pConstGeometryArray, area, firstMoments, secondMoments, productMoments, relative_tolerance, absolute_tolerance);
       GC.KeepAlive(geometry);
@@ -857,7 +857,7 @@ namespace Rhino.Geometry
       const double relative_tolerance = 1.0e-6;
       const double absolute_tolerance = 1.0e-6;
 
-      Rhino.Runtime.InteropWrappers.SimpleArrayGeometryPointer array = new Runtime.InteropWrappers.SimpleArrayGeometryPointer(geometry);
+      Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayGeometryPointer array = new Runtime.InteropWrappers.SimpleArrayGeometryPointer(geometry);
       IntPtr pConstGeometryArray = array.ConstPointer();
       IntPtr rc = UnsafeNativeMethods.ON_Geometry_VolumeMassProperties(pConstGeometryArray, volume, firstMoments, secondMoments, productMoments, relative_tolerance, absolute_tolerance);
       GC.KeepAlive(geometry);

@@ -1,6 +1,6 @@
 using System;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Provides a base class to brep faces and other surface proxies.

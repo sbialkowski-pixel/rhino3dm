@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   // look at System.Windows.Media.Media3d.Matrix3D structure to help in laying this structure out
   /// <summary>
@@ -1609,10 +1609,10 @@ namespace Rhino.Geometry
 }
 
 #if RHINO_SDK
-namespace Rhino.Geometry.Morphs
+namespace Pixel.Rhino.Geometry.Morphs
 {
   /// <summary>Deforms objects by rotating them around an axis.</summary>
-  public class TwistSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class TwistSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -1741,7 +1741,7 @@ namespace Rhino.Geometry.Morphs
   /// <summary>
   /// Deforms objects by bending along a spine arc.
   /// </summary>
-  public class BendSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class BendSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -1761,7 +1761,7 @@ namespace Rhino.Geometry.Morphs
       double tolerance = 0;
       bool quick_preview = false;
       bool preserve_structure = false;
-      m_space_morph = UnsafeNativeMethods.RHC_BendSpaceMorph(start, end, point, Rhino.RhinoMath.UnsetValue, straight, symmetric);
+      m_space_morph = UnsafeNativeMethods.RHC_BendSpaceMorph(start, end, point, Pixel.Rhino.RhinoMath.UnsetValue, straight, symmetric);
       if (m_space_morph != IntPtr.Zero)
       {
         if (UnsafeNativeMethods.ON_SpaceMorph_GetValues(m_space_morph, ref tolerance, ref quick_preview, ref preserve_structure))
@@ -1859,7 +1859,7 @@ namespace Rhino.Geometry.Morphs
   /// <summary>
   /// Deforms objects toward or away from a specified axis.
   /// </summary>
-  public class TaperSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class TaperSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -1951,7 +1951,7 @@ namespace Rhino.Geometry.Morphs
   /// <summary>
   /// Deforms objects in a spiral as if they were caught in a whirlpool.
   /// </summary>
-  public class MaelstromSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class MaelstromSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -2055,7 +2055,7 @@ namespace Rhino.Geometry.Morphs
   /// <summary>
   /// Deforms objects toward or away from a specified axis.
   /// </summary>
-  public class StretchSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class StretchSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -2073,7 +2073,7 @@ namespace Rhino.Geometry.Morphs
       double tolerance = 0;
       bool quick_preview = false;
       bool preserve_structure = false;
-      m_space_morph = UnsafeNativeMethods.RHC_StretchSpaceMorph(start, end, point, Rhino.RhinoMath.UnsetValue);
+      m_space_morph = UnsafeNativeMethods.RHC_StretchSpaceMorph(start, end, point, Pixel.Rhino.RhinoMath.UnsetValue);
       if (m_space_morph != IntPtr.Zero)
       {
         if (UnsafeNativeMethods.ON_SpaceMorph_GetValues(m_space_morph, ref tolerance, ref quick_preview, ref preserve_structure))
@@ -2097,7 +2097,7 @@ namespace Rhino.Geometry.Morphs
       double tolerance = 0;
       bool quick_preview = false;
       bool preserve_structure = false;
-      m_space_morph = UnsafeNativeMethods.RHC_StretchSpaceMorph(start, end, Rhino.Geometry.Point3d.Unset, length);
+      m_space_morph = UnsafeNativeMethods.RHC_StretchSpaceMorph(start, end, Pixel.Rhino.Geometry.Point3d.Unset, length);
       if (m_space_morph != IntPtr.Zero)
       {
         if (UnsafeNativeMethods.ON_SpaceMorph_GetValues(m_space_morph, ref tolerance, ref quick_preview, ref preserve_structure))
@@ -2171,7 +2171,7 @@ namespace Rhino.Geometry.Morphs
   /// <summary>
   /// Deforms an object from a source surface to a target surface.
   /// </summary>
-  public class SporphSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class SporphSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -2192,7 +2192,7 @@ namespace Rhino.Geometry.Morphs
       IntPtr const_surface0 = surface0.ConstPointer();
       IntPtr const_surface1 = surface1.ConstPointer();
 
-      m_space_morph = UnsafeNativeMethods.RHC_SporphSpaceMorph(const_surface0, const_surface1, Rhino.Geometry.Point2d.Unset, Rhino.Geometry.Point2d.Unset);
+      m_space_morph = UnsafeNativeMethods.RHC_SporphSpaceMorph(const_surface0, const_surface1, Pixel.Rhino.Geometry.Point2d.Unset, Pixel.Rhino.Geometry.Point2d.Unset);
       if (m_space_morph != IntPtr.Zero)
       {
         if (UnsafeNativeMethods.ON_SpaceMorph_GetValues(m_space_morph, ref tolerance, ref quick_preview, ref preserve_structure))
@@ -2297,7 +2297,7 @@ namespace Rhino.Geometry.Morphs
   /// <summary>
   /// Re-aligns objects from a base curve to a target curve.
   /// </summary>
-  public class FlowSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class FlowSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -2425,7 +2425,7 @@ namespace Rhino.Geometry.Morphs
   /// <summary>
   /// Rotates, scales, and wraps objects on a surface.
   /// </summary>
-  public class SplopSpaceMorph : Rhino.Geometry.SpaceMorph, IDisposable
+  public class SplopSpaceMorph : Pixel.Rhino.Geometry.SpaceMorph, IDisposable
   {
     internal IntPtr m_space_morph;
     IntPtr ConstPointer() { return m_space_morph; }
@@ -2446,7 +2446,7 @@ namespace Rhino.Geometry.Morphs
 
       IntPtr const_surface = surface.ConstPointer();
 
-      m_space_morph = UnsafeNativeMethods.RHC_SplopSpaceMorph(plane, const_surface, surfaceParam, Rhino.RhinoMath.UnsetValue, Rhino.RhinoMath.UnsetValue);
+      m_space_morph = UnsafeNativeMethods.RHC_SplopSpaceMorph(plane, const_surface, surfaceParam, Pixel.Rhino.RhinoMath.UnsetValue, Pixel.Rhino.RhinoMath.UnsetValue);
       if (m_space_morph != IntPtr.Zero)
       {
         if (UnsafeNativeMethods.ON_SpaceMorph_GetValues(m_space_morph, ref tolerance, ref quick_preview, ref preserve_structure))
@@ -2475,7 +2475,7 @@ namespace Rhino.Geometry.Morphs
 
       IntPtr const_surface = surface.ConstPointer();
 
-      m_space_morph = UnsafeNativeMethods.RHC_SplopSpaceMorph(plane, const_surface, surfaceParam, scale, Rhino.RhinoMath.UnsetValue);
+      m_space_morph = UnsafeNativeMethods.RHC_SplopSpaceMorph(plane, const_surface, surfaceParam, scale, Pixel.Rhino.RhinoMath.UnsetValue);
       if (m_space_morph != IntPtr.Zero)
       {
         if (UnsafeNativeMethods.ON_SpaceMorph_GetValues(m_space_morph, ref tolerance, ref quick_preview, ref preserve_structure))
@@ -2494,8 +2494,8 @@ namespace Rhino.Geometry.Morphs
     /// <param name="plane">Source plane of deformation.</param>
     /// <param name="surface">Surface to wrap objects onto.</param>
     /// <param name="surfaceParam">U,V parameter on surface used for orienting.</param>
-    /// <param name="scale">Scale factor. To ignore, use Rhino.RhinoMath.UnsetValue.</param>
-    /// <param name="angle">Rotation angle in radians. To ignore, use Rhino.RhinoMath.UnsetValue.</param>
+    /// <param name="scale">Scale factor. To ignore, use Pixel.Rhino.RhinoMath.UnsetValue.</param>
+    /// <param name="angle">Rotation angle in radians. To ignore, use Pixel.Rhino.RhinoMath.UnsetValue.</param>
     /// <since>5.9</since>
     public SplopSpaceMorph(Plane plane, Surface surface, Point2d surfaceParam, double scale, double angle)
     {

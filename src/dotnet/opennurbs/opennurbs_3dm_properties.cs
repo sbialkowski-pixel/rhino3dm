@@ -1,7 +1,7 @@
 using System;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   /// <summary>
   /// Represents the notes information stored in a 3dm file.

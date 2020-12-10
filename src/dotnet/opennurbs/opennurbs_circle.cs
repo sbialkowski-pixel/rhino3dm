@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a circle in 3D.
@@ -637,7 +637,7 @@ namespace Rhino.Geometry
         return false;
 
       int count;
-      Point3d[] ptArray = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] ptArray = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (count < 2)
         return false;
       bool rc = UnsafeNativeMethods.RHC_FitCircleToPoints(count, ptArray, ref circle);

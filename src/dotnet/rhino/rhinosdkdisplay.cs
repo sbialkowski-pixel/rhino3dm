@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 #if RHINO_SDK
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Defines enumerated constants for display blend modes.
@@ -289,7 +289,7 @@ namespace Rhino.Display
     }
 
     /// <since>5.0</since>
-    public void SetPoints(IEnumerable<Rhino.Geometry.Point3d> points, IEnumerable<System.Drawing.Color> colors)
+    public void SetPoints(IEnumerable<Pixel.Rhino.Geometry.Point3d> points, IEnumerable<System.Drawing.Color> colors)
     {
       var _points = new List<Geometry.Point3d>(points);
       var _colors = new List<System.Drawing.Color>(colors);
@@ -306,7 +306,7 @@ namespace Rhino.Display
   }
 }
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a simple particle.

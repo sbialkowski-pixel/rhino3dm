@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System.Linq;
-using Rhino.FileIO;
+using Pixel.Rhino.FileIO;
 using System.Threading.Tasks;
 
 
-namespace Rhino.Geometry.Intersect
+namespace Pixel.Rhino.Geometry.Intersect
 {
     /// <summary>
     /// Provides static methods for the computation of intersections, projections, sections and similar.
@@ -467,7 +467,7 @@ namespace Rhino.Geometry.Intersect
     /// <since>5.0</since>
     public static Polyline[] MeshPlane(Mesh mesh, Plane plane)
     {
-      Rhino.Collections.RhinoList<Plane> planes = new Rhino.Collections.RhinoList<Plane>(1, plane);
+      Pixel.Rhino.Collections.RhinoList<Plane> planes = new Pixel.Rhino.Collections.RhinoList<Plane>(1, plane);
       return MeshPlane(mesh, planes);
     }
     /// <summary>
@@ -482,8 +482,8 @@ namespace Rhino.Geometry.Intersect
     {
       if (planes == null) throw new ArgumentNullException("planes");
 
-      Rhino.Collections.RhinoList<Plane> list = planes as Rhino.Collections.RhinoList<Plane> ??
-                                                new Rhino.Collections.RhinoList<Plane>(planes);
+      Pixel.Rhino.Collections.RhinoList<Plane> list = planes as Pixel.Rhino.Collections.RhinoList<Plane> ??
+                                                new Pixel.Rhino.Collections.RhinoList<Plane>(planes);
       if (list.Count < 1)
         return null;
 
@@ -1592,7 +1592,7 @@ namespace Rhino.Geometry.Intersect
     public static double MeshRay(Mesh mesh, Ray3d ray, out int[] meshFaceIndices)
     {
       meshFaceIndices = null;
-      using (Runtime.InteropWrappers.SimpleArrayInt indices = new Rhino.Runtime.InteropWrappers.SimpleArrayInt())
+      using (Runtime.InteropWrappers.SimpleArrayInt indices = new Pixel.Rhino.Runtime.InteropWrappers.SimpleArrayInt())
       {
         IntPtr pConstMesh = mesh.ConstPointer();
         double rc = UnsafeNativeMethods.ON_Intersect_MeshRay1(pConstMesh, ref ray, indices.m_ptr);
@@ -1761,7 +1761,7 @@ namespace Rhino.Geometry.Intersect
         foreach (Mesh mesh in meshes)
           mesh_array.Add(mesh, true);
 
-        Rhino.Collections.Point3dList inputpoints = new Rhino.Collections.Point3dList(points);
+        Pixel.Rhino.Collections.Point3dList inputpoints = new Pixel.Rhino.Collections.Point3dList(points);
         if (inputpoints.Count > 0)
         {
           IntPtr const_ptr_mesh_array = mesh_array.ConstPointer();
@@ -1808,7 +1808,7 @@ namespace Rhino.Geometry.Intersect
         foreach (Mesh mesh in meshes)
           mesh_array.Add(mesh, true);
 
-        Rhino.Collections.Point3dList inputpoints = new Rhino.Collections.Point3dList(points);
+        Pixel.Rhino.Collections.Point3dList inputpoints = new Pixel.Rhino.Collections.Point3dList(points);
         if (inputpoints.Count > 0)
         {
           IntPtr const_ptr_mesh_array = mesh_array.ConstPointer();
@@ -1856,7 +1856,7 @@ namespace Rhino.Geometry.Intersect
         foreach (Brep brep in breps)
           brep_array.Add(brep, true);
 
-        Rhino.Collections.Point3dList inputpoints = new Rhino.Collections.Point3dList(points);
+        Pixel.Rhino.Collections.Point3dList inputpoints = new Pixel.Rhino.Collections.Point3dList(points);
         if (inputpoints.Count > 0)
         {
           IntPtr const_ptr_brep_array = brep_array.ConstPointer();
@@ -1895,7 +1895,7 @@ namespace Rhino.Geometry.Intersect
         foreach (Brep brep in breps)
           brep_array.Add(brep, true);
 
-        Rhino.Collections.Point3dList inputpoints = new Rhino.Collections.Point3dList(points);
+        Pixel.Rhino.Collections.Point3dList inputpoints = new Pixel.Rhino.Collections.Point3dList(points);
         if (inputpoints.Count > 0)
         {
           IntPtr const_ptr_brep_array = brep_array.ConstPointer();

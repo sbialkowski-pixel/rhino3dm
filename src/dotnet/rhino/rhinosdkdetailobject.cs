@@ -1,10 +1,10 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Geometry;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
 #if RHINO_SDK
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// A detail view object is a nested Rhino viewport placed on a page view with a 2D closed curve
@@ -19,11 +19,11 @@ namespace Rhino.DocObjects
     /// Returns the detail view geometry.
     /// </summary>
     /// <since>5.0</since>
-    public Rhino.Geometry.DetailView DetailGeometry
+    public Pixel.Rhino.Geometry.DetailView DetailGeometry
     {
       get
       {
-        Rhino.Geometry.DetailView rc = Geometry as Rhino.Geometry.DetailView;
+        Pixel.Rhino.Geometry.DetailView rc = Geometry as Pixel.Rhino.Geometry.DetailView;
         return rc;
       }
     }
@@ -55,11 +55,11 @@ namespace Rhino.DocObjects
     /// Gets the detail view's viewport.
     /// </summary>
     /// <since>5.0</since>
-    public Rhino.Display.RhinoViewport Viewport
+    public Pixel.Rhino.Display.RhinoViewport Viewport
     {
-      get { return m_viewport ?? (m_viewport = new Rhino.Display.RhinoViewport(this)); }
+      get { return m_viewport ?? (m_viewport = new Pixel.Rhino.Display.RhinoViewport(this)); }
     }
-    Rhino.Display.RhinoViewport m_viewport;
+    Pixel.Rhino.Display.RhinoViewport m_viewport;
 
     /// <since>5.0</since>
     public bool CommitViewportChanges()

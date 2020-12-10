@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a view of the model placed on a page layout.
@@ -131,7 +131,7 @@ namespace Rhino.Geometry
     /// <code source='examples\py\ex_addlayout.py' lang='py'/>
     /// </example>
     /// <since>5.0</since>
-    public bool SetScale(double modelLength, Rhino.UnitSystem modelUnits, double pageLength, Rhino.UnitSystem pageUnits)
+    public bool SetScale(double modelLength, Pixel.Rhino.UnitSystem modelUnits, double pageLength, Pixel.Rhino.UnitSystem pageUnits)
     {
       // SetScale only works on parallel projections
       if (!IsParallelProjection)

@@ -2,14 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.Display;
-using Rhino.Collections;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.Runtime;
+using Pixel.Rhino.Display;
+using Pixel.Rhino.Collections;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime;
 using System.Linq;
 
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
     /// <summary>
     /// Represents a Non Uniform Rational B-Splines (NURBS) curve.
@@ -494,7 +494,7 @@ namespace Rhino.Geometry
         /// <since>5.0</since>
         public Collections.NurbsCurveKnotList Knots
         {
-            get { return m_knots ?? (m_knots = new Rhino.Geometry.Collections.NurbsCurveKnotList(this)); }
+            get { return m_knots ?? (m_knots = new Pixel.Rhino.Geometry.Collections.NurbsCurveKnotList(this)); }
         }
 
         /// <summary>
@@ -1397,7 +1397,7 @@ namespace Rhino.Geometry
     }
 }
 
-namespace Rhino.Geometry.Collections
+namespace Pixel.Rhino.Geometry.Collections
 {
     /// <summary>
     /// Provides access to the knot vector of a NURBS curve.
@@ -2079,7 +2079,7 @@ namespace Rhino.Geometry.Collections
         /// Note, if the curve is non-rational, the weight will be 1.0.
         /// </summary>
         /// <param name="index">Index of control point to get.</param>
-        /// <returns>The control point weight if successful, Rhino.Math.UnsetValue otherwise.</returns>
+        /// <returns>The control point weight if successful, Pixel.Rhino.Math.UnsetValue otherwise.</returns>
         /// <since>6.0</since>
         public double GetWeight(int index)
         {

@@ -1,14 +1,14 @@
-using Rhino.Render;
+using Pixel.Rhino.Render;
 #pragma warning disable 1591
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
-namespace Rhino.Collections
+namespace Pixel.Rhino.Collections
 {
   /// <summary>
   /// <para>Represents a dictionary class that can be attached to objects and
@@ -131,7 +131,7 @@ namespace Rhino.Collections
     {
       get
       {
-        // matches id used by old Rhino.NET
+        // matches id used by old Pixel.Rhino.NET
         return new Guid("21EE7933-1E2D-4047-869E-6BDBF986EA11");
       }
     }
@@ -195,8 +195,8 @@ namespace Rhino.Collections
     protected ArchivableDictionary(SerializationInfo info, StreamingContext context)
     {
       //int version = info.GetInt32("version");
-      int archive_3dm_version = info.GetInt32(Rhino.Runtime.CommonObject.ARCHIVE_3DM_VERSION);
-      int archive_opennurbs_version_int = info.GetInt32(Rhino.Runtime.CommonObject.ARCHIVE_OPENNURBS_VERSION);
+      int archive_3dm_version = info.GetInt32(Pixel.Rhino.Runtime.CommonObject.ARCHIVE_3DM_VERSION);
+      int archive_opennurbs_version_int = info.GetInt32(Pixel.Rhino.Runtime.CommonObject.ARCHIVE_OPENNURBS_VERSION);
       uint archive_opennurbs_version = (uint)archive_opennurbs_version_int;
       byte[] stream = info.GetValue("data", typeof(byte[])) as byte[];
       IntPtr ptrReadBufferArchive = UnsafeNativeMethods.ON_ReadBufferArchiveFromStream(archive_3dm_version, archive_opennurbs_version, stream.Length, stream);
@@ -217,7 +217,7 @@ namespace Rhino.Collections
     [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
     public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-      Rhino.FileIO.SerializationOptions options = context.Context as Rhino.FileIO.SerializationOptions;
+      Pixel.Rhino.FileIO.SerializationOptions options = context.Context as Pixel.Rhino.FileIO.SerializationOptions;
 
       bool writeuserdata = true;
       if (options != null)
@@ -241,9 +241,9 @@ namespace Rhino.Collections
         System.Runtime.InteropServices.Marshal.Copy(pByteArray, bytearray, 0, sz);
 
         info.AddValue("version", 10000);
-        info.AddValue(Rhino.Runtime.CommonObject.ARCHIVE_3DM_VERSION, rhino_version);
+        info.AddValue(Pixel.Rhino.Runtime.CommonObject.ARCHIVE_3DM_VERSION, rhino_version);
         uint archive_opennurbs_version = UnsafeNativeMethods.ON_WriteBufferArchive_OpenNURBSVersion(pWriteBuffer);
-        info.AddValue(Rhino.Runtime.CommonObject.ARCHIVE_OPENNURBS_VERSION, (int)archive_opennurbs_version);
+        info.AddValue(Pixel.Rhino.Runtime.CommonObject.ARCHIVE_OPENNURBS_VERSION, (int)archive_opennurbs_version);
         info.AddValue("data", bytearray);
       }
       UnsafeNativeMethods.ON_WriteBufferArchive_Delete(pWriteBuffer);
@@ -295,7 +295,7 @@ namespace Rhino.Collections
       if( !archive.BeginReadDictionary(out dictionary_id, out version, out dictionary_name) )
         return null;
 
-      // make sure this dictionary is one that was written by Rhino.NET
+      // make sure this dictionary is one that was written by Pixel.Rhino.NET
       if( dictionary_id != RhinoDotNetDictionaryId )
       {
         archive.EndReadDictionary();
@@ -1361,7 +1361,7 @@ namespace Rhino.Collections
     /// <since>5.0</since>
     public Geometry.Vector3d GetVector3d(string key)
     {
-      return GetHelper(key, Rhino.Geometry.Vector3d.Unset);
+      return GetHelper(key, Pixel.Rhino.Geometry.Vector3d.Unset);
     }
     /// <summary>
     /// Get value as Vector3d, will return defaultValue unless value was created using Set(string key, Vector3d value)
@@ -1743,121 +1743,121 @@ namespace Rhino.Collections
     public bool Set(string key, System.Drawing.Font val) { return SetItem(key, ItemType.Font, val); }
 #endif
     /// <summary>
-    /// Sets an <see cref="Rhino.Geometry.Interval"/>.
+    /// Sets an <see cref="Pixel.Rhino.Geometry.Interval"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Interval"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Interval"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Interval val) { return SetItem(key, ItemType.Interval, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Point2d"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Point2d"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A point for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Point2d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Point2d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Point2d val) { return SetItem(key, ItemType.Point2d, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Point3d"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Point3d"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A point for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Point3d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Point3d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Point3d val) { return SetItem(key, ItemType.Point3d, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Point4d"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Point4d"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Point4d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Point4d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Point4d val) { return SetItem(key, ItemType.Point4d, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Vector2d"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Vector2d"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Vector2d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Vector2d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Vector2d val) { return SetItem(key, ItemType.Vector2d, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Vector3d"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Vector3d"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Vector3d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Vector3d"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Vector3d val) { return SetItem(key, ItemType.Vector3d, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.BoundingBox"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.BoundingBox"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.BoundingBox"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.BoundingBox"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.BoundingBox val) { return SetItem(key, ItemType.BoundingBox, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Ray3d"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Ray3d"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Ray3d"/> has value semantics and is immutable, no changes to this object are possible.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Ray3d"/> has value semantics and is immutable, no changes to this object are possible.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Ray3d val) { return SetItem(key, ItemType.Ray3d, val); }
 
     bool SetPlaneEquation(string key, double[] eq) { return SetItem(key, ItemType.PlaneEquation, eq); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Transform"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Transform"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A transform for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Transform"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Transform"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Transform val) { return SetItem(key, ItemType.Xform, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Plane"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Plane"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A plane for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Plane"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Plane"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Plane val) { return SetItem(key, ItemType.Plane, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Line"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Line"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Line"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Line"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Line val) { return SetItem(key, ItemType.Line, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Point3f"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Point3f"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Point3f"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Point3f"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Point3f val) { return SetItem(key, ItemType.Point3f, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.Vector3f"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.Vector3f"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A value for that key.
-    /// <para>Because <see cref="Rhino.Geometry.Vector3f"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
+    /// <para>Because <see cref="Pixel.Rhino.Geometry.Vector3f"/> has value semantics, changes to the assigning value will leave this entry unchanged.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.Vector3f val) { return SetItem(key, ItemType.Vector3f, val); }
 
@@ -1872,7 +1872,7 @@ namespace Rhino.Collections
     public bool Set(string key, ArchivableDictionary val) { return SetItem(key, ItemType.OnBinaryArchiveDictionary, val); }
 
     /// <summary>
-    /// Sets a <see cref="Rhino.Geometry.MeshingParameters"/>.
+    /// Sets a <see cref="Pixel.Rhino.Geometry.MeshingParameters"/>.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">An object for that key.
@@ -1882,18 +1882,18 @@ namespace Rhino.Collections
     public bool Set(string key, Geometry.MeshingParameters val) { return SetItem(key, ItemType.OnMeshParameters, val); }
 
     /// <summary>
-    /// Sets any class deriving from the <see cref="Rhino.Geometry.GeometryBase"/> base class.
+    /// Sets any class deriving from the <see cref="Pixel.Rhino.Geometry.GeometryBase"/> base class.
     /// </summary>
     /// <param name="key">A text key.</param>
     /// <param name="val">A geometry object for that key.
     /// <para>Because this class is a reference type and is mutable, changes to this object <b>will propagate</b> to the object inside the dictionary.</para>
-    /// <para>It is up to the user to clone this entry when appropriate. You can use <see cref="Rhino.Geometry.GeometryBase.Duplicate"/> for this.</para></param>
+    /// <para>It is up to the user to clone this entry when appropriate. You can use <see cref="Pixel.Rhino.Geometry.GeometryBase.Duplicate"/> for this.</para></param>
     /// <since>5.0</since>
     public bool Set(string key, Geometry.GeometryBase val) { return SetItem(key, ItemType.OnGeometry, val); }
 
 #if RHINO_SDK
     /// <summary>
-    /// Sets a <see cref="Rhino.DocObjects.ObjRef"/>
+    /// Sets a <see cref="Pixel.Rhino.DocObjects.ObjRef"/>
     /// </summary>
     /// <param name="key">A text key</param>
     /// <param name="val">An object for that key
@@ -1903,7 +1903,7 @@ namespace Rhino.Collections
     public bool Set(string key, DocObjects.ObjRef val) { return SetItem(key, ItemType.OnObjRef, val); }
 
     /// <summary>
-    /// Sets an array of <see cref="Rhino.DocObjects.ObjRef"/>
+    /// Sets an array of <see cref="Pixel.Rhino.DocObjects.ObjRef"/>
     /// </summary>
     /// <param name="key">A text key</param>
     /// <param name="val">An object for that key
@@ -2243,7 +2243,7 @@ namespace Rhino.Collections
   }
 }
 
-namespace Rhino.FileIO
+namespace Pixel.Rhino.FileIO
 {
   /// <summary>
   /// Thrown by BinaryArchiveReader and BinaryArchiveWriter classes when
@@ -2861,7 +2861,7 @@ namespace Rhino.FileIO
 
 #if RHINO_SDK
     /// <summary>
-    /// Writes a <see cref="Rhino.DocObjects.ObjRef"/> to the archive
+    /// Writes a <see cref="Pixel.Rhino.DocObjects.ObjRef"/> to the archive
     /// </summary>
     /// <returns>the element that was read</returns>
     /// <since>5.8</since>
@@ -2874,7 +2874,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a list, an array, or any enumerable of <see cref="Rhino.DocObjects.ObjRef"/> to the archive.
+    /// Writes a list, an array, or any enumerable of <see cref="Pixel.Rhino.DocObjects.ObjRef"/> to the archive.
     /// <para>The return will always be an array.</para>
     /// </summary>
     /// <param name="objrefs">A value to write.</param>
@@ -2911,7 +2911,7 @@ namespace Rhino.FileIO
 
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Interval"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Interval"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -2924,7 +2924,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Point2d"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Point2d"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -2937,7 +2937,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Point3d"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Point3d"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -2950,7 +2950,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Point4d"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Point4d"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -2963,7 +2963,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Vector2d"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Vector2d"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -2976,7 +2976,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Vector3d"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Vector3d"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -2989,7 +2989,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.BoundingBox"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.BoundingBox"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3000,7 +3000,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Ray3d"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Ray3d"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3020,7 +3020,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Transform"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Transform"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3032,7 +3032,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Plane"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Plane"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3044,7 +3044,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Line"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Line"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3055,7 +3055,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Point3f"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Point3f"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3068,7 +3068,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.Vector3f"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.Vector3f"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3081,7 +3081,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.MeshingParameters"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.MeshingParameters"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3094,7 +3094,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Geometry.GeometryBase"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Geometry.GeometryBase"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>5.0</since>
@@ -3107,7 +3107,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Writes a <see cref="Rhino.Render.RenderSettings"/> value to the archive.
+    /// Writes a <see cref="Pixel.Rhino.Render.RenderSettings"/> value to the archive.
     /// </summary>
     /// <param name="value">A value to write.</param>
     /// <since>6.0</since>
@@ -3342,11 +3342,11 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a complete <see cref="Rhino.Collections.ArchivableDictionary"/> from the archive.
+    /// Reads a complete <see cref="Pixel.Rhino.Collections.ArchivableDictionary"/> from the archive.
     /// </summary>
     /// <returns>The newly instantiated object.</returns>
     /// <since>5.0</since>
-    public Rhino.Collections.ArchivableDictionary ReadDictionary()
+    public Pixel.Rhino.Collections.ArchivableDictionary ReadDictionary()
     {
       Collections.ArchivableDictionary rc = null;
       if (!m_read_error_occured)
@@ -3903,7 +3903,7 @@ namespace Rhino.FileIO
 
 #if RHINO_SDK
     /// <summary>
-    /// Reads a <see cref="Rhino.DocObjects.ObjRef"/> from the archive
+    /// Reads a <see cref="Pixel.Rhino.DocObjects.ObjRef"/> from the archive
     /// </summary>
     /// <returns>the element that was read</returns>
     /// <since>5.8</since>
@@ -3939,7 +3939,7 @@ namespace Rhino.FileIO
 #endif
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Interval"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Interval"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -3953,7 +3953,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Point2d"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Point2d"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -3967,7 +3967,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Point3d"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Point3d"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -3981,7 +3981,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Point4d"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Point4d"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -3995,7 +3995,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Vector2d"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Vector2d"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4009,7 +4009,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Vector3d"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Vector3d"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4023,7 +4023,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.BoundingBox"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.BoundingBox"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4035,7 +4035,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Ray3d"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Ray3d"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4057,7 +4057,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Transform"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Transform"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4071,13 +4071,13 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Plane"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Plane"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
     public Geometry.Plane ReadPlane()
     {
-      Rhino.Geometry.Plane rc = new Rhino.Geometry.Plane();
+      Pixel.Rhino.Geometry.Plane rc = new Pixel.Rhino.Geometry.Plane();
       m_read_error_occured = m_read_error_occured || !UnsafeNativeMethods.ON_BinaryArchive_ReadPlane(m_ptr, ref rc);
       if( m_read_error_occured )
         throw new BinaryArchiveException("ReadPlane failed");
@@ -4085,7 +4085,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Line"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Line"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4097,7 +4097,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Point3f"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Point3f"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4111,7 +4111,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.Vector3f"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.Vector3f"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4125,7 +4125,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.MeshingParameters"/> from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Geometry.MeshingParameters"/> from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4141,8 +4141,8 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Geometry.GeometryBase"/>-derived object from the archive.
-    /// <para>The <see cref="Rhino.Geometry.GeometryBase"/> class is abstract.</para>
+    /// Reads a <see cref="Pixel.Rhino.Geometry.GeometryBase"/>-derived object from the archive.
+    /// <para>The <see cref="Pixel.Rhino.Geometry.GeometryBase"/> class is abstract.</para>
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>5.0</since>
@@ -4181,7 +4181,7 @@ namespace Rhino.FileIO
     }
 
     /// <summary>
-    /// Reads a <see cref="Rhino.Render.RenderSettings"/>-derived object from the archive.
+    /// Reads a <see cref="Pixel.Rhino.Render.RenderSettings"/>-derived object from the archive.
     /// </summary>
     /// <returns>The element that was read.</returns>
     /// <since>6.0</since>

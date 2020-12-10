@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.Serialization;
-using Rhino.DocObjects;
-using Rhino.Runtime;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Provides a common base for most geometric classes. This class is abstract.
@@ -76,7 +76,7 @@ namespace Rhino.Geometry
         return UnsafeNativeMethods.CRhinoObject_Geometry(ptr_parent_rhinoobject, ci);
       return UnsafeNativeMethods.CRhinoObject_Geometry2(serial_number, ci);
 #else
-      var fileobject = m__parent as Rhino.FileIO.File3dmObject;
+      var fileobject = m__parent as Pixel.Rhino.FileIO.File3dmObject;
       if (null != fileobject)
         return fileobject.GetGeometryConstPointer();
       return IntPtr.Zero;

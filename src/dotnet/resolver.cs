@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   /// <summary> Assembly Resolver for the Rhino App Domain. </summary>
   public static class AssemblyResolver
@@ -13,7 +13,7 @@ namespace Rhino.Runtime
     {
       if (null == m_assembly_resolve)
       {
-        //Rhino.Runtime.HostUtils.DebugString("Assembly Resolver initialized\n");
+        //Pixel.Rhino.Runtime.HostUtils.DebugString("Assembly Resolver initialized\n");
         if (File.Exists(LogFilePath))
         {
           // Curtis: Temporary logging to debug assembly directs when running rhino inside

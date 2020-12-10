@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a sum surface, or an extrusion of a curve along a curved path.

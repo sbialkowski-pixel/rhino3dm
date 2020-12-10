@@ -1,9 +1,9 @@
 #if RHINO_SDK
 using System;
 using System.Collections.Generic;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
-namespace Rhino
+namespace Pixel.Rhino
 {
   static class PersistentSettingsHooks
   {

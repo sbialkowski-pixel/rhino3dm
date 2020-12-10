@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 using System.Linq;
-using Rhino.FileIO;
+using Pixel.Rhino.FileIO;
 
-namespace Rhino.Runtime.InteropWrappers
+namespace Pixel.Rhino.Runtime.InteropWrappers
 {
   class INTERNAL_ComponentIndexArray : IDisposable
   {
@@ -63,7 +63,7 @@ namespace Rhino.Runtime.InteropWrappers
   /// This class is used to pass strings back and forth between managed
   /// and unmanaged code.  This should not be needed by plug-ins.
   /// <para>If you are just dealing with an ON_wString*,
-  /// use <see cref="Rhino.Runtime.InteropWrappers.StringWrapper"/></para>
+  /// use <see cref="Pixel.Rhino.Runtime.InteropWrappers.StringWrapper"/></para>
   /// </summary>
   public class StringHolder : IDisposable
   {
@@ -700,7 +700,7 @@ namespace Rhino.Runtime.InteropWrappers
       // Helps to have a newed up array...
       m_ptr = UnsafeNativeMethods.ON_DoubleArray_New();
 
-      Rhino.Collections.RhinoList<double> list = new Rhino.Collections.RhinoList<double>(items);
+      Pixel.Rhino.Collections.RhinoList<double> list = new Pixel.Rhino.Collections.RhinoList<double>(items);
       UnsafeNativeMethods.ON_DoubleArray_Append(m_ptr, list.Count, list.m_items);
     }
 
@@ -1798,7 +1798,7 @@ namespace Rhino.Runtime.InteropWrappers
     }
 
 #if RHINO_SDK
-    internal Geometry.Mesh[] ToConstArray(Rhino.DocObjects.RhinoObject parent)
+    internal Geometry.Mesh[] ToConstArray(Pixel.Rhino.DocObjects.RhinoObject parent)
     {
       int count = Count;
       if (count < 1)
@@ -1809,7 +1809,7 @@ namespace Rhino.Runtime.InteropWrappers
       for (int i = 0; i < rc.Length; i++)
       {
         IntPtr pMesh = UnsafeNativeMethods.ON_MeshArray_Get(ptr, i);
-        Rhino.DocObjects.ObjRef objref = new DocObjects.ObjRef(parent, pMesh);
+        Pixel.Rhino.DocObjects.ObjRef objref = new DocObjects.ObjRef(parent, pMesh);
         rc[i] = objref.Mesh();
       }
       return rc;
@@ -2398,7 +2398,7 @@ namespace Rhino.Runtime.InteropWrappers
     /// </summary>
     /// <param name="objrefs">An array, a list or any enumerable set of Rhino object references.</param>
     /// <since>5.0</since>
-    public ClassArrayObjRef(System.Collections.Generic.IEnumerable<Rhino.DocObjects.ObjRef> objrefs)
+    public ClassArrayObjRef(System.Collections.Generic.IEnumerable<Pixel.Rhino.DocObjects.ObjRef> objrefs)
     {
       m_ptr = UnsafeNativeMethods.ON_ClassArrayCRhinoObjRef_New();
       foreach (var objref in objrefs)
@@ -2425,7 +2425,7 @@ namespace Rhino.Runtime.InteropWrappers
     /// </summary>
     /// <param name="objref">An ObjRef to add.</param>
     /// <since>5.0</since>
-    public void Add(Rhino.DocObjects.ObjRef objref)
+    public void Add(Pixel.Rhino.DocObjects.ObjRef objref)
     {
       if (null != objref)
       {
@@ -2467,14 +2467,14 @@ namespace Rhino.Runtime.InteropWrappers
     /// </summary>
     /// <returns>The managed array.</returns>
     /// <since>5.0</since>
-    public Rhino.DocObjects.ObjRef[] ToNonConstArray()
+    public Pixel.Rhino.DocObjects.ObjRef[] ToNonConstArray()
     {
       int count = Count;
       if (count < 1)
         return new DocObjects.ObjRef[0];
       IntPtr ptr = ConstPointer();
 
-      Rhino.DocObjects.ObjRef[] rc = new DocObjects.ObjRef[count];
+      Pixel.Rhino.DocObjects.ObjRef[] rc = new DocObjects.ObjRef[count];
       for (int i = 0; i < count; i++)
       {
         IntPtr pObjRef = UnsafeNativeMethods.ON_ClassArrayCRhinoObjRef_Get(ptr, i);
@@ -2522,7 +2522,7 @@ namespace Rhino.Runtime.InteropWrappers
     /// </summary>
     /// <param name="objrefs">An array, a list or any enumerable set of Rhino object references.</param>
     /// <since>5.8</since>
-    public ClassArrayOnObjRef(System.Collections.Generic.IEnumerable<Rhino.DocObjects.ObjRef> objrefs)
+    public ClassArrayOnObjRef(System.Collections.Generic.IEnumerable<Pixel.Rhino.DocObjects.ObjRef> objrefs)
     {
       m_ptr = UnsafeNativeMethods.ON_ClassArrayON_ObjRef_New();
       foreach (var objref in objrefs)

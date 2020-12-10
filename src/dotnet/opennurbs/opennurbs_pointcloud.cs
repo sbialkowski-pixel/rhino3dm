@@ -3,10 +3,10 @@ using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Rhino.Collections;
-using Rhino.Runtime;
+using Pixel.Rhino.Collections;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents a single item in a point cloud. A PointCloud item 
@@ -220,7 +220,7 @@ namespace Rhino.Geometry
     public PointCloud(IEnumerable<Point3d> points)
     {
       int count;
-      Point3d[] point_array = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] point_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       IntPtr ptr;
       if (null == point_array || count < 1)
       {
@@ -468,7 +468,7 @@ namespace Rhino.Geometry
     public void AddRange(IEnumerable<Point3d> points)
     {
       int count;
-      Point3d[] point_array = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] point_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (point_array == null)
         return;
 
@@ -486,12 +486,12 @@ namespace Rhino.Geometry
     public void AddRange(IEnumerable<Point3d> points, IEnumerable<Vector3d> normals)
     {
       int point_count;
-      Point3d[] point_array = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out point_count);
+      Point3d[] point_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out point_count);
       if (point_array == null || point_count == 0)
         return;
 
       int normal_count;
-      Vector3d[] normal_array = Rhino.Collections.RhinoListHelpers.GetConstArray(normals, out normal_count);
+      Vector3d[] normal_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(normals, out normal_count);
       if (normal_array == null || normal_count == 0)
         return;
 
@@ -511,7 +511,7 @@ namespace Rhino.Geometry
     public void AddRange(IEnumerable<Point3d> points, IEnumerable<Color> colors)
     {
       int count;
-      Point3d[] ptArray = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] ptArray = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (ptArray == null) { return; }
 
       int countColor;
@@ -526,7 +526,7 @@ namespace Rhino.Geometry
       foreach (var color in colors)
         argbList.Add(ColorTranslator.ToWin32(color));
 #endif
-      int[] argbArray = Rhino.Collections.RhinoListHelpers.GetConstArray(argbList.ToArray(), out countColor);
+      int[] argbArray = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(argbList.ToArray(), out countColor);
       if (argbArray == null) { return; }
 
       if (count != countColor) { throw new ArgumentException("Must supply equal number of points and colors"); }
@@ -550,12 +550,12 @@ namespace Rhino.Geometry
     public void AddRange(IEnumerable<Point3d> points, IEnumerable<Vector3d> normals, IEnumerable<Color> colors)
     {
       int point_count;
-      Point3d[] point_array = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out point_count);
+      Point3d[] point_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out point_count);
       if (point_array == null || point_count <= 0)
         return;
 
       int normal_count;
-      Vector3d[] normal_array = Rhino.Collections.RhinoListHelpers.GetConstArray(normals, out normal_count);
+      Vector3d[] normal_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(normals, out normal_count);
       if (normal_array == null || normal_count <= 0)
         return;
 
@@ -642,7 +642,7 @@ namespace Rhino.Geometry
       if (index > Count) { throw new IndexOutOfRangeException("Index must be smaller than or equal to Count"); }
 
       int count;
-      Point3d[] point_array = Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
+      Point3d[] point_array = Pixel.Rhino.Collections.RhinoListHelpers.GetConstArray(points, out count);
       if (point_array == null)
         return;
 

@@ -1,9 +1,9 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
 #if RHINO_SDK
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   public class HatchObject : RhinoObject
   {

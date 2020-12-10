@@ -1,8 +1,8 @@
 #pragma warning disable 1591
 using System;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
-namespace Rhino.UI.Gumball
+namespace Pixel.Rhino.UI.Gumball
 {
 #if RHINO_SDK
   /// <summary>
@@ -258,10 +258,10 @@ namespace Rhino.UI.Gumball
       ScaleYEnabled = UnsafeNativeMethods.CRhinoGumballAppearance_GetBool(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceBools.EnableYScale);
       ScaleZEnabled = UnsafeNativeMethods.CRhinoGumballAppearance_GetBool(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceBools.EnableZScale);
       FreeTranslate = UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.EnableFreeTranslate);
-      ColorX = Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Xcolor));
-      ColorY = Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Ycolor));
-      ColorZ = Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Zcolor));
-      ColorMenuButton = Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Menubuttoncolor));
+      ColorX = Pixel.Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Xcolor));
+      ColorY = Pixel.Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Ycolor));
+      ColorZ = Pixel.Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Zcolor));
+      ColorMenuButton = Pixel.Rhino.Runtime.Interop.ColorFromWin32(UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Menubuttoncolor));
       Radius = UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Gumball_radius);
       ArrowHeadLength = UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Gumball_tip_length);
       ArrowHeadWidth = UnsafeNativeMethods.CRhinoGumballAppearance_GetInt(pGumballAppearance, UnsafeNativeMethods.GumbalAppearanceInts.Gumball_tip_width);
@@ -642,7 +642,7 @@ namespace Rhino.UI.Gumball
     }
 
     /// <since>5.0</since>
-    public bool PickGumball(Rhino.Input.Custom.PickContext pickContext, Rhino.Input.Custom.GetPoint getPoint)
+    public bool PickGumball(Pixel.Rhino.Input.Custom.PickContext pickContext, Pixel.Rhino.Input.Custom.GetPoint getPoint)
     {
       IntPtr pThis = NonConstPointer();
       IntPtr pConstPickContext = pickContext.ConstPointer();

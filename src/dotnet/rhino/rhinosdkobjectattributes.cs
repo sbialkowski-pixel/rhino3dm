@@ -1,10 +1,10 @@
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 #pragma warning disable 1591
 using System;
 using System.Runtime.Serialization;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.Runtime.InteropWrappers;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// Attributes (color, material, layer,...) associated with a rhino object
@@ -51,7 +51,7 @@ namespace Rhino.DocObjects
         const_ptr_parent = parent_object.ConstPointer();
       return UnsafeNativeMethods.CRhinoObject_Attributes(const_ptr_parent);
 #else
-      var parent_model_object = m__parent as Rhino.FileIO.File3dmObject;
+      var parent_model_object = m__parent as Pixel.Rhino.FileIO.File3dmObject;
       if (parent_model_object != null)
         return parent_model_object.GetAttributesConstPointer();
       return IntPtr.Zero;

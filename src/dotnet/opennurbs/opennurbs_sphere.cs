@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using Rhino.Runtime;
+using Pixel.Rhino.Runtime;
 
-namespace Rhino.Geometry
+namespace Pixel.Rhino.Geometry
 {
   /// <summary>
   /// Represents the plane and radius values of a sphere.
@@ -68,7 +68,7 @@ namespace Rhino.Geometry
     public static Sphere FitSphereToPoints(System.Collections.Generic.IEnumerable<Point3d> points)
     {
       if (points == null) { throw new ArgumentNullException("points"); }
-      Rhino.Collections.Point3dList pts = new Rhino.Collections.Point3dList(points);
+      Pixel.Rhino.Collections.Point3dList pts = new Pixel.Rhino.Collections.Point3dList(points);
 
       if (pts.Count < 2) { return Sphere.Unset; }
 

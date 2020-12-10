@@ -1,6 +1,6 @@
 using System;
 
-namespace Rhino.Runtime
+namespace Pixel.Rhino.Runtime
 {
   /// <summary>
   /// Contains static methods to marshal objects between RhinoCommon and legacy Rhino_DotNet or C++.
@@ -64,10 +64,10 @@ namespace Rhino.Runtime
     /// <returns>NSFont* on success. IntPtr.Zero on failure</returns>
     /// <param name="font"></param>
     /// <since>6.9</since>
-    public static IntPtr NSFontFromFont(Rhino.DocObjects.Font font)
+    public static IntPtr NSFontFromFont(Pixel.Rhino.DocObjects.Font font)
     {
 #if MONO_BUILD
-      if (Rhino.Runtime.HostUtils.RunningOnOSX)
+      if (Pixel.Rhino.Runtime.HostUtils.RunningOnOSX)
       {
         IntPtr constPtrFont = font.ConstPointer();
         IntPtr nsfont = UnsafeNativeMethods.ON_Font_GetAppleFont(constPtrFont);
@@ -84,10 +84,10 @@ namespace Rhino.Runtime
     /// <param name="font"></param>
     /// <param name="pointSize">Point size</param>
     /// <since>6.9</since>
-    public static IntPtr NSFontFromFont(Rhino.DocObjects.Font font, double pointSize)
+    public static IntPtr NSFontFromFont(Pixel.Rhino.DocObjects.Font font, double pointSize)
     {
 #if MONO_BUILD
-      if (Rhino.Runtime.HostUtils.RunningOnOSX)
+      if (Pixel.Rhino.Runtime.HostUtils.RunningOnOSX)
       {
         IntPtr constPtrFont = font.ConstPointer();
         IntPtr nsfont = UnsafeNativeMethods.ON_Font_GetAppleFont2(constPtrFont, pointSize);
@@ -236,7 +236,7 @@ namespace Rhino.Runtime
     }
 
     /// <summary>
-    /// Returns the underlying const CRhinoFileWriteOptions* for a Rhino.FileIO.FileWriteOptions object. 
+    /// Returns the underlying const CRhinoFileWriteOptions* for a Pixel.Rhino.FileIO.FileWriteOptions object. 
     /// You should only be interested in using this function if you are writing C++ code.
     /// </summary>
     /// <param name="options">A FileWriteOptions object.</param>
@@ -251,7 +251,7 @@ namespace Rhino.Runtime
     }
 
     /// <summary>
-    /// Returns the underlying const CRhinoFileReadOptions* for a Rhino.FileIO.FileReadOptions object.
+    /// Returns the underlying const CRhinoFileReadOptions* for a Pixel.Rhino.FileIO.FileReadOptions object.
     /// You should only be interested in using this function if you are writing C++ code.
     /// </summary>
     /// <param name="options">A FileReadOptions object.</param>
@@ -280,7 +280,7 @@ namespace Rhino.Runtime
     }
 
     /// <summary>
-    /// Attempts to copy the contents of a RMA.OpenNURBS.OnArc to a Rhino.Geometry.Arc.
+    /// Attempts to copy the contents of a RMA.OpenNURBS.OnArc to a Pixel.Rhino.Geometry.Arc.
     /// </summary>
     /// <param name="source">A source OnArc.</param>
     /// <param name="destination">A destination arc.</param>
@@ -300,7 +300,7 @@ namespace Rhino.Runtime
     }
 
     /// <summary>
-    /// Attempts to copy the contents of a Rhino.Geometry.Arc to a RMA.OpenNURBS.OnArc.
+    /// Attempts to copy the contents of a Pixel.Rhino.Geometry.Arc to a RMA.OpenNURBS.OnArc.
     /// </summary>
     /// <param name="source">A source arc.</param>
     /// <param name="destination">A destination OnArc.</param>
@@ -556,7 +556,7 @@ namespace Rhino.Runtime
 
 #if RHINO_SDK
     /// <summary>
-    /// Convert a Rhino.Display.Viewport to an RMA.Rhino.IRhinoViewport.
+    /// Convert a Pixel.Rhino.Display.Viewport to an RMA.Pixel.Rhino.IRhinoViewport.
     /// </summary>
     /// <param name="source">A RhinoCommon viewport.</param>
     /// <returns>
@@ -567,7 +567,7 @@ namespace Rhino.Runtime
     {
       object rc = null;
       IntPtr const_ptr_source = source.ConstPointer();
-      Type rh_type = GetRhinoDotNetType("RMA.Rhino.MRhinoViewport");
+      Type rh_type = GetRhinoDotNetType("RMA.Pixel.Rhino.MRhinoViewport");
       if (IntPtr.Zero != const_ptr_source && null != rh_type)
       {
         System.Reflection.MethodInfo mi = rh_type.GetMethod("WrapNativePointer", new[] { typeof(IntPtr), typeof(bool), typeof(bool) });
@@ -579,7 +579,7 @@ namespace Rhino.Runtime
     }
 #endif
     /*
-        public static Rhino.Geometry.Curve TryCopyFromOnCurve(object source)
+        public static Pixel.Rhino.Geometry.Curve TryCopyFromOnCurve(object source)
         {
           if (source != null)
           {
@@ -591,7 +591,7 @@ namespace Rhino.Runtime
               {
                 System.Reflection.PropertyInfo pi = t.GetProperty("InternalPointer");
                 IntPtr ptr = (IntPtr)pi.GetValue(source, null);
-                Rhino.Geometry.Curve crv = Rhino.Geometry.Curve.CreateCurveHelper(ptr, null);
+                Pixel.Rhino.Geometry.Curve crv = Pixel.Rhino.Geometry.Curve.CreateCurveHelper(ptr, null);
                 crv.NonConstPointer();
                 return crv;
               }
@@ -608,19 +608,19 @@ namespace Rhino.Runtime
         /// </summary>
         /// <param name="source">-</param>
         /// <returns>-</returns>
-        public static Rhino.Display.DisplayPipeline ConvertFromMRhinoDisplayPipeline(object source)
+        public static Pixel.Rhino.Display.DisplayPipeline ConvertFromMRhinoDisplayPipeline(object source)
         {
           if (source != null)
           {
             try
             {
-              Type base_type = Type.GetType("RMA.Rhino.MRhinoDisplayPipeline");
+              Type base_type = Type.GetType("RMA.Pixel.Rhino.MRhinoDisplayPipeline");
               System.Type t = source.GetType();
               if (t.IsAssignableFrom(base_type))
               {
                 System.Reflection.PropertyInfo pi = t.GetProperty("InternalPointer");
                 IntPtr ptr = (IntPtr)pi.GetValue(source, null);
-                return new Rhino.Display.DisplayPipeline(ptr);
+                return new Pixel.Rhino.Display.DisplayPipeline(ptr);
               }
             }
             catch (Exception)
@@ -646,7 +646,7 @@ namespace Rhino.Runtime
   }
 }
 
-namespace Rhino.Runtime.InteropWrappers
+namespace Pixel.Rhino.Runtime.InteropWrappers
 {
 #if RHINO_SDK
   class RhinoDib : IDisposable
@@ -703,7 +703,7 @@ namespace Rhino.Runtime.InteropWrappers
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Rhino.Runtime.InteropWrappers.RhinoDib"/>
+    /// Initializes a new instance of the <see cref="Pixel.Rhino.Runtime.InteropWrappers.RhinoDib"/>
     /// class and attach it to a unmanaged CRhinoDib pointer.
     /// </summary>
     /// <param name="rhinoDibPointer">

@@ -2,10 +2,10 @@
 using System;
 using System.Drawing;
 using System.Collections.Generic;
-using Rhino.Geometry;
+using Pixel.Rhino.Geometry;
 
 #if RHINO_SDK
-namespace Rhino.Display
+namespace Pixel.Rhino.Display
 {
   /// <summary>
   /// Provides some basic (indeed, very basic) mechanisms for drawing custom geometry in viewports.
@@ -64,13 +64,13 @@ namespace Rhino.Display
     private bool m_enabled; // = false; initialized to false by runtime
     private BoundingBox m_clip;
 
-    readonly Rhino.Collections.RhinoList<CDU_Arc> m_arcs = new Rhino.Collections.RhinoList<CDU_Arc>();
-    readonly Rhino.Collections.RhinoList<CDU_Text> m_text = new Rhino.Collections.RhinoList<CDU_Text>();
-    readonly Rhino.Collections.RhinoList<CDU_Line> m_lines = new Rhino.Collections.RhinoList<CDU_Line>();
-    readonly Rhino.Collections.RhinoList<CDU_Point> m_points = new Rhino.Collections.RhinoList<CDU_Point>();
-    readonly Rhino.Collections.RhinoList<CDU_Curve> m_curves = new Rhino.Collections.RhinoList<CDU_Curve>();
-    readonly Rhino.Collections.RhinoList<CDU_Vector> m_vectors = new Rhino.Collections.RhinoList<CDU_Vector>();
-    readonly Rhino.Collections.RhinoList<CDU_Polygon> m_polygons = new Rhino.Collections.RhinoList<CDU_Polygon>();
+    readonly Pixel.Rhino.Collections.RhinoList<CDU_Arc> m_arcs = new Pixel.Rhino.Collections.RhinoList<CDU_Arc>();
+    readonly Pixel.Rhino.Collections.RhinoList<CDU_Text> m_text = new Pixel.Rhino.Collections.RhinoList<CDU_Text>();
+    readonly Pixel.Rhino.Collections.RhinoList<CDU_Line> m_lines = new Pixel.Rhino.Collections.RhinoList<CDU_Line>();
+    readonly Pixel.Rhino.Collections.RhinoList<CDU_Point> m_points = new Pixel.Rhino.Collections.RhinoList<CDU_Point>();
+    readonly Pixel.Rhino.Collections.RhinoList<CDU_Curve> m_curves = new Pixel.Rhino.Collections.RhinoList<CDU_Curve>();
+    readonly Pixel.Rhino.Collections.RhinoList<CDU_Vector> m_vectors = new Pixel.Rhino.Collections.RhinoList<CDU_Vector>();
+    readonly Pixel.Rhino.Collections.RhinoList<CDU_Polygon> m_polygons = new Pixel.Rhino.Collections.RhinoList<CDU_Polygon>();
     #endregion
 
     #region constructors
@@ -104,13 +104,13 @@ namespace Rhino.Display
 
         if (m_enabled)
         {
-          Rhino.Display.DisplayPipeline.CalculateBoundingBox += DisplayPipeline_CalculateBoundingBox;
-          Rhino.Display.DisplayPipeline.PostDrawObjects += DisplayPipeline_PostDrawObjects;
+          Pixel.Rhino.Display.DisplayPipeline.CalculateBoundingBox += DisplayPipeline_CalculateBoundingBox;
+          Pixel.Rhino.Display.DisplayPipeline.PostDrawObjects += DisplayPipeline_PostDrawObjects;
         }
         else
         {
-          Rhino.Display.DisplayPipeline.CalculateBoundingBox -= DisplayPipeline_CalculateBoundingBox;
-          Rhino.Display.DisplayPipeline.PostDrawObjects -= DisplayPipeline_PostDrawObjects;
+          Pixel.Rhino.Display.DisplayPipeline.CalculateBoundingBox -= DisplayPipeline_CalculateBoundingBox;
+          Pixel.Rhino.Display.DisplayPipeline.PostDrawObjects -= DisplayPipeline_PostDrawObjects;
         }
       }
     }

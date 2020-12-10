@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   /// <summary>
   /// For internal use, the IStackedDialogPageService service is implemented in
@@ -365,7 +365,7 @@ namespace Rhino.UI
     private bool m_attached_to_tree_control;
 
     /// <summary>
-    /// Currently only used by Windows Rhino.  If this is set to true then the
+    /// Currently only used by Windows Pixel.Rhino.  If this is set to true then the
     /// tree control item text will be bold.
     /// </summary>
     /// <since>6.0</since>
@@ -390,7 +390,7 @@ namespace Rhino.UI
     private bool m_tree_item_bold;
 
     /// <summary>
-    /// Currently only used by Windows Rhino.  If this is set to true then the
+    /// Currently only used by Windows Pixel.Rhino.  If this is set to true then the
     /// tree control item text be drawn using this color.  Set the color to
     /// System.Drawing.Color.Empty to use the default color.
     /// </summary>

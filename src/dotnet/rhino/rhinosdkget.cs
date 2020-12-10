@@ -8,16 +8,16 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Rhino.Commands;
-using Rhino.Display;
-using Rhino.DocObjects;
-using Rhino.Geometry;
-using Rhino.Input.Custom;
-using Rhino.Runtime;
-using Rhino.Runtime.InteropWrappers;
-using Rhino.UI;
+using Pixel.Rhino.Commands;
+using Pixel.Rhino.Display;
+using Pixel.Rhino.DocObjects;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.Input.Custom;
+using Pixel.Rhino.Runtime;
+using Pixel.Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.UI;
 
-namespace Rhino.Input
+namespace Pixel.Rhino.Input
 {
   /// <summary>
   /// Enumerates all Box getter modes.
@@ -1155,7 +1155,7 @@ namespace Rhino.Input
   }
 }
 
-namespace Rhino.Input.Custom
+namespace Pixel.Rhino.Input.Custom
 {
   /// <summary>
   /// Base class for GetObject, GetPoint, GetSphere, etc.

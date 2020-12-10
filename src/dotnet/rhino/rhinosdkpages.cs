@@ -5,11 +5,11 @@ using System.Linq;
 
 using System.Collections.Generic;
 
-namespace Rhino.UI
+namespace Pixel.Rhino.UI
 {
   /// <summary>
   /// For internal use only, provides access to unmanaged core
-  /// Rhino.
+  /// Pixel.Rhino.
   /// </summary>
   public static class RhinoPageInterop
   {
@@ -212,7 +212,7 @@ namespace Rhino.UI
       }
       catch(Exception ex)
       {
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
       }
       return 0;
     }
@@ -339,7 +339,7 @@ namespace Rhino.UI
       }
       catch (Exception ex)
       {
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
       }
       return default_result;
 
@@ -394,7 +394,7 @@ namespace Rhino.UI
       }
       catch(Exception ex)
       {
-        Rhino.Runtime.HostUtils.ExceptionReport(ex);
+        Pixel.Rhino.Runtime.HostUtils.ExceptionReport(ex);
       }
       return 0;
     }
@@ -507,7 +507,7 @@ namespace Rhino.UI
       return 1;
     }
 
-    private static readonly Dictionary<ObjectPropertiesPage, Action<ObjectPropertiesPageEventArgs>> g_modify_properties_page_action = new Dictionary<Rhino.UI.ObjectPropertiesPage, Action<ObjectPropertiesPageEventArgs>>();
+    private static readonly Dictionary<ObjectPropertiesPage, Action<ObjectPropertiesPageEventArgs>> g_modify_properties_page_action = new Dictionary<Pixel.Rhino.UI.ObjectPropertiesPage, Action<ObjectPropertiesPageEventArgs>>();
 
     public static void ObjectPropertiesModifyPage(ObjectPropertiesPage page, Action<ObjectPropertiesPageEventArgs> callbackAction)
     {
@@ -602,7 +602,7 @@ namespace Rhino.UI
 
     public static IntPtr PageCollectionWindowHandle(StackedDialogPage page)
     {
-      if (Rhino.Runtime.HostUtils.RunningOnOSX)
+      if (Pixel.Rhino.Runtime.HostUtils.RunningOnOSX)
         return IntPtr.Zero;
       var pointer = UnmanagedIRhinoPagePointerFromPage(page);
       var result = UnsafeNativeMethods.IRhinoOptionsPage_HostWindowHandle(pointer);

@@ -1,10 +1,10 @@
 using System;
 using System.Drawing;
 using System.Runtime.Serialization;
-using Rhino.Geometry;
-using Rhino.FileIO;
+using Pixel.Rhino.Geometry;
+using Pixel.Rhino.FileIO;
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
   /// <summary>
   /// The TextureType controls how the pixels in the bitmap
@@ -224,7 +224,7 @@ namespace Rhino.DocObjects
         return UnsafeNativeMethods.ON_Material_GetTexturePointer(pMaterial, m_index);
       }
 
-      Rhino.Render.SimulatedTexture parent_simulated_texture = m__parent as Rhino.Render.SimulatedTexture;
+      Pixel.Rhino.Render.SimulatedTexture parent_simulated_texture = m__parent as Pixel.Rhino.Render.SimulatedTexture;
       if (parent_simulated_texture != null)
       {
         IntPtr pSimulatedTexture = parent_simulated_texture.ConstPointer();

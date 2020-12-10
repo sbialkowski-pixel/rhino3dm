@@ -1,6 +1,6 @@
 #pragma warning disable 1591
-using Rhino.FileIO;
-using Rhino.Runtime.InteropWrappers;
+using Pixel.Rhino.FileIO;
+using Pixel.Rhino.Runtime.InteropWrappers;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 
 //[skipping] CRhinoGroup
 
-namespace Rhino.DocObjects
+namespace Pixel.Rhino.DocObjects
 {
 #if RHINO_SDK
   namespace Tables
@@ -257,7 +257,7 @@ namespace Rhino.DocObjects
       {
         if (null == objectIds)
           return Add(groupName);
-        Rhino.Collections.RhinoList<Guid> ids = new Rhino.Collections.RhinoList<Guid>();
+        Pixel.Rhino.Collections.RhinoList<Guid> ids = new Pixel.Rhino.Collections.RhinoList<Guid>();
         foreach (Guid id in objectIds)
         {
           ids.Add(id);
@@ -313,7 +313,7 @@ namespace Rhino.DocObjects
       {
         if (null == objectIds)
           return false;
-        Rhino.Collections.RhinoList<Guid> ids = new Rhino.Collections.RhinoList<Guid>();
+        Pixel.Rhino.Collections.RhinoList<Guid> ids = new Pixel.Rhino.Collections.RhinoList<Guid>();
         foreach (Guid id in objectIds)
         {
           ids.Add(id);
@@ -378,7 +378,7 @@ namespace Rhino.DocObjects
         int count = Count;
         if (count < 1)
           return null;
-        Rhino.Collections.RhinoList<string> names = new Rhino.Collections.RhinoList<string>(count);
+        Pixel.Rhino.Collections.RhinoList<string> names = new Pixel.Rhino.Collections.RhinoList<string>(count);
         for (int i = 0; i < count; i++)
         {
           if (ignoreDeletedGroups && IsDeleted(i))
@@ -432,7 +432,7 @@ namespace Rhino.DocObjects
       /// <since>5.0</since>
       public RhinoObject[] GroupMembers(int groupIndex)
       {
-        using (Rhino.Runtime.InternalRhinoObjectArray rhobjs = new Runtime.InternalRhinoObjectArray())
+        using (Pixel.Rhino.Runtime.InternalRhinoObjectArray rhobjs = new Runtime.InternalRhinoObjectArray())
         {
           IntPtr pRhinoObjects = rhobjs.NonConstPointer();
           UnsafeNativeMethods.CRhinoGroupTable_GroupMembers(m_doc.RuntimeSerialNumber, groupIndex, pRhinoObjects);
@@ -516,7 +516,7 @@ namespace Rhino.DocObjects
 
     internal override IntPtr NonConstPointer()
     {
-      if (m__parent is Rhino.FileIO.File3dm)
+      if (m__parent is Pixel.Rhino.FileIO.File3dm)
         return _InternalGetConstPointer();
 
       return base.NonConstPointer();
