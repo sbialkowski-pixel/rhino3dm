@@ -623,7 +623,8 @@ namespace Pixel.Rhino.Geometry.Intersect
                 }
             });
             result.CompleteAdding();
-            return result.ToHashSet().ToList();
+            HashSet<IntersectionEvent> uniqueIntersections = new HashSet<IntersectionEvent>(result.ToList());
+            return uniqueIntersections.ToList();
         }
 
         /// <summary>
@@ -664,7 +665,8 @@ namespace Pixel.Rhino.Geometry.Intersect
                 }
             });
             result.CompleteAdding();
-            return result.ToHashSet().ToList();
+            HashSet<IntersectionEvent> uniqueIntersections = new HashSet<IntersectionEvent>(result.ToList());
+            return uniqueIntersections.ToList();
         }
 
 

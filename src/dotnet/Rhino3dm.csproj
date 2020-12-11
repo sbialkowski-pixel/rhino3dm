@@ -11,6 +11,7 @@
     <RootNamespace>Rhino</RootNamespace>
     <AssemblyName>Rhino3dm</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RuntimeIdentifiers>win10-x86;win10-x64;</RuntimeIdentifiers>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -28,7 +29,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>$(SolutionDir)$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;RHINO3DM_BUILD SB_IMP</DefineConstants>
+    <DefineConstants>TRACE;RHINO3DM_BUILD;SB_IMP</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -302,7 +303,6 @@
     <Compile Include="UnsafeNativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="RDN_StrongName.snk" />
   </ItemGroup>
   <ItemGroup />

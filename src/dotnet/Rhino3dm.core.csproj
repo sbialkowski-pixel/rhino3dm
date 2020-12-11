@@ -1,24 +1,40 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <!-- Common Stuff -->
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);RHINO3DM_BUILD</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.0'">$(DefineConstants);DOTNETCORE</DefineConstants>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);RHINO3DM_BUILD SB_IMP</DefineConstants>
     <AssemblyName>Rhino3dm</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>Rhino</RootNamespace>
     <Version>0.1.0</Version>
     <PackageId>Rhino3dm</PackageId>
-    <Authors>mcneel</Authors>
+    <Authors>Pixel</Authors>
     <PackageTitle>.NET library based on OpenNURBS with a "RhinoCommon" style</PackageTitle>
     <PackageDescription>rhino3dm is a set of libraries based on the OpenNURBS geometry library with a "RhinoCommon" style. This provides the ability to access and manipulate geometry through .NET, Python or JavaScript applications independent of Rhino.</PackageDescription>
-    <RepositoryUrl>https://github.com/mcneel/rhino3dm</RepositoryUrl>
     <PackageTags>rhino3d</PackageTags>
-    <Copyright>Copyright (c) 1997-2020 Robert McNeel &amp; Associates</Copyright>
+    <Copyright>Pixel</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIconUrl>https://github.com/mcneel/developer-rhino3d-com/raw/6/images/logo-rhino3dmio-128x128.png</PackageIconUrl>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>Release\</OutputPath>
   </PropertyGroup>
+  
+  <!-- .NET Standard 2.0 references, compilation flags and build options -->
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.0'">$(DefineConstants);TRACE DOTNETCORE</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netcore'))" >
+  </ItemGroup>
 
+  <!-- .NET 4.5 references, compilation flags and build options -->
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))" >
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  
+  <!-- Native c++ lib inclusion -->
   <ItemGroup Condition="exists('..\build\windows\win64\Release\librhino3dm_native.dll')">
     <None Include="..\build\windows\win64\Release\librhino3dm_native.dll">
       <PackagePath>runtimes\win-x64\native</PackagePath>
