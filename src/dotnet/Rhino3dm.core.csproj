@@ -24,14 +24,11 @@
     <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.0'">$(DefineConstants);TRACE DOTNETCORE</DefineConstants>
   </PropertyGroup>
   
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netcore'))" >
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))" >
   </ItemGroup>
 
   <!-- .NET 4.5 references, compilation flags and build options -->
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))" >
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   
   <!-- Native c++ lib inclusion -->
