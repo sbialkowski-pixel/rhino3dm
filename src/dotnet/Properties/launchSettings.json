@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Rhino3dm.core": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Rhino 6\\System\\Rhino.exe",
+      "nativeDebugging": false
+    }
+  }
+}

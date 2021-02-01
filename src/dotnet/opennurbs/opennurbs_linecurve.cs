@@ -215,16 +215,12 @@ namespace Pixel.Rhino.Geometry
         /// <param name="pointOnOtherCurve">The point on other curve. This out parameter is assigned during this call.</param>
         /// <returns>true on success; false on error.</returns>
         /// <since>5.0</since>
-
+        /*
         public override bool ClosestPoints(Curve otherCurve, out Point3d pointOnThisCurve, out Point3d pointOnOtherCurve)
         {
-
-
-            pointOnThisCurve = Point3d.Unset;
-            pointOnOtherCurve = Point3d.Unset;
-            return false;
+            return this.ClosestPoints(otherCurve, out pointOnThisCurve, out pointOnOtherCurve);
         }
-
+        */
 
         #endregion
 
@@ -248,8 +244,8 @@ namespace Pixel.Rhino.Geometry
             }
         }
 
-        public static explicit operator PolylineCurve(LineCurve crv) => new PolylineCurve(new Point3d[] { crv.Line.From, crv.Line.To });
-        public static explicit operator LineCurve(PolylineCurve plineCrv) => new LineCurve(new Line(plineCrv.ToPolyline().First(), plineCrv.ToPolyline().Last()));
+//public static explicit operator PolylineCurve(LineCurve crv) => new PolylineCurve(new Point3d[] { crv.Line.From, crv.Line.To });
+        //public static explicit operator LineCurve(PolylineCurve plineCrv) => new LineCurve(new Line(plineCrv.ToPolyline().First(), plineCrv.ToPolyline().Last()));
 
 
     }

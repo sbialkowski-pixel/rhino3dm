@@ -3,7 +3,7 @@
   <!-- Common Stuff -->
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);RHINO3DM_BUILD SB_IMP</DefineConstants>
+    <DefineConstants>RHINO3DM_BUILD;SB_IMP;DOTNETCORE</DefineConstants>
     <AssemblyName>Rhino3dm</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>Rhino</RootNamespace>
@@ -23,12 +23,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.0'">$(DefineConstants);TRACE DOTNETCORE</DefineConstants>
   </PropertyGroup>
-  
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))" >
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WarningLevel>0</WarningLevel>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG; </DefineConstants>
+    <WarningLevel>0</WarningLevel>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
   </ItemGroup>
 
   <!-- .NET 4.5 references, compilation flags and build options -->
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))" >
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
   </ItemGroup>
   
   <!-- Native c++ lib inclusion -->

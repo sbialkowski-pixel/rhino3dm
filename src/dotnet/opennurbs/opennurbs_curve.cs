@@ -2667,6 +2667,7 @@ namespace Pixel.Rhino.Geometry
         [ConstOperation]
         public Polyline TryGetPolyline(out double[] parameters)
         {
+            parameters = null;
             if (Degree > 1)
             {
                 NurbsCurve nCurve = ToNurbsCurve();
@@ -2679,9 +2680,17 @@ namespace Pixel.Rhino.Geometry
             }
             else
             {
-
-                Polyline pline = null;
-                if (this is LineCurve)
+                if (this.TryGetPolyline(out Polyline pline))
+                {
+                    parameters = Enumerable.Range(0, pline.Count).Select(x => Interval.Map((double)x, new Interval(0, pline.Count - 1), Domain)).ToArray();
+                    if (pline.Count > 0) return pline;
+                    else return null;
+                }
+                else
+                {
+                   return null;
+                }
+                /*
                 {
                     Line ln = ((LineCurve)this).Line;
                     pline = new Polyline(new Point3d[] { ln.From, ln.To });
@@ -2692,9 +2701,9 @@ namespace Pixel.Rhino.Geometry
                 }
 
                 //Polyline pline = ((PolylineCurve)this).ToPolyline();
-                parameters = Enumerable.Range(0, pline.Count).Select(x => Interval.Map((double)x, new Interval(0, pline.Count - 1), Domain)).ToArray();
-                if (pline.Count > 0) return pline;
+                
                 else return null;
+                */
             }
         }
 
@@ -3477,11 +3486,9 @@ namespace Pixel.Rhino.Geometry
             }
             else
             {
-                return otherCurve.ToNurbsCurve().ClosestPoints(otherCurve, out pointOnThisCurve, out pointOnOtherCurve);
+                return this.ToNurbsCurve().ClosestPoints(otherCurve, out pointOnThisCurve, out pointOnOtherCurve);
             }
         }
-
-
 
 
 #endif
